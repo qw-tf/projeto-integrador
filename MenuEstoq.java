@@ -5,18 +5,19 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import javax.swing.BoxLayout;
-
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class MenuN2 extends JPanel {
+public class MenuEstoq extends JPanel {
 
     private final SistemaPrincipal framePai;
     private JScrollPane painelScroll;
 
-    public MenuN2(SistemaPrincipal frame) {
+    public MenuEstoq(SistemaPrincipal frame) {
         this.framePai = frame;
         setLayout(new GridBagLayout());
         setBackground(new Color(156, 156, 156));
@@ -40,8 +41,7 @@ public class MenuN2 extends JPanel {
     private void adicionarLinhaProduto(JPanel container, String id, String nome, String preco, String qtd,
             String validade) {
         JPanel linha = new JPanel(new GridLayout(1, 5));
-        linha.setBackground(Color.WHITE);
-
+        linha.setBackground(new Color(156, 156, 156));
         linha.add(new JLabel(id));
         linha.add(new JLabel(nome));
         linha.add(new JLabel(preco));
@@ -49,6 +49,7 @@ public class MenuN2 extends JPanel {
         linha.add(new JLabel(validade));
 
         container.add(linha);
+
     }
 
     private void initComponents() {
@@ -62,35 +63,21 @@ public class MenuN2 extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(50, 40, 10, 10);
+        gbc.insets = new Insets(10, 20, 10, 20);
         jBPopUpAdicionar.setText("fdodases???");
         this.add(jBPopUpAdicionar, gbc);
         jBPopUpAdicionar.addActionListener(e -> {
-            JFrame popUpAdicionar = new JFrame("ADICIONAR PRODUTO");
             Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
 
             JPanel panelzao = new JPanel();
-            panelzao.setBackground(new Color(156, 156, 156)); // Fundo da pop-up
-            panelzao.setLayout(new GridBagLayout());
-
-            popUpAdicionar.setSize(800, 500);
-            popUpAdicionar.setResizable(false);
-            popUpAdicionar.setLocationRelativeTo(null);
-            popUpAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            popUpAdicionar.setContentPane(panelzao); // usa setContentPane pra garantir
-
-            // CRIA A LABEL ESTILIZADA
+            JDialog popUpAdicionar = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao);
+            popUpAdicionar.setLayout(new GridBagLayout());
             javax.swing.JLabel labelProduto = new javax.swing.JLabel("PRODUTO");
             labelProduto.setFont(fonteLabel);
             labelProduto.setForeground(Color.BLACK); // opcional, caso queira forçar cor
 
-            // PAINELZINHO TRANSPARENTE PRA NÃO CAGAR O VISUAL
-            JPanel jLNome = new JPanel();
-            jLNome.setOpaque(false); // O SEGREDO PRA ACABAR COM O HIGHLIGHT HORRENDO
-            jLNome.add(labelProduto);
-
-            // ADICIONA AO PANELZÃO
-            panelzao.add(jLNome);
+            labelProduto.setOpaque(false); // O SEGREDO PRA ACABAR COM O HIGHLIGHT HORRENDO
+            panelzao.add(labelProduto);
 
             popUpAdicionar.setVisible(true);
 
@@ -101,20 +88,15 @@ public class MenuN2 extends JPanel {
         gbc.gridy = 0;
         this.add(jBPopUpListar, gbc);
         jBPopUpListar.addActionListener(e -> {
-            JFrame popUpListar = new JFrame("LISTAR PRODUTOS");
-            popUpListar.setSize(800, 500);
-            popUpListar.setResizable(false);
-            popUpListar.setLocationRelativeTo(null);
-            popUpListar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
             // Painel principal que vai dentro do JScrollPane
             JPanel panel = new JPanel();
+            JDialog popUpListar = framePai.criarPopUp("LISTAR PRODUTOS", panel);
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.setBackground(Color.WHITE);
+            panel.setBackground(new Color(156, 156, 156));
 
             // 🔶 Cabeçalho
             JPanel cabecalho = new JPanel(new GridLayout(1, 5));
-            cabecalho.setBackground(Color.LIGHT_GRAY);
+            cabecalho.setBackground(new Color(100, 100, 100));
             cabecalho.add(new JLabel("ID"));
             cabecalho.add(new JLabel("NOME DO PRODUTO"));
             cabecalho.add(new JLabel("PREÇO"));
@@ -140,22 +122,18 @@ public class MenuN2 extends JPanel {
         gbc.gridy = 0;
         this.add(JBpopUpExcluir, gbc);
         JBpopUpExcluir.addActionListener(e -> {
-            JFrame popUpExcluir = new JFrame("EXCLUIR PRODUTO");
             Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
             setLayout(new GridBagLayout());
             JPanel panelzao = new JPanel();
-            panelzao.setBackground(new Color(156, 156, 156)); // Aqui sim, diva!
-            panelzao.setLayout(new GridBagLayout()); // Agora é dentro do painel
-            popUpExcluir.setSize(800, 500); // Tamanho da janelinha
-            popUpExcluir.setResizable(false);
-            popUpExcluir.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
-            popUpExcluir.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
-            popUpExcluir.add(panelzao);
+            JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao);
+            panelzao.setBackground(new Color(156, 156, 156));
+            panelzao.setLayout(new GridBagLayout());
 
-            JPanel jLNome = new JPanel();
-            jLNome.add(new javax.swing.JLabel("PRODUTO"));
-            jLNome.setFont(fonteLabel);
-            panelzao.add(jLNome);
+            JButton jBExcluir = new JButton("EXCLUIR");
+            framePai.estilizarBotaoMaior(jBExcluir);
+            gbc.gridx = 0;
+            gbc.gridy = 6;
+            panelzao.add(jBExcluir, gbc);
 
             popUpExcluir.setVisible(true);
 
@@ -165,10 +143,11 @@ public class MenuN2 extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 6;
         gbc.gridwidth = 1;
+        gbc.insets = new Insets(40, 10, 10, 10);
         gbc.fill = GridBagConstraints.NONE;
         this.add(jBVoltar, gbc);
 
-        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuN1(framePai)));
+        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
     }
 
     private javax.swing.JButton jBVoltar;

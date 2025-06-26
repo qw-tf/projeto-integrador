@@ -6,11 +6,11 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
-public class MenuN1 extends JPanel {
+public class MenuAcess extends JPanel {
 
     private final SistemaPrincipal framePai;
 
-    public MenuN1(SistemaPrincipal frame) {
+    public MenuAcess(SistemaPrincipal frame) {
         this.framePai = frame;
         setLayout(new GridBagLayout());
         setBackground(new Color(156, 156, 156));
@@ -65,7 +65,7 @@ public class MenuN1 extends JPanel {
         gbc.gridx = 1;
         jBCEstoq.setText(" ");
         this.add(jBCEstoq, gbc);
-        jBCEstoq.addActionListener(e -> framePai.trocarTela(new MenuN2(framePai)));
+        jBCEstoq.addActionListener(e -> framePai.trocarTela(new MenuEstoq(framePai)));
 
         gbc.gridy = 2;
         gbc.gridx = 0;
@@ -75,7 +75,7 @@ public class MenuN1 extends JPanel {
         gbc.gridx = 1;
         jBVendas.setText(" ");
         this.add(jBVendas, gbc);
-        jBVendas.addActionListener(e -> framePai.trocarTela(new MenuN3(framePai)));
+        jBVendas.addActionListener(e -> framePai.trocarTela(new MenuVendas(framePai)));
 
         gbc.gridy = 3;
         gbc.gridx = 0;
@@ -85,6 +85,7 @@ public class MenuN1 extends JPanel {
         gbc.gridx = 1;
         jBFiados.setText(" ");
         this.add(jBFiados, gbc);
+        jBFiados.addActionListener(e -> framePai.trocarTela(new MenuFiados(framePai)));
 
         gbc.gridy = 4;
         gbc.gridx = 0;
@@ -94,6 +95,7 @@ public class MenuN1 extends JPanel {
         gbc.gridx = 1;
         jBGastos.setText(" ");
         this.add(jBGastos, gbc);
+        jBGastos.addActionListener(e -> framePai.trocarTela(new MenuGastos(framePai)));
 
         gbc.gridy = 5;
         gbc.gridx = 0;

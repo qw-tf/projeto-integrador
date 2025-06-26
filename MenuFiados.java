@@ -11,21 +11,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class MenuN3 extends JPanel {
+public class MenuFiados extends JPanel {
 
     private final SistemaPrincipal framePai;
     private JScrollPane painelScroll2;
 
-    public MenuN3(SistemaPrincipal frame) {
+    public MenuFiados(SistemaPrincipal frame) {
         this.framePai = frame;
         setLayout(new GridBagLayout());
         setBackground(new Color(156, 156, 156));
         initComponents();
 
         estilizarBotaoMaior(jBVoltar);
-        estilizarBotaoMaior(jBPopUpVendasListar);
-        estilizarBotaoMaior(jBPopUpVendasAdicionar);
-        estilizarBotaoMaior(jBPopUpVendasExcluir);
+        estilizarBotaoMaior(jBPopUpFiadosListarP);
+        estilizarBotaoMaior(jBPopUpFiadosAdicionarP);
+        estilizarBotaoMaior(jBPopUpFiadosQuitarP);
 
     }
 
@@ -54,24 +54,24 @@ public class MenuN3 extends JPanel {
 
     private void initComponents() {
         jBVoltar = new javax.swing.JButton("VOLTAR");
-        jBPopUpVendasAdicionar = new javax.swing.JButton();
-        jBPopUpVendasListar = new javax.swing.JButton();
-        jBPopUpVendasExcluir = new javax.swing.JButton();
+        jBPopUpFiadosAdicionarP = new javax.swing.JButton();
+        jBPopUpFiadosListarP = new javax.swing.JButton();
+        jBPopUpFiadosQuitarP = new javax.swing.JButton();
 
         GridBagConstraints gbc = new GridBagConstraints();
 
-        jBPopUpVendasListar.setText("rolasrolasrolas");
+        jBPopUpFiadosListarP.setText("Baphomet");
         gbc.gridx = 0;
         gbc.gridy = 0;
 
         gbc.insets = new Insets(50, 40, 10, 10);
-        this.add(jBPopUpVendasListar, gbc);
-        jBPopUpVendasListar.addActionListener(e -> {
-            JFrame popUpVendasListar = new JFrame("LISTAR VENDAS");
-            popUpVendasListar.setSize(800, 500);
-            popUpVendasListar.setResizable(false);
-            popUpVendasListar.setLocationRelativeTo(null);
-            popUpVendasListar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.add(jBPopUpFiadosListarP, gbc);
+        jBPopUpFiadosListarP.addActionListener(e -> {
+            JFrame popUpFiadosListar = new JFrame("LISTAR VENDAS");
+            popUpFiadosListar.setSize(800, 500);
+            popUpFiadosListar.setResizable(false);
+            popUpFiadosListar.setLocationRelativeTo(null);
+            popUpFiadosListar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -95,60 +95,60 @@ public class MenuN3 extends JPanel {
             JScrollPane painelScroll = new JScrollPane(panel);
             painelScroll.getVerticalScrollBar().setUnitIncrement(16);
 
-            popUpVendasListar.setContentPane(painelScroll);
-            popUpVendasListar.setVisible(true);
+            popUpFiadosListar.setContentPane(painelScroll);
+            popUpFiadosListar.setVisible(true);
         });
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
-        jBPopUpVendasAdicionar.setText("bundasbundasbundas");
-        this.add(jBPopUpVendasAdicionar, gbc);
-        jBPopUpVendasAdicionar.addActionListener(e -> {
-            JFrame popUpVendaAdicionar = new JFrame("ADICIONAR VENDA");
+        jBPopUpFiadosAdicionarP.setText("bundasbundasbundas");
+        this.add(jBPopUpFiadosAdicionarP, gbc);
+        jBPopUpFiadosAdicionarP.addActionListener(e -> {
+            JFrame popUpFiadosAdicionar = new JFrame("ADICIONAR VENDA");
             Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
             setLayout(new GridBagLayout());
             JPanel panelzao = new JPanel();
             panelzao.setBackground(new Color(156, 156, 156)); // Aqui sim, diva!
             panelzao.setLayout(new GridBagLayout()); // Agora é dentro do painel
-            popUpVendaAdicionar.setSize(800, 500); // Tamanho da janelinha
-            popUpVendaAdicionar.setResizable(false);
-            popUpVendaAdicionar.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
-            popUpVendaAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
-            popUpVendaAdicionar.add(panelzao);
+            popUpFiadosAdicionar.setSize(800, 500); // Tamanho da janelinha
+            popUpFiadosAdicionar.setResizable(false);
+            popUpFiadosAdicionar.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
+            popUpFiadosAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
+            popUpFiadosAdicionar.add(panelzao);
 
             JPanel jLNome = new JPanel();
             jLNome.add(new javax.swing.JLabel("VENDA"));
             jLNome.setFont(fonteLabel);
             panelzao.add(jLNome);
 
-            popUpVendaAdicionar.setVisible(true); // Agora SIM, BIXAA! Ela aparece!
+            popUpFiadosAdicionar.setVisible(true); // Agora SIM, BIXAA! Ela aparece!
         });
 
-        jBPopUpVendasExcluir.setText("KusKuskus");
+        jBPopUpFiadosQuitarP.setText("KusKuskus");
         gbc.gridx = 2;
         gbc.gridy = 0;
-        framePai.estilizarBotaoMaior(jBPopUpVendasExcluir);
-        this.add(jBPopUpVendasExcluir, gbc);
-        jBPopUpVendasExcluir.addActionListener(e -> {
-            JFrame popUpVendasExcluir = new JFrame("EXCLUIR VENDA");
+        framePai.estilizarBotaoMaior(jBPopUpFiadosQuitarP);
+        this.add(jBPopUpFiadosQuitarP, gbc);
+        jBPopUpFiadosQuitarP.addActionListener(e -> {
+            JFrame popUpFiadosQuitar = new JFrame("EXCLUIR VENDA");
             Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
             setLayout(new GridBagLayout());
             JPanel panelzao = new JPanel();
             panelzao.setBackground(new Color(156, 156, 156)); // Aqui sim, diva!
             panelzao.setLayout(new GridBagLayout()); // Agora é dentro do painel
-            popUpVendasExcluir.setSize(800, 500); // Tamanho da janelinha
-            popUpVendasExcluir.setResizable(false);
-            popUpVendasExcluir.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
-            popUpVendasExcluir.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
-            popUpVendasExcluir.add(panelzao);
+            popUpFiadosQuitar.setSize(800, 500); // Tamanho da janelinha
+            popUpFiadosQuitar.setResizable(false);
+            popUpFiadosQuitar.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
+            popUpFiadosQuitar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
+            popUpFiadosQuitar.add(panelzao);
 
             JPanel jLNome = new JPanel();
             jLNome.add(new javax.swing.JLabel("VENDA EXCLUIR"));
             jLNome.setFont(fonteLabel);
             panelzao.add(jLNome);
 
-            popUpVendasExcluir.setVisible(true);
+            popUpFiadosQuitar.setVisible(true);
 
         });
 
@@ -158,13 +158,13 @@ public class MenuN3 extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         this.add(jBVoltar, gbc);
 
-        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuN1(framePai)));
+        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
 
     }
 
     private javax.swing.JButton jBVoltar;
-    private javax.swing.JButton jBPopUpVendasAdicionar;
-    private javax.swing.JButton jBPopUpVendasListar;
-    private javax.swing.JButton jBPopUpVendasExcluir;
+    private javax.swing.JButton jBPopUpFiadosAdicionarP;
+    private javax.swing.JButton jBPopUpFiadosListarP;
+    private javax.swing.JButton jBPopUpFiadosQuitarP;
 
 }

@@ -11,12 +11,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class MenuN4 extends JPanel {
+public class MenuVendas extends JPanel {
 
     private final SistemaPrincipal framePai;
     private JScrollPane painelScroll2;
 
-    public MenuN4(SistemaPrincipal frame) {
+    public MenuVendas(SistemaPrincipal frame) {
         this.framePai = frame;
         setLayout(new GridBagLayout());
         setBackground(new Color(156, 156, 156));
@@ -158,13 +158,13 @@ public class MenuN4 extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         this.add(jBVoltar, gbc);
 
-        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuN1(framePai)));
+        jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
 
     }
 
     private javax.swing.JButton jBVoltar;
-    private javax.swing.JButton jBPopUpFiados;
-    private javax.swing.JButton jBPopUpFiadosListar;
-    private javax.swing.JButton jBPopUpFiadosQuitar;
+    private javax.swing.JButton jBPopUpVendasAdicionar;
+    private javax.swing.JButton jBPopUpVendasListar;
+    private javax.swing.JButton jBPopUpVendasExcluir;
 
 }

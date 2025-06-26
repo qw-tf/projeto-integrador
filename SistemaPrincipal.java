@@ -14,6 +14,18 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         repaint();
     }
 
+    public JDialog criarPopUp(String titulo, JPanel conteudo) {
+        JDialog popUp = new JDialog(this, "TÍTULO", true); // true = modal
+        popUp.setSize(800, 500);
+        popUp.setResizable(false);
+        popUp.setLocationRelativeTo(null);
+        popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        conteudo.setBackground(new Color(156, 156, 156));
+
+        popUp.setContentPane(conteudo);
+        return popUp;
+    }
+
     public void estilizarBotaoMaior(javax.swing.JButton botao) {
         botao.setBackground(new Color(0, 0, 0));
         botao.setForeground(Color.WHITE);
@@ -56,7 +68,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         estilizarBotaoMaior(btnSair);
         btnSair.setForeground(new Color(255, 50, 50));
 
-        btnContinuar.addActionListener(e -> trocarTela(new MenuN1(this)));
+        btnContinuar.addActionListener(e -> trocarTela(new MenuAcess(this)));
         btnSair.addActionListener(e -> System.exit(0));
 
         painelBotoes.add(btnContinuar);
