@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 public class MenuN1 extends JPanel {
 
-    private final SistemaPrincipal framePai; 
+    private final SistemaPrincipal framePai;
 
     public MenuN1(SistemaPrincipal frame) {
         this.framePai = frame;
@@ -75,6 +75,7 @@ public class MenuN1 extends JPanel {
         gbc.gridx = 1;
         jBVendas.setText(" ");
         this.add(jBVendas, gbc);
+        jBVendas.addActionListener(e -> framePai.trocarTela(new MenuN3(framePai)));
 
         gbc.gridy = 3;
         gbc.gridx = 0;

@@ -33,19 +33,14 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     }
 
     public void montarInterface() {
-        Color cinzaElegante = new Color(0, 0, 0);
-        Color brancoSuave = new Color(240, 240, 240);
-        Color vermelhoChique = new Color(255, 50, 50);
-        Color cinzaViados = new Color(156, 156, 156);
-
         JPanel telaInicial = new JPanel(new GridBagLayout());
-        telaInicial.setBackground(cinzaViados);
+        telaInicial.setBackground(new Color(156, 156, 156));
 
         JLabel labelVindo = new JLabel("SEJA BEM VINDO!");
         JButton btnContinuar = new JButton("Continuar");
         JButton btnSair = new JButton("Sair");
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        painelBotoes.setBackground(cinzaViados);
+        painelBotoes.setBackground(new Color(156, 156, 156));
 
         labelVindo.setFont(new Font("Arial", Font.BOLD, 50));
         labelVindo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -57,19 +52,9 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         btnContinuar.setPreferredSize(mesmoTamanho);
         btnSair.setPreferredSize(mesmoTamanho);
 
-        btnContinuar.setBackground(cinzaElegante);
-        btnContinuar.setForeground(brancoSuave);
-        btnContinuar.setFocusPainted(false);
-        btnContinuar.setBorderPainted(false);
-        btnContinuar.setOpaque(true);
-        btnContinuar.setContentAreaFilled(true);
-
-        btnSair.setBackground(cinzaElegante);
-        btnSair.setForeground(vermelhoChique);
-        btnSair.setFocusPainted(false);
-        btnSair.setBorderPainted(false);
-        btnSair.setOpaque(true);
-        btnSair.setContentAreaFilled(true);
+        estilizarBotaoMaior(btnContinuar);
+        estilizarBotaoMaior(btnSair);
+        btnSair.setForeground(new Color(255, 50, 50));
 
         btnContinuar.addActionListener(e -> trocarTela(new MenuN1(this)));
         btnSair.addActionListener(e -> System.exit(0));
