@@ -98,7 +98,7 @@ public class MenuAcess extends JPanel {
         gbc.gridx = 1;
         jBGastos.setText(" ");
         this.add(jBGastos, gbc);
-        jBGastos.addActionListener(e -> framePai.trocarTela(new MenuGastos(framePai)));
+        jBGastos.addActionListener(e -> framePai.trocarTela(new MenuBalanco(framePai)));
 
         gbc.gridy = 5;
         gbc.gridx = 0;
@@ -108,18 +108,7 @@ public class MenuAcess extends JPanel {
         gbc.gridx = 1;
         jBGeral.setText(" ");
         this.add(jBGeral, gbc);
-        jBGeral.addActionListener(e -> {
-
-            setLayout(new GridBagLayout());
-            JPanel panelzao = new JPanel();
-            JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao);
-            panelzao.setBackground(new Color(156, 156, 156));
-            panelzao.setLayout(new GridBagLayout());
-            LabelBotaoArredondado labelProduto = new LabelBotaoArredondado("PRODUTO", Color.BLACK, Color.WHITE);
-            panelzao.add(labelProduto);
-            popUpExcluir.setVisible(true);
-
-        });
+        jBGeral.addActionListener(e -> framePai.trocarTela(new MenuBalanco(framePai)));
 
         // Botão Voltar no canto inferior esquerdo
         gbc.gridx = 0;

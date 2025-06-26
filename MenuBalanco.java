@@ -3,11 +3,11 @@ import javax.swing.*;
 
 import Formatacao.LabelBotaoArredondado;
 
-public class MenuFiados extends JPanel {
+public class MenuBalanco extends JPanel {
 
     private final SistemaPrincipal framePai;
 
-    public MenuFiados(SistemaPrincipal frame) {
+    public MenuBalanco(SistemaPrincipal frame) {
         this.framePai = frame;
         setLayout(new GridBagLayout());
         setBackground(new Color(156, 156, 156));
@@ -15,26 +15,25 @@ public class MenuFiados extends JPanel {
 
         Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
 
-        jLAdicionarFiados.setFont(fonteLabel);
-        jLListarFiados.setFont(fonteLabel);
-        jLExcluirFiados.setFont(fonteLabel);
+        jLBalancoAnual.setFont(fonteLabel);
+        jLBalancoMensal.setFont(fonteLabel);
+        jLBalancoVendas.setFont(fonteLabel);
 
         framePai.estilizarBotaoMaior(jBVoltar);
-        framePai.estilizarBotaoMaior(jBPopUpFiadosAdicionarP);
-        framePai.estilizarBotaoMaior(jBPopUpFiadosListarP);
-        framePai.estilizarBotaoMaior(jBPopUpFiadosQuitarP);
-
+        framePai.estilizarBotaoMaior(jBBalancoMensal);
+        framePai.estilizarBotaoMaior(jBBalancoAnual);
+        framePai.estilizarBotaoMaior(jBBalancoVendas);
     }
 
     private void initComponents() {
-        jLAdicionarFiados = new JLabel("ADICIONAR FIADOS");
-        jLListarFiados = new JLabel("LISTAR FIADOS");
-        jLExcluirFiados = new JLabel("QUITAR FIADOS");
-        jLTituloFiados = new JLabel("MENU DE FIADOS");
+        jLBalancoVendas = new JLabel("BALANÇO DE VENDAS");
+        jLBalancoAnual = new JLabel("BALANÇO ANUAL");
+        jLBalancoMensal = new JLabel("BALANÇO MENSAL");
+        jLTituloBalanco = new JLabel("MENU DE BALANÇO");
 
-        jBPopUpFiadosAdicionarP = new JButton();
-        jBPopUpFiadosListarP = new JButton();
-        jBPopUpFiadosQuitarP = new JButton();
+        jBBalancoVendas = new JButton();
+        jBBalancoMensal = new JButton();
+        jBBalancoAnual = new JButton();
         jBVoltar = new JButton("VOLTAR");
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -44,31 +43,31 @@ public class MenuFiados extends JPanel {
 
         gbc.gridy = 0;
         gbc.gridx = 0;
-        jLTituloFiados.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        add(jLTituloFiados, gbc);
+        jLTituloBalanco.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        add(jLTituloBalanco, gbc);
 
         gbc.gridy = 1;
         gbc.gridx = 0;
-        add(jLAdicionarFiados, gbc);
+        add(jLBalancoVendas, gbc);
         gbc.gridx = 1;
-        jBPopUpFiadosAdicionarP.setText(" ");
-        add(jBPopUpFiadosAdicionarP, gbc);
+        jBBalancoVendas.setText(" ");
+        add(jBBalancoVendas, gbc);
         // jBPopUpAdicionar.addActionListener(e -> framePai.abrirAdicionarProduto());
 
         gbc.gridy = 2;
         gbc.gridx = 0;
-        add(jLListarFiados, gbc);
+        add(jLBalancoMensal, gbc);
         gbc.gridx = 1;
-        jBPopUpFiadosListarP.setText(" ");
-        add(jBPopUpFiadosListarP, gbc);
+        jBBalancoMensal.setText(" ");
+        add(jBBalancoMensal, gbc);
         // jBPopUpListar.addActionListener(e -> framePai.abrirListarProdutos());
 
         gbc.gridy = 3;
         gbc.gridx = 0;
-        add(jLExcluirFiados, gbc);
+        add(jLBalancoAnual, gbc);
         gbc.gridx = 1;
-        jBPopUpFiadosQuitarP.setText(" ");
-        add(jBPopUpFiadosQuitarP, gbc);
+        jBBalancoAnual.setText(" ");
+        add(jBBalancoAnual, gbc);
         // JBpopUpExcluir.addActionListener(e -> framePai.abrirExcluirProduto());
 
         gbc.gridx = 0;
@@ -84,11 +83,11 @@ public class MenuFiados extends JPanel {
     }
 
     private javax.swing.JButton jBVoltar;
-    private javax.swing.JButton jBPopUpFiadosAdicionarP;
-    private javax.swing.JButton jBPopUpFiadosListarP;
-    private javax.swing.JButton jBPopUpFiadosQuitarP;
-    private JLabel jLAdicionarFiados;
-    private JLabel jLListarFiados;
-    private JLabel jLExcluirFiados;
-    private JLabel jLTituloFiados;
+    private javax.swing.JButton jBBalancoMensal;
+    private javax.swing.JButton jBBalancoAnual;
+    private javax.swing.JButton jBBalancoVendas;
+    private JLabel jLBalancoMensal;
+    private JLabel jLBalancoAnual;
+    private JLabel jLBalancoVendas;
+    private JLabel jLTituloBalanco;
 }

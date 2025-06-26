@@ -1,15 +1,11 @@
 import java.awt.*;
-import javax.swing.BoxLayout;
+import javax.swing.*;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import Formatacao.LabelBotaoArredondado;
 
 public class MenuVendas extends JPanel {
 
     private final SistemaPrincipal framePai;
-    private JScrollPane painelScroll2;
 
     public MenuVendas(SistemaPrincipal frame) {
         this.framePai = frame;
@@ -17,140 +13,82 @@ public class MenuVendas extends JPanel {
         setBackground(new Color(156, 156, 156));
         initComponents();
 
+        Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
+
+        jLAdicionarVendas.setFont(fonteLabel);
+        jLListarVendas.setFont(fonteLabel);
+        jLExcluirVendas.setFont(fonteLabel);
+
         framePai.estilizarBotaoMaior(jBVoltar);
-        framePai.estilizarBotaoMaior(jBPopUpVendasListar);
         framePai.estilizarBotaoMaior(jBPopUpVendasAdicionar);
+        framePai.estilizarBotaoMaior(jBPopUpVendasListar);
         framePai.estilizarBotaoMaior(jBPopUpVendasExcluir);
 
-    }
-
-    private void adicionarLinhaProduto(JPanel container, String id, String nome, String preco, String qtd,
-            String validade) {
-        JPanel linha = new JPanel(new GridLayout(1, 5));
-        linha.setBackground(Color.WHITE);
-
-        linha.add(new JLabel(id));
-        linha.add(new JLabel(nome));
-        linha.add(new JLabel(preco));
-        linha.add(new JLabel(qtd));
-        linha.add(new JLabel(validade));
-
-        container.add(linha);
     }
 
     private void initComponents() {
-        jBVoltar = new javax.swing.JButton("VOLTAR");
-        jBPopUpVendasAdicionar = new javax.swing.JButton();
-        jBPopUpVendasListar = new javax.swing.JButton();
-        jBPopUpVendasExcluir = new javax.swing.JButton();
+        jLAdicionarVendas = new JLabel("ADICIONAR VENDAS");
+        jLListarVendas = new JLabel("LISTAR VENDAS");
+        jLExcluirVendas = new JLabel("EXCLUIR VENDAS");
+        jLTituloVendas = new JLabel("MENU DE VENDAS");
+
+        jBPopUpVendasAdicionar = new JButton();
+        jBPopUpVendasListar = new JButton();
+        jBPopUpVendasExcluir = new JButton();
+        jBVoltar = new JButton("VOLTAR");
 
         GridBagConstraints gbc = new GridBagConstraints();
-
-        jBPopUpVendasListar.setText("rolasrolasrolas");
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-
-        gbc.insets = new Insets(50, 40, 10, 10);
-        this.add(jBPopUpVendasListar, gbc);
-        jBPopUpVendasListar.addActionListener(e -> {
-            JFrame popUpVendasListar = new JFrame("LISTAR VENDAS");
-            popUpVendasListar.setSize(800, 500);
-            popUpVendasListar.setResizable(false);
-            popUpVendasListar.setLocationRelativeTo(null);
-            popUpVendasListar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-            panel.setBackground(Color.WHITE);
-
-            JPanel cabecalho = new JPanel(new GridLayout(1, 5));
-            cabecalho.setBackground(Color.LIGHT_GRAY);
-            cabecalho.add(new JLabel("ID"));
-            cabecalho.add(new JLabel("NOME DA VENDA"));
-            cabecalho.add(new JLabel("PREÇO"));
-            cabecalho.add(new JLabel("QUANTIDADE"));
-            cabecalho.add(new JLabel("DATA DA VENDA"));
-            panel.add(cabecalho);
-
-            // 🔷 Linhas de produto
-            adicionarLinhaProduto(panel, "1", "Sabre de Luz", "R$ 999.99", "2", "25/12/3025");
-            adicionarLinhaProduto(panel, "2", "Capa Jedi", "R$ 199.90", "5", "30/06/3027");
-            adicionarLinhaProduto(panel, "3", "Holocron", "R$ 450.00", "1", "01/01/3030");
-
-            // 🔽 Scroll
-            JScrollPane painelScroll = new JScrollPane(panel);
-            painelScroll.getVerticalScrollBar().setUnitIncrement(16);
-
-            popUpVendasListar.setContentPane(painelScroll);
-            popUpVendasListar.setVisible(true);
-        });
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        jBPopUpVendasAdicionar.setText("bundasbundasbundas");
-        this.add(jBPopUpVendasAdicionar, gbc);
-        jBPopUpVendasAdicionar.addActionListener(e -> {
-            JFrame popUpVendaAdicionar = new JFrame("ADICIONAR VENDA");
-            Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
-            setLayout(new GridBagLayout());
-            JPanel panelzao = new JPanel();
-            panelzao.setBackground(new Color(156, 156, 156)); // Aqui sim, diva!
-            panelzao.setLayout(new GridBagLayout()); // Agora é dentro do painel
-            popUpVendaAdicionar.setSize(800, 500); // Tamanho da janelinha
-            popUpVendaAdicionar.setResizable(false);
-            popUpVendaAdicionar.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
-            popUpVendaAdicionar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
-            popUpVendaAdicionar.add(panelzao);
-
-            JPanel jLNome = new JPanel();
-            jLNome.add(new javax.swing.JLabel("VENDA"));
-            jLNome.setFont(fonteLabel);
-            panelzao.add(jLNome);
-
-            popUpVendaAdicionar.setVisible(true); // Agora SIM, BIXAA! Ela aparece!
-        });
-
-        jBPopUpVendasExcluir.setText("KusKuskus");
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        framePai.estilizarBotaoMaior(jBPopUpVendasExcluir);
-        this.add(jBPopUpVendasExcluir, gbc);
-        jBPopUpVendasExcluir.addActionListener(e -> {
-            JFrame popUpVendasExcluir = new JFrame("EXCLUIR VENDA");
-            Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
-            setLayout(new GridBagLayout());
-            JPanel panelzao = new JPanel();
-            panelzao.setBackground(new Color(156, 156, 156)); // Aqui sim, diva!
-            panelzao.setLayout(new GridBagLayout()); // Agora é dentro do painel
-            popUpVendasExcluir.setSize(800, 500); // Tamanho da janelinha
-            popUpVendasExcluir.setResizable(false);
-            popUpVendasExcluir.setLocationRelativeTo(null); // Centralizadinha, igual diva em spotlight
-            popUpVendasExcluir.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Só fecha ela, não o app todo
-            popUpVendasExcluir.add(panelzao);
-
-            JPanel jLNome = new JPanel();
-            jLNome.add(new javax.swing.JLabel("VENDA EXCLUIR"));
-            jLNome.setFont(fonteLabel);
-            panelzao.add(jLNome);
-
-            popUpVendasExcluir.setVisible(true);
-
-        });
-
-        gbc.gridx = 1;
-        gbc.gridy = 6;
+        gbc.insets = new Insets(20, 40, 20, 40);
+        gbc.anchor = GridBagConstraints.WEST;
         gbc.gridwidth = 1;
+
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        jLTituloVendas.setFont(new Font("Segoe UI", Font.BOLD, 32));
+        add(jLTituloVendas, gbc);
+
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        add(jLAdicionarVendas, gbc);
+        gbc.gridx = 1;
+        jBPopUpVendasAdicionar.setText(" ");
+        add(jBPopUpVendasAdicionar, gbc);
+        // jBPopUpAdicionar.addActionListener(e -> framePai.abrirAdicionarProduto());
+
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        add(jLListarVendas, gbc);
+        gbc.gridx = 1;
+        jBPopUpVendasListar.setText(" ");
+        add(jBPopUpVendasListar, gbc);
+        // jBPopUpListar.addActionListener(e -> framePai.abrirListarProdutos());
+
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        add(jLExcluirVendas, gbc);
+        gbc.gridx = 1;
+        jBPopUpVendasExcluir.setText(" ");
+        add(jBPopUpVendasExcluir, gbc);
+        // JBpopUpExcluir.addActionListener(e -> framePai.abrirExcluirProduto());
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.SOUTHWEST;
         gbc.fill = GridBagConstraints.NONE;
-        this.add(jBVoltar, gbc);
+        gbc.insets = new Insets(40, 30, 10, 10);
+        add(jBVoltar, gbc);
 
         jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
-
     }
 
     private javax.swing.JButton jBVoltar;
     private javax.swing.JButton jBPopUpVendasAdicionar;
     private javax.swing.JButton jBPopUpVendasListar;
     private javax.swing.JButton jBPopUpVendasExcluir;
-
+    private JLabel jLAdicionarVendas;
+    private JLabel jLListarVendas;
+    private JLabel jLExcluirVendas;
+    private JLabel jLTituloVendas;
 }
