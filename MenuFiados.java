@@ -1,9 +1,4 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
 import javax.swing.BoxLayout;
 
 import javax.swing.JFrame;
@@ -22,20 +17,11 @@ public class MenuFiados extends JPanel {
         setBackground(new Color(156, 156, 156));
         initComponents();
 
-        estilizarBotaoMaior(jBVoltar);
-        estilizarBotaoMaior(jBPopUpFiadosListarP);
-        estilizarBotaoMaior(jBPopUpFiadosAdicionarP);
-        estilizarBotaoMaior(jBPopUpFiadosQuitarP);
+        framePai.estilizarBotaoMaior(jBVoltar);
+        framePai.estilizarBotaoMaior(jBPopUpFiadosListarP);
+        framePai.estilizarBotaoMaior(jBPopUpFiadosAdicionarP);
+        framePai.estilizarBotaoMaior(jBPopUpFiadosQuitarP);
 
-    }
-
-    private void estilizarBotaoMaior(javax.swing.JButton botao) {
-        botao.setBackground(new Color(0, 0, 0));
-        botao.setForeground(Color.WHITE);
-        botao.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        botao.setOpaque(true);
-        botao.setBorderPainted(false);
-        botao.setFocusPainted(false);
     }
 
     private void adicionarLinhaProduto(JPanel container, String id, String nome, String preco, String qtd,
@@ -60,7 +46,7 @@ public class MenuFiados extends JPanel {
 
         GridBagConstraints gbc = new GridBagConstraints();
 
-        jBPopUpFiadosListarP.setText("Baphomet");
+        jBPopUpFiadosListarP.setText("PENDENCIAS");
         gbc.gridx = 0;
         gbc.gridy = 0;
 

@@ -1,9 +1,4 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
 import javax.swing.BoxLayout;
 
 import javax.swing.JFrame;
@@ -22,20 +17,11 @@ public class MenuVendas extends JPanel {
         setBackground(new Color(156, 156, 156));
         initComponents();
 
-        estilizarBotaoMaior(jBVoltar);
-        estilizarBotaoMaior(jBPopUpVendasListar);
-        estilizarBotaoMaior(jBPopUpVendasAdicionar);
-        estilizarBotaoMaior(jBPopUpVendasExcluir);
+        framePai.estilizarBotaoMaior(jBVoltar);
+        framePai.estilizarBotaoMaior(jBPopUpVendasListar);
+        framePai.estilizarBotaoMaior(jBPopUpVendasAdicionar);
+        framePai.estilizarBotaoMaior(jBPopUpVendasExcluir);
 
-    }
-
-    private void estilizarBotaoMaior(javax.swing.JButton botao) {
-        botao.setBackground(new Color(0, 0, 0));
-        botao.setForeground(Color.WHITE);
-        botao.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        botao.setOpaque(true);
-        botao.setBorderPainted(false);
-        botao.setFocusPainted(false);
     }
 
     private void adicionarLinhaProduto(JPanel container, String id, String nome, String preco, String qtd,

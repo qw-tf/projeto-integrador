@@ -1,15 +1,5 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import javax.swing.*;
 
 public class MenuGastos extends JPanel {
     private final SistemaPrincipal framePai;
@@ -21,10 +11,10 @@ public class MenuGastos extends JPanel {
         setBackground(new Color(156, 156, 156));
         initComponents();
 
-        estilizarBotaoMaior(jBVoltar);
-        estilizarBotaoMaior(jBPopUpListarGastosP);
-        estilizarBotaoMaior(jBPopUpListarGastosE);
-        estilizarBotaoMaior(jBPopUpAdicionarGastos);
+        framePai.estilizarBotaoMaior(jBVoltar);
+        framePai.estilizarBotaoMaior(jBPopUpListarGastosP);
+        framePai.estilizarBotaoMaior(jBPopUpListarGastosE);
+        framePai.estilizarBotaoMaior(jBPopUpAdicionarGastos);
     }
 
     private void initComponents() {
@@ -57,20 +47,15 @@ public class MenuGastos extends JPanel {
             popUpAdicionarGastos.setVisible(true);
         });
 
-        jBPopUpListarGastosP.setText("seilaporra");
-        gbc.gridx = 0;
+        jBPopUpListarGastosP.setText("GASTOS PESSOAIS");
+        gbc.gridx = 1;
         gbc.gridy = 0;
-
         gbc.insets = new Insets(50, 40, 10, 10);
         this.add(jBPopUpListarGastosP, gbc);
         jBPopUpListarGastosP.addActionListener(e -> {
-            JFrame popUpListarP = new JFrame("LISTAR GASTOS");
-            popUpListarP.setSize(800, 500);
-            popUpListarP.setResizable(false);
-            popUpListarP.setLocationRelativeTo(null);
-            popUpListarP.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             JPanel panel = new JPanel();
+            JDialog popUpListarP = framePai.criarPopUp("LISTA GASTOS PESSOAIS", panel);
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setBackground(Color.WHITE);
 
@@ -95,12 +80,45 @@ public class MenuGastos extends JPanel {
             popUpListarP.setContentPane(painelScroll);
             popUpListarP.setVisible(true);
         });
+        jBPopUpListarGastosE.setText("GASTOS EMPRESARIAIS");
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(50, 40, 10, 10);
+        this.add(jBPopUpListarGastosE, gbc);
+        jBPopUpListarGastosE.addActionListener(e -> {
+            JPanel panel = new JPanel();
+            JDialog popUpListarGastosE = framePai.criarPopUp("LISTA GASTOS EMPRESARIAIS", panel);
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.setBackground(Color.WHITE);
 
-        gbc.gridx = 0;
+            JPanel cabecalho = new JPanel(new GridLayout(1, 5));
+            cabecalho.setBackground(Color.LIGHT_GRAY);
+            cabecalho.add(new JLabel("ID"));
+            cabecalho.add(new JLabel("NOME Do fiatroçodos"));
+            cabecalho.add(new JLabel("lklklklkl"));
+            cabecalho.add(new JLabel("vaitoamnocu"));
+            cabecalho.add(new JLabel("njhkjhkjhhjh"));
+            panel.add(cabecalho);
+
+            // 🔷 Linhas de produto
+            adicionarLinhaProduto(panel, "1", "Sabre de Luz", "R$ 999.99", "2", "25/12/3025");
+            adicionarLinhaProduto(panel, "2", "Capa Jedi", "R$ 199.90", "5", "30/06/3027");
+            adicionarLinhaProduto(panel, "3", "Holocron", "R$ 450.00", "1", "01/01/3030");
+
+            // 🔽 Scroll
+            JScrollPane painelScroll = new JScrollPane(panel);
+            painelScroll.getVerticalScrollBar().setUnitIncrement(16);
+
+            popUpListarGastosE.setContentPane(painelScroll);
+            popUpListarGastosE.setVisible(true);
+        });
+
+        gbc.gridx = 1;
         gbc.gridy = 6;
+        gbc.weightx = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(50, 40, 10, 10);
+        gbc.insets = new Insets(50, 10, 10, 10);
         this.add(jBVoltar, gbc);
         jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
     }
@@ -128,6 +146,7 @@ public class MenuGastos extends JPanel {
         container.add(linha);
 
     }
+
     private javax.swing.JButton jBVoltar;
     private javax.swing.JButton jBPopUpListarGastosP;
     private javax.swing.JButton jBPopUpListarGastosE;

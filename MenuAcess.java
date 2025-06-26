@@ -4,7 +4,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.JDialog;
 import javax.swing.JPanel;
+
+import Formatacao.LabelBotaoArredondado;
 
 public class MenuAcess extends JPanel {
 
@@ -105,6 +108,18 @@ public class MenuAcess extends JPanel {
         gbc.gridx = 1;
         jBGeral.setText(" ");
         this.add(jBGeral, gbc);
+        jBGeral.addActionListener(e -> {
+
+            setLayout(new GridBagLayout());
+            JPanel panelzao = new JPanel();
+            JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao);
+            panelzao.setBackground(new Color(156, 156, 156));
+            panelzao.setLayout(new GridBagLayout());
+            LabelBotaoArredondado labelProduto = new LabelBotaoArredondado("PRODUTO", Color.BLACK, Color.WHITE);
+            panelzao.add(labelProduto);
+            popUpExcluir.setVisible(true);
+
+        });
 
         // Botão Voltar no canto inferior esquerdo
         gbc.gridx = 0;

@@ -14,8 +14,20 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         repaint();
     }
 
+    public JDialog criarPopUp(String titulo, JPanel conteudo, int width, int height) {
+        JDialog popUp = new JDialog(this, titulo, true); // true = modal
+        popUp.setSize(width, height);
+        popUp.setResizable(false);
+        popUp.setLocationRelativeTo(null);
+        popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        conteudo.setBackground(new Color(156, 156, 156));
+
+        popUp.setContentPane(conteudo);
+        return popUp;
+    }
+
     public JDialog criarPopUp(String titulo, JPanel conteudo) {
-        JDialog popUp = new JDialog(this, "TÍTULO", true); // true = modal
+        JDialog popUp = new JDialog(this, titulo, true); // true = modal
         popUp.setSize(800, 500);
         popUp.setResizable(false);
         popUp.setLocationRelativeTo(null);
@@ -27,12 +39,13 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     }
 
     public void estilizarBotaoMaior(javax.swing.JButton botao) {
-        botao.setBackground(new Color(0, 0, 0));
+        botao.setBackground(Color.BLACK);
         botao.setForeground(Color.WHITE);
         botao.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        botao.setOpaque(true);
         botao.setBorderPainted(false);
         botao.setFocusPainted(false);
+        botao.setOpaque(false);
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     private void initComponents() {
@@ -89,7 +102,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
 
     public static void main(String args[]) {
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;

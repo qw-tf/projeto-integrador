@@ -1,16 +1,7 @@
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import java.awt.*;
+import javax.swing.*;
+
+import Formatacao.LabelBotaoArredondado;
 
 public class MenuEstoq extends JPanel {
 
@@ -23,19 +14,10 @@ public class MenuEstoq extends JPanel {
         setBackground(new Color(156, 156, 156));
         initComponents();
 
-        estilizarBotaoMaior(jBVoltar);
-        estilizarBotaoMaior(jBPopUpAdicionar);
-        estilizarBotaoMaior(jBPopUpListar);
-        estilizarBotaoMaior(JBpopUpExcluir);
-    }
-
-    private void estilizarBotaoMaior(javax.swing.JButton botao) {
-        botao.setBackground(new Color(0, 0, 0));
-        botao.setForeground(Color.WHITE);
-        botao.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        botao.setOpaque(true);
-        botao.setBorderPainted(false);
-        botao.setFocusPainted(false);
+        framePai.estilizarBotaoMaior(jBVoltar);
+        framePai.estilizarBotaoMaior(jBPopUpAdicionar);
+        framePai.estilizarBotaoMaior(jBPopUpListar);
+        framePai.estilizarBotaoMaior(JBpopUpExcluir);
     }
 
     private void adicionarLinhaProduto(JPanel container, String id, String nome, String preco, String qtd,
@@ -64,44 +46,128 @@ public class MenuEstoq extends JPanel {
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 20, 10, 20);
-        jBPopUpAdicionar.setText("fdodases???");
+        jBPopUpAdicionar.setText("ADICIONAR");
         this.add(jBPopUpAdicionar, gbc);
         jBPopUpAdicionar.addActionListener(e -> {
             Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
 
             JPanel panelzao = new JPanel();
-            JDialog popUpAdicionar = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao);
-            popUpAdicionar.setLayout(new GridBagLayout());
-            javax.swing.JLabel labelProduto = new javax.swing.JLabel("PRODUTO");
-            labelProduto.setFont(fonteLabel);
-            labelProduto.setForeground(Color.BLACK); // opcional, caso queira forçar cor
+            panelzao.setLayout(new BoxLayout(panelzao, BoxLayout.Y_AXIS));
+            panelzao.setBackground(new Color(156, 156, 156));
 
-            labelProduto.setOpaque(false); // O SEGREDO PRA ACABAR COM O HIGHLIGHT HORRENDO
-            panelzao.add(labelProduto);
+            JDialog popUpAdicionar = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 800, 400);
+
+            // Cabeçalho
+            JPanel cabecalhoA = new JPanel(new GridLayout(1, 4));
+            cabecalhoA.setBackground(Color.DARK_GRAY);
+            String[] titulos = { "DESCRIÇÃO", "PREÇO", "QUANTIDADE", "DATA DE VALIDADE" };
+
+            for (String titulo : titulos) {
+                JLabel label = new JLabel(titulo, JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.BLACK);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                cabecalhoA.add(label);
+            }
+
+            panelzao.add(cabecalhoA);
+
+            // Linha de campos
+            JPanel linhaCampos = new JPanel(new GridLayout(1, 4));
+            linhaCampos.setBackground(new Color(200, 200, 200));
+
+            JTextField campoDescricao = new JTextField();
+            JTextField campoPreco = new JTextField();
+            JTextField campoQuantidade = new JTextField();
+            JTextField campoValidade = new JTextField();
+
+            linhaCampos.add(campoDescricao);
+            linhaCampos.add(campoPreco);
+            linhaCampos.add(campoQuantidade);
+            linhaCampos.add(campoValidade);
+
+            panelzao.add(linhaCampos);
+
+            // Painel dos botões
+            JPanel painelBotoes = new JPanel(new BorderLayout());
+            painelBotoes.setBackground(new Color(156, 156, 156));
+
+            // Botões
+            JButton botaoConfirmar = new JButton("CONFIRMAR");
+            JButton botaoCancelar = new JButton("CANCELAR");
+
+            // Painel do botão esquerdo
+            JPanel painelEsquerda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            painelEsquerda.setOpaque(false); // herda o fundo
+            painelEsquerda.add(botaoCancelar);
+
+            // Painel do botão direito
+            JPanel painelDireita = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            painelDireita.setOpaque(false);
+            painelDireita.add(botaoConfirmar);
+
+            // Adiciona os dois lados
+            painelBotoes.add(painelEsquerda, BorderLayout.WEST);
+            painelBotoes.add(painelDireita, BorderLayout.EAST);
+
+            // Restringe o tamanho ao necessário
+            painelBotoes.setMaximumSize(painelBotoes.getPreferredSize());
+
+            // 🧠 O segredo Jedi:
+            painelBotoes.setMaximumSize(painelBotoes.getPreferredSize());
+            painelBotoes.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+            botaoConfirmar.setBackground(new Color(0, 0, 0));
+            botaoConfirmar.setForeground(Color.WHITE);
+            botaoCancelar.setBackground(Color.BLACK);
+            botaoCancelar.setForeground(Color.WHITE);
+
+            // Ação do botão "CONFIRMAR"
+            botaoConfirmar.addActionListener(ev -> {
+                String descricao = campoDescricao.getText().trim();
+                String preco = campoPreco.getText().trim();
+                String quantidade = campoQuantidade.getText().trim();
+                String validade = campoValidade.getText().trim();
+            });
+
+            // Ação do botão "CANCELAR"
+            botaoCancelar.addActionListener(ev -> popUpAdicionar.dispose());
+
+            painelBotoes.add(botaoCancelar);
+            painelBotoes.add(botaoConfirmar);
+
+            panelzao.add(Box.createVerticalStrut(10)); // espaço entre campos e botões
+            panelzao.add(painelBotoes);
 
             popUpAdicionar.setVisible(true);
-
         });
 
-        jBPopUpListar.setText("fdodases!!!");
+        jBPopUpListar.setText("LISTAR PRODUTOS");
         gbc.gridx = 1;
         gbc.gridy = 0;
         this.add(jBPopUpListar, gbc);
         jBPopUpListar.addActionListener(e -> {
             // Painel principal que vai dentro do JScrollPane
             JPanel panel = new JPanel();
-            JDialog popUpListar = framePai.criarPopUp("LISTAR PRODUTOS", panel);
+            JDialog popUpListar = framePai.criarPopUp("LISTA PRODUTOS", panel);
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
             panel.setBackground(new Color(156, 156, 156));
 
             // 🔶 Cabeçalho
             JPanel cabecalho = new JPanel(new GridLayout(1, 5));
             cabecalho.setBackground(new Color(100, 100, 100));
-            cabecalho.add(new JLabel("ID"));
-            cabecalho.add(new JLabel("NOME DO PRODUTO"));
-            cabecalho.add(new JLabel("PREÇO"));
-            cabecalho.add(new JLabel("QUANTIDADE"));
-            cabecalho.add(new JLabel("DATA DE VALIDADE"));
+            String[] titulos = { "ID", "NOME DO PRODUTO", "PREÇO", "QUANTIDADE", "DATA DE VALIDADE" };
+
+            for (String titulo : titulos) {
+                JLabel label = new JLabel(titulo, JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.DARK_GRAY);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                cabecalho.add(label);
+            }
+
             panel.add(cabecalho);
 
             // 🔷 Linhas de produto
@@ -117,24 +183,19 @@ public class MenuEstoq extends JPanel {
             popUpListar.setVisible(true);
         });
 
-        JBpopUpExcluir.setText("fdodases!?!");
+        JBpopUpExcluir.setText("EXCLUIR PRODUTO");
         gbc.gridx = 2;
         gbc.gridy = 0;
         this.add(JBpopUpExcluir, gbc);
         JBpopUpExcluir.addActionListener(e -> {
-            Font fonteLabel = new Font("Segoe UI", Font.BOLD, 22);
             setLayout(new GridBagLayout());
             JPanel panelzao = new JPanel();
             JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao);
             panelzao.setBackground(new Color(156, 156, 156));
             panelzao.setLayout(new GridBagLayout());
-
-            JButton jBExcluir = new JButton("EXCLUIR");
-            framePai.estilizarBotaoMaior(jBExcluir);
-            gbc.gridx = 0;
-            gbc.gridy = 6;
-            panelzao.add(jBExcluir, gbc);
-
+            LabelBotaoArredondado labelProduto = new LabelBotaoArredondado("PRODUTO", new Color(30, 144, 255),
+                    Color.WHITE);
+            panelzao.add(labelProduto);
             popUpExcluir.setVisible(true);
 
         });
