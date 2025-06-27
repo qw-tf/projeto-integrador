@@ -1,3 +1,5 @@
+package Backend;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,10 +78,5 @@ public class Estoque {
         } else {
             throw new ValidacaoException("Produto não encontrado!");
         }
-    }
-
-    // Método para injetar diretamente um produto (ex: ao carregar do arquivo)
-    public static void inserirLista(Produto produto) {
-        produtos.add(produto);
     }
 }

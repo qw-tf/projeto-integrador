@@ -1,3 +1,4 @@
+package Backend;
 public class Produto {
     // atributos pedidos no arquivo,
     // escolhemos adicionar código do produto e limite maximo de estoque.

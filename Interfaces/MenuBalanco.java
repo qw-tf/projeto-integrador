@@ -1,7 +1,7 @@
+package Interfaces;
+
 import java.awt.*;
 import javax.swing.*;
-
-import Formatacao.LabelBotaoArredondado;
 
 public class MenuBalanco extends JPanel {
 

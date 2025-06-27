@@ -1,8 +1,15 @@
+package Interfaces;
+
 import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import javax.swing.*;
+
+import Backend.Produto;
+import Backend.ProdutoPerecivel;
+import Backend.Estoque;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,12 +17,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import Formatacao.LabelBotaoArredondado;
-
 public class MenuEstoq extends JPanel {
 
     private final SistemaPrincipal framePai;
-    private List<Produto> listaProdutos = new ArrayList<>();
 
     public MenuEstoq(SistemaPrincipal frame) {
         this.framePai = frame;
@@ -103,56 +107,93 @@ public class MenuEstoq extends JPanel {
     }
 
     private void abrirAdicionarProduto() {
-        JPanel panelzao = new JPanel();
-        panelzao.setLayout(new BoxLayout(panelzao, BoxLayout.Y_AXIS));
+        JPanel panelzao = new JPanel(new GridBagLayout());
         panelzao.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10); // margens menores para equilíbrio
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-        JPanel campos = new JPanel(new GridLayout(5, 2, 10, 10));
-        campos.setBackground(new Color(156, 156, 156));
-
-        JTextField campoNome = new JTextField();
-        JTextField campoPreco = new JTextField();
-        JTextField campoQuantidade = new JTextField();
+        // Campos
+        JLabel labelNome = new JLabel("Nome:");
+        JTextField campoNome = new JTextField(20);
+        JLabel labelPreco = new JLabel("Preço:");
+        JTextField campoPreco = new JTextField(10);
+        JLabel labelQuantidade = new JLabel("Quantidade:");
+        JTextField campoQuantidade = new JTextField(10);
         JCheckBox checkPerecivel = new JCheckBox("Produto Perecível");
-
         JLabel labelValidade = new JLabel("Validade (se perecível):");
-        JTextField campoValidade = new JTextField();
+        JTextField campoValidade = new JTextField(10);
 
-        // Ocultar inicialmente
+        // Inicialmente invisível validade
         labelValidade.setVisible(false);
         campoValidade.setVisible(false);
 
-        campos.add(new JLabel("Nome:"));
-        campos.add(campoNome);
-        campos.add(new JLabel("Preço:"));
-        campos.add(campoPreco);
-        campos.add(new JLabel("Quantidade:"));
-        campos.add(campoQuantidade);
-        campos.add(checkPerecivel);
-        campos.add(new JLabel()); // célula vazia ao lado da checkbox
-        campos.add(labelValidade);
-        campos.add(campoValidade);
+        // Adiciona os componentes com posicionamento
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelzao.add(labelNome, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoNome, gbc);
 
-        // Listener para exibir/ocultar validade
-        checkPerecivel.addActionListener(e -> {
-            boolean visivel = checkPerecivel.isSelected();
-            labelValidade.setVisible(visivel);
-            campoValidade.setVisible(visivel);
-            campos.revalidate();
-            campos.repaint();
-        });
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelzao.add(labelPreco, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoPreco, gbc);
 
-        panelzao.add(campos);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panelzao.add(labelQuantidade, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoQuantidade, gbc);
 
-        JPanel botoes = new JPanel();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panelzao.add(checkPerecivel, gbc);
+
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        panelzao.add(labelValidade, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoValidade, gbc);
+
+        // Botões
         JButton confirmar = new JButton("Confirmar");
         JButton cancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(confirmar);
+        SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-        botoes.add(confirmar);
-        botoes.add(cancelar);
-        panelzao.add(botoes);
+        gbc.gridy = 5;
+        gbc.gridwidth = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 600, 300);
+        // Botão Cancelar - à esquerda
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelzao.add(cancelar, gbc);
+
+        // Botão Confirmar - à direita
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelzao.add(confirmar, gbc);
+        
+        Dimension botaoTamanho = new Dimension(120, 30); // ou o tamanho que preferires
+        confirmar.setPreferredSize(botaoTamanho);
+        cancelar.setPreferredSize(botaoTamanho);
+
+        // Listener para checkbox mostrar/esconder validade
+        checkPerecivel.addActionListener(e -> {
+            boolean selecionado = checkPerecivel.isSelected();
+            labelValidade.setVisible(selecionado);
+            campoValidade.setVisible(selecionado);
+            panelzao.revalidate();
+            panelzao.repaint();
+        });
+
+        JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 280);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -166,9 +207,9 @@ public class MenuEstoq extends JPanel {
                     String validadeStr = campoValidade.getText();
                     LocalDate dataValidade = LocalDate.parse(validadeStr, formatter);
                     ProdutoPerecivel perecivel = new ProdutoPerecivel(nome, qtd, preco, dataValidade);
-                    listaProdutos.add(perecivel);
+                    Estoque.getProdutos().add(perecivel);
                 } else {
-                    listaProdutos.add(new Produto(nome, qtd, preco));
+                    Estoque.getProdutos().add(new Produto(nome, qtd, preco));
                 }
 
                 popUp.dispose();
@@ -204,8 +245,8 @@ public class MenuEstoq extends JPanel {
         }
         panel.add(cabecalho);
 
-        for (int i = 0; i < listaProdutos.size(); i++) {
-            Produto p = listaProdutos.get(i);
+        for (int i = 0; i < Estoque.getProdutos().size(); i++) {
+            Produto p = Estoque.getProdutos().get(i);
             JPanel linha = new JPanel(new GridLayout(1, 6));
             linha.setBackground(new Color(180, 180, 180));
 
@@ -239,7 +280,9 @@ public class MenuEstoq extends JPanel {
         panelzao.setLayout(new GridBagLayout());
         panelzao.setBackground(new Color(156, 156, 156));
 
-        LabelBotaoArredondado labelProduto = new LabelBotaoArredondado("PRODUTO", new Color(30, 144, 255), Color.WHITE);
+        JLabel labelProduto = new JLabel("PRODUTO");
+        labelProduto.setBackground(new Color(30, 144, 255));
+        labelProduto.setForeground(Color.WHITE);
         panelzao.add(labelProduto);
 
         JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao, 600, 300);
