@@ -79,4 +79,27 @@ public class Estoque {
             throw new ValidacaoException("Produto não encontrado!");
         }
     }
+
+    public static void inserirLista(Produto produto) {
+        if (produto == null) {
+            throw new IllegalArgumentException("Produto não pode ser nulo!");
+        }
+
+        if (produto.getQuantidade() < 0) {
+            throw new IllegalArgumentException("Quantidade inválida no produto: " + produto.getNome());
+        }
+
+        if (produto.getPreco() < 0) {
+            throw new IllegalArgumentException("Preço inválido no produto: " + produto.getNome());
+        }
+
+        for (Produto p : produtos) {
+            if (p.getCodigo() == produto.getCodigo()) {
+                throw new IllegalArgumentException("Já existe um produto com o código " + produto.getCodigo());
+            }
+        }
+
+        produtos.add(produto);
+    }
+
 }

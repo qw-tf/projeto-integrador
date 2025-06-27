@@ -1,4 +1,5 @@
 package Interfaces;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -61,10 +62,39 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
+    public static void estiloPopUp() {
+        Color bg = new Color(156, 156, 156); // um fundo mais suave, mais chique
+        Color fg = new Color(30, 30, 30); // texto escuro e moderno
+        Font fonteMsg = new Font("Segoe UI", Font.BOLD, 16);
+        Font fonteBotao = new Font("Segoe UI", Font.PLAIN, 14);
+
+        // Fundo do JOptionPane
+        UIManager.put("OptionPane.background", bg);
+        UIManager.put("Panel.background", bg);
+
+        // Texto da mensagem
+        UIManager.put("OptionPane.messageForeground", fg);
+        UIManager.put("OptionPane.messageFont", fonteMsg);
+
+        // Botões
+        UIManager.put("Button.background", new Color(156, 156, 156));
+        UIManager.put("Button.foreground", fg);
+        UIManager.put("Button.font", fonteBotao);
+        UIManager.put("Button.border", BorderFactory.createEmptyBorder(5, 15, 5, 15));
+
+        // Área da mensagem
+        UIManager.put("OptionPane.messageArea.background", bg);
+        UIManager.put("OptionPane.buttonArea.background", bg);
+
+        // Sem aquela linhazinha brega separando botão e texto
+        UIManager.put("OptionPane.separator.foreground", bg);
+        UIManager.put("OptionPane.separator.background", bg);
+    }
+
     private void initComponents() {
         setTitle("Canaã");
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1000, 700));
+        setMinimumSize(new java.awt.Dimension(600, 600));
         getContentPane().setLayout(new java.awt.GridBagLayout());
         getContentPane().setBackground(new Color(156, 156, 156));
         pack();
