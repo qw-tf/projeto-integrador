@@ -1,8 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
 
-import Formatacao.LabelBotaoArredondado;
-
 public class MenuFiados extends JPanel {
 
     private final SistemaPrincipal framePai;

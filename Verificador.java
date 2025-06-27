@@ -7,24 +7,19 @@ public class Verificador {
 
     private static final DateTimeFormatter FORMATO = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public void verificarDataValidade(String dataDeValidade) {
-        try {
-            LocalDate dataValida = LocalDate.parse(dataDeValidade, FORMATO);
-            if (dataValida.isBefore(LocalDate.now())) {
-                throw new ValidacaoException("Produto já está vencido!");
-            }
-        } catch (DateTimeParseException e) {
-            throw new ValidacaoException("Formato de data inválido! Use dd/MM/yyyy.");
+    public static void verificarDataValidade(LocalDate dataDeValidade) {
+        if (dataDeValidade.isBefore(LocalDate.now())) {
+            throw new ValidacaoException("Produto já está vencido!");
         }
     }
 
-    public void verificarCodigo(int codigo) {
-        if (codigo < 1000 || codigo > 9999) {
+    public static void verificarCodigo(int codigo) {
+        if (codigo < 0 || codigo > 9999999) {
             throw new ValidacaoException("Código inválido! Deve conter 4 dígitos.");
         }
     }
 
-    public void verificarNome(String nome) {
+    public static void verificarNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new ValidacaoException("Nome não pode ser vazio.");
         }
@@ -33,31 +28,31 @@ public class Verificador {
         }
     }
 
-    public void verificarPreco(double preco) {
+    public static void verificarPreco(double preco) {
         if (preco <= 0) {
             throw new ValidacaoException("Preço inválido! Deve ser maior que zero.");
         }
     }
 
-    public void verificarQuantidade(int quantidade) {
-        if (quantidade < 0 ) {
+    public static void verificarQuantidade(int quantidade) {
+        if (quantidade < 0) {
             throw new ValidacaoException("Quantidade inválida! Deve ser maior que zero!");
         }
     }
-    
-    public void verificarLista(List<?> lista) {
+
+    public static void verificarLista(List<?> lista) {
         if (lista == null || lista.isEmpty()) {
             throw new ValidacaoException("Lista vazia! Nenhum item encontrado.");
         }
     }
 
-    public void validarSenha(String senha) {
+    public static void validarSenha(String senha) {
         if (senha == null || senha.isBlank()) {
             throw new ValidacaoException("Senha inválida!");
         }
     }
 
-    public void verificarValor(double valor) {
+    public static void verificarValor(double valor) {
         if (valor < 0) {
             throw new ValidacaoException("Valor inválido! Não pode ser negativo.");
         }

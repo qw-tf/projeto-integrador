@@ -7,8 +7,6 @@ import java.awt.Insets;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import Formatacao.LabelBotaoArredondado;
-
 public class MenuAcess extends JPanel {
 
     private final SistemaPrincipal framePai;
@@ -22,13 +20,13 @@ public class MenuAcess extends JPanel {
         jLAcessar.setForeground(Color.BLACK);
         jLAcessar.setFont(new Font("Segoe UI", Font.BOLD, 32));
 
-        framePai.estilizarBotaoMaior(jBCEstoq);
-        framePai.estilizarBotaoMaior(jBVendas);
-        framePai.estilizarBotaoMaior(jBFiados);
-        framePai.estilizarBotaoMaior(jBGastos);
-        framePai.estilizarBotaoMaior(jBGeral);
-        framePai.estilizarBotaoMaior(jBVoltar);
-        framePai.estilizarBotaoMaior(jBNotif);
+        SistemaPrincipal.estilizarBotaoMaior(jBCEstoq);
+        SistemaPrincipal.estilizarBotaoMaior(jBVendas);
+        SistemaPrincipal.estilizarBotaoMaior(jBFiados);
+        SistemaPrincipal.estilizarBotaoMaior(jBGastos);
+        SistemaPrincipal.estilizarBotaoMaior(jBGeral);
+        SistemaPrincipal.estilizarBotaoMaior(jBVoltar);
+        SistemaPrincipal.estilizarBotaoMaior(jBNotif);
     }
 
     private void initComponents() {
@@ -98,7 +96,7 @@ public class MenuAcess extends JPanel {
         gbc.gridx = 1;
         jBGastos.setText(" ");
         this.add(jBGastos, gbc);
-        jBGastos.addActionListener(e -> framePai.trocarTela(new MenuBalanco(framePai)));
+        jBGastos.addActionListener(e -> framePai.trocarTela(new MenuGastos(framePai)));
 
         gbc.gridy = 5;
         gbc.gridx = 0;

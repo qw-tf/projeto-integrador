@@ -19,10 +19,10 @@ public class MenuGastos extends JPanel {
         jLListarGastosEmp.setFont(fonteLabel);
         jLAdicionarGastos.setFont(fonteLabel);
 
-        framePai.estilizarBotaoMaior(jBVoltar);
-        framePai.estilizarBotaoMaior(jBPopUpListarGastosPer);
-        framePai.estilizarBotaoMaior(jBPopUpListarGastosEmp);
-        framePai.estilizarBotaoMaior(jBPopUpAdicionarGastos);
+        SistemaPrincipal.estilizarBotaoMaior(jBVoltar);
+        SistemaPrincipal.estilizarBotaoMaior(jBPopUpListarGastosPer);
+        SistemaPrincipal.estilizarBotaoMaior(jBPopUpListarGastosEmp);
+        SistemaPrincipal.estilizarBotaoMaior(jBPopUpAdicionarGastos);
     }
 
     private void initComponents() {

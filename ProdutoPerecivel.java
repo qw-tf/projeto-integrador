@@ -1,18 +1,21 @@
-public class ProdutoPerecivel extends Produto{
-    //variaveis extras da classe
-    private String dataDeValidade;
+import java.time.LocalDate;
 
-    //construtor base
-    public ProdutoPerecivel(String nome, int quantidade, double preco, String dataDeValidade){
+public class ProdutoPerecivel extends Produto {
+    // variaveis extras da classe
+    private LocalDate dataDeValidade;
+
+    // construtor base
+    public ProdutoPerecivel(String nome, int quantidade, double preco, LocalDate dataDeValidade) {
         super(nome, quantidade, preco);
         this.dataDeValidade = dataDeValidade;
     }
 
-    //gets e sets
-    public String getDataDeValidade() {
+    // gets e sets
+    public LocalDate getDataDeValidade() {
         return dataDeValidade;
     }
-    public void setDataDeValidade(String dataDeValidade) {
+
+    public void setDataDeValidade(LocalDate dataDeValidade) {
         this.dataDeValidade = dataDeValidade;
     }
 }

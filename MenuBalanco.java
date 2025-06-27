@@ -19,10 +19,10 @@ public class MenuBalanco extends JPanel {
         jLBalancoMensal.setFont(fonteLabel);
         jLBalancoVendas.setFont(fonteLabel);
 
-        framePai.estilizarBotaoMaior(jBVoltar);
-        framePai.estilizarBotaoMaior(jBBalancoMensal);
-        framePai.estilizarBotaoMaior(jBBalancoAnual);
-        framePai.estilizarBotaoMaior(jBBalancoVendas);
+        SistemaPrincipal.estilizarBotaoMaior(jBVoltar);
+        SistemaPrincipal.estilizarBotaoMaior(jBBalancoMensal);
+        SistemaPrincipal.estilizarBotaoMaior(jBBalancoAnual);
+        SistemaPrincipal.estilizarBotaoMaior(jBBalancoVendas);
     }
 
     private void initComponents() {

@@ -1,23 +1,33 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Estoque {
 
-    private List<Produto> produtos = new ArrayList<>();
-    Verificador verificador = new Verificador();
+    // A LISTA ABSOLUTA, GLOBAL, INTOCÁVEL E DE MILHÕES
+    private static final List<Produto> produtos = new ArrayList<>();
 
-    public List<Produto> getProdutos() {
-        return produtos;
+    // Impede que alguém instancie essa deusa
+    private Estoque() {
     }
 
-    public void adicionarProduto(String nome, int quantidade, double preco, boolean perecivel, String dataValidade) throws ValidacaoException {
-        verificador.verificarNome(nome);
-        verificador.verificarQuantidade(quantidade);
-        verificador.verificarPreco(preco);
+    // Retorna a lista em versão IMUTÁVEL (só leitura)
+    public static List<Produto> getProdutos() {
+        return Collections.unmodifiableList(produtos);
+    }
+
+    // Adiciona produto com validações
+    public static void adicionarProduto(String nome, int quantidade, double preco, boolean perecivel,
+            LocalDate dataValidade)
+            throws ValidacaoException {
+        Verificador.verificarNome(nome);
+        Verificador.verificarQuantidade(quantidade);
+        Verificador.verificarPreco(preco);
 
         Produto produto;
         if (perecivel) {
-            verificador.verificarDataValidade(dataValidade);
+            Verificador.verificarDataValidade(dataValidade);
             produto = new ProdutoPerecivel(nome, quantidade, preco, dataValidade);
         } else {
             produto = new Produto(nome, quantidade, preco);
@@ -27,10 +37,11 @@ public class Estoque {
         GerarLogs.logAutomatic("Produto cadastrado com sucesso!");
     }
 
-    public boolean excluirProduto(int codigo) throws ValidacaoException {
-        verificador.verificarCodigo(codigo);
+    // Remove produto pelo código
+    public static boolean excluirProduto(int codigo) throws ValidacaoException {
+        Verificador.verificarCodigo(codigo);
         Produto produto = buscarProduto(codigo);
-        
+
         if (produto != null) {
             produtos.remove(produto);
             GerarLogs.logAutomatic("Produto removido: " + produto.getNome());
@@ -41,11 +52,8 @@ public class Estoque {
         return false;
     }
 
-    public void inserirLista(Produto produto) {
-        produtos.add(produto);
-    }
-
-    public Produto buscarProduto(int codigo) throws ValidacaoException {
+    // Busca produto por código
+    public static Produto buscarProduto(int codigo) {
         for (Produto produto : produtos) {
             if (produto.getCodigo() == codigo) {
                 return produto;
@@ -54,11 +62,24 @@ public class Estoque {
         return null;
     }
 
-    public void removerProduto(int codigo, int quantidade) throws ValidacaoException {
+    // Atualiza quantidade de produto
+    public static void removerProduto(int codigo, int quantidade) throws ValidacaoException {
         Produto produto = buscarProduto(codigo);
         if (produto != null) {
-            produto.setQuantidade(produto.getQuantidade() - quantidade);
-            System.out.println("Produto " + produto.getNome() + " atualizado no estoque. Nova quantidade: " + produto.getQuantidade());
+            int novaQuantidade = produto.getQuantidade() - quantidade;
+            if (novaQuantidade < 0) {
+                throw new ValidacaoException("Não é possível remover mais do que o estoque atual!");
+            }
+            produto.setQuantidade(novaQuantidade);
+            GerarLogs
+                    .logAutomatic("Produto atualizado: " + produto.getNome() + " | Nova quantidade: " + novaQuantidade);
+        } else {
+            throw new ValidacaoException("Produto não encontrado!");
         }
+    }
+
+    // Método para injetar diretamente um produto (ex: ao carregar do arquivo)
+    public static void inserirLista(Produto produto) {
+        produtos.add(produto);
     }
 }
