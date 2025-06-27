@@ -8,7 +8,7 @@ public class Produto {
 
     // variavel static para contar a quantidade total de produtos, e a
     // variavel para ajudar a carregar os codigos dos produtos corretamente"
-    private static int proximoCodigo = 0;
+    private static int proximoCodigo = 1;
 
     // construtor da classe
     public Produto(String nome, int quantidade, double preco) {
