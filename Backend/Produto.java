@@ -1,25 +1,29 @@
 package Backend;
+
+import java.util.LinkedList;
+import java.util.List;
+
 public class Produto {
-    // atributos pedidos no arquivo,
-    // escolhemos adicionar código do produto e limite maximo de estoque.
     private String nome;
     private int quantidade, codigo;
     private double preco;
 
-    // variavel static para contar a quantidade total de produtos, e a
-    // variavel para ajudar a carregar os codigos dos produtos corretamente"
+    // Controle de códigos
     private static int proximoCodigo = 1;
+    private static List<Integer> codigosDisponiveis = new LinkedList<>();
 
-    // construtor da classe
     public Produto(String nome, int quantidade, double preco) {
         this.nome = nome;
         this.preco = preco;
         this.quantidade = quantidade;
 
-        codigo = proximoCodigo++; // automaticamente da um novo codigo a um produto
+        if (!codigosDisponiveis.isEmpty()) {
+            this.codigo = codigosDisponiveis.remove(0);
+        } else {
+            this.codigo = proximoCodigo++;
+        }
     }
 
-    // gets e sets dos atributos
     public int getQuantidade() {
         return quantidade;
     }
@@ -36,7 +40,7 @@ public class Produto {
         return preco;
     }
 
-    public int getProximoCodigo() {
+    public static int getProximoCodigo() {
         return proximoCodigo;
     }
 
@@ -59,4 +63,9 @@ public class Produto {
     public static void setProximoCodigo(int codigo) {
         proximoCodigo = codigo;
     }
+
+    public static void liberarCodigo(int codigo) {
+        codigosDisponiveis.add(codigo);
+    }
+    
 }

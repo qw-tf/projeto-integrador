@@ -62,6 +62,18 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
+    public static void estilizarBotaoMenor(javax.swing.JButton botao) {
+        botao.setBackground(Color.BLACK);
+        botao.setForeground(Color.WHITE);
+        botao.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        botao.setBorderPainted(false);
+        botao.putClientProperty("JButton.arc", 20);
+        botao.setText("●");
+        botao.setFocusPainted(false);
+        botao.setOpaque(false);
+        botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
     private void initComponents() {
         setTitle("Canaã");
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -123,6 +135,8 @@ public class SistemaPrincipal extends javax.swing.JFrame {
                 }
             }
         } catch (Exception ex) {
+            System.out.println("Erro");
+            System.exit(ABORT);
         }
         UIManager.put("Button.select", new Color(20, 20, 20)); // Cor do clique
         SistemaPrincipal telas = new SistemaPrincipal();

@@ -1,105 +1,69 @@
 package Backend;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Estoque {
+    private static List<Produto> produtos = new ArrayList<>();
 
-    // A LISTA ABSOLUTA, GLOBAL, INTOCÁVEL E DE MILHÕES
-    private static final List<Produto> produtos = new ArrayList<>();
+    public static void adicionarProduto(String nome, int quantidade, double preco, boolean perecivel, java.time.LocalDate validade) throws ValidacaoException {
+        if (nome == null || nome.isEmpty()) throw new ValidacaoException("Nome não pode ser vazio.");
+        if (quantidade < 0) throw new ValidacaoException("Quantidade não pode ser negativa.");
+        if (preco < 0) throw new ValidacaoException("Preço não pode ser negativo.");
 
-    // Impede que alguém instancie essa deusa
-    private Estoque() {
-    }
-
-    // Retorna a lista em versão IMUTÁVEL (só leitura)
-    public static List<Produto> getProdutos() {
-        return Collections.unmodifiableList(produtos);
-    }
-
-    // Adiciona produto com validações
-    public static void adicionarProduto(String nome, int quantidade, double preco, boolean perecivel,
-            LocalDate dataValidade)
-            throws ValidacaoException {
-        Verificador.verificarNome(nome);
-        Verificador.verificarQuantidade(quantidade);
-        Verificador.verificarPreco(preco);
-
-        Produto produto;
+        Produto novoProduto;
         if (perecivel) {
-            Verificador.verificarDataValidade(dataValidade);
-            produto = new ProdutoPerecivel(nome, quantidade, preco, dataValidade);
+            if (validade == null) throw new ValidacaoException("Data de validade obrigatória para produto perecível.");
+            novoProduto = new ProdutoPerecivel(nome, quantidade, preco, validade);
         } else {
-            produto = new Produto(nome, quantidade, preco);
+            novoProduto = new Produto(nome, quantidade, preco);
         }
-
-        produtos.add(produto);
-        GerarLogs.logAutomatic("Produto cadastrado com sucesso!");
+        produtos.add(novoProduto);
     }
 
-    // Remove produto pelo código
-    public static boolean excluirProduto(int codigo) throws ValidacaoException {
-        Verificador.verificarCodigo(codigo);
+    public static boolean removerProdutoPorId(int codigo, int quantidade) throws ValidacaoException {
         Produto produto = buscarProduto(codigo);
-
         if (produto != null) {
-            produtos.remove(produto);
-            GerarLogs.logAutomatic("Produto removido: " + produto.getNome());
+            if (quantidade <= 0) {
+                throw new ValidacaoException("Quantidade de remoção deve ser maior que zero.");
+            }
+            if (produto.getQuantidade() < quantidade) {
+                throw new ValidacaoException("Quantidade em estoque insuficiente!");
+            }
+            produto.setQuantidade(produto.getQuantidade() - quantidade);
+    
+            // Se esgotou, remove da lista
+            if (produto.getQuantidade() == 0) {
+                produtos.remove(produto);
+                Produto.liberarCodigo(produto.getCodigo());
+            }
+    
             return true;
         }
+        return false; // Produto não encontrado
+    }
+    
 
-        GerarLogs.logAutomatic("Tentativa de exclusão falhou. Produto não encontrado.");
+    public static boolean excluirProduto(int codigo) {
+        Produto produto = buscarProduto(codigo);
+        if (produto != null) {
+            produtos.remove(produto);
+            Produto.liberarCodigo(produto.getCodigo());
+            return true;
+        }
         return false;
     }
 
-    // Busca produto por código
     public static Produto buscarProduto(int codigo) {
-        for (Produto produto : produtos) {
-            if (produto.getCodigo() == codigo) {
-                return produto;
+        for (Produto p : produtos) {
+            if (p.getCodigo() == codigo) {
+                return p;
             }
         }
         return null;
     }
 
-    // Atualiza quantidade de produto
-    public static void removerProduto(int codigo, int quantidade) throws ValidacaoException {
-        Produto produto = buscarProduto(codigo);
-        if (produto != null) {
-            int novaQuantidade = produto.getQuantidade() - quantidade;
-            if (novaQuantidade < 0) {
-                throw new ValidacaoException("Não é possível remover mais do que o estoque atual!");
-            }
-            produto.setQuantidade(novaQuantidade);
-            GerarLogs
-                    .logAutomatic("Produto atualizado: " + produto.getNome() + " | Nova quantidade: " + novaQuantidade);
-        } else {
-            throw new ValidacaoException("Produto não encontrado!");
-        }
+    public static List<Produto> getProdutos() {
+        return produtos;
     }
-
-    public static void inserirLista(Produto produto) {
-        if (produto == null) {
-            throw new IllegalArgumentException("Produto não pode ser nulo!");
-        }
-
-        if (produto.getQuantidade() < 0) {
-            throw new IllegalArgumentException("Quantidade inválida no produto: " + produto.getNome());
-        }
-
-        if (produto.getPreco() < 0) {
-            throw new IllegalArgumentException("Preço inválido no produto: " + produto.getNome());
-        }
-
-        for (Produto p : produtos) {
-            if (p.getCodigo() == produto.getCodigo()) {
-                throw new IllegalArgumentException("Já existe um produto com o código " + produto.getCodigo());
-            }
-        }
-
-        produtos.add(produto);
-    }
-
 }

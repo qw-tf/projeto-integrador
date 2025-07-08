@@ -22,11 +22,11 @@ public class MenuAcess extends JPanel {
         jLAcessar.setForeground(Color.BLACK);
         jLAcessar.setFont(new Font("Segoe UI", Font.BOLD, 32));
 
-        SistemaPrincipal.estilizarBotaoMaior(jBCEstoq);
-        SistemaPrincipal.estilizarBotaoMaior(jBVendas);
-        SistemaPrincipal.estilizarBotaoMaior(jBFiados);
-        SistemaPrincipal.estilizarBotaoMaior(jBGastos);
-        SistemaPrincipal.estilizarBotaoMaior(jBGeral);
+        SistemaPrincipal.estilizarBotaoMenor(jBCEstoq);
+        SistemaPrincipal.estilizarBotaoMenor(jBVendas);
+        SistemaPrincipal.estilizarBotaoMenor(jBFiados);
+        SistemaPrincipal.estilizarBotaoMenor(jBGastos);
+        SistemaPrincipal.estilizarBotaoMenor(jBGeral);
         SistemaPrincipal.estilizarBotaoMaior(jBVoltar);
         SistemaPrincipal.estilizarBotaoMaior(jBNotif);
     }
@@ -66,7 +66,6 @@ public class MenuAcess extends JPanel {
         jLCEstoq.setFont(fonteLabel);
         this.add(jLCEstoq, gbc);
         gbc.gridx = 1;
-        jBCEstoq.setText(" ");
         this.add(jBCEstoq, gbc);
         jBCEstoq.addActionListener(e -> framePai.trocarTela(new MenuEstoq(framePai)));
 
@@ -76,7 +75,6 @@ public class MenuAcess extends JPanel {
         jLVendas.setFont(fonteLabel);
         this.add(jLVendas, gbc);
         gbc.gridx = 1;
-        jBVendas.setText(" ");
         this.add(jBVendas, gbc);
         jBVendas.addActionListener(e -> framePai.trocarTela(new MenuVendas(framePai)));
 
@@ -86,7 +84,6 @@ public class MenuAcess extends JPanel {
         jLFiados.setFont(fonteLabel);
         this.add(jLFiados, gbc);
         gbc.gridx = 1;
-        jBFiados.setText(" ");
         this.add(jBFiados, gbc);
         jBFiados.addActionListener(e -> framePai.trocarTela(new MenuFiados(framePai)));
 
@@ -96,7 +93,6 @@ public class MenuAcess extends JPanel {
         jLGastos.setFont(fonteLabel);
         this.add(jLGastos, gbc);
         gbc.gridx = 1;
-        jBGastos.setText(" ");
         this.add(jBGastos, gbc);
         jBGastos.addActionListener(e -> framePai.trocarTela(new MenuGastos(framePai)));
 
@@ -106,7 +102,6 @@ public class MenuAcess extends JPanel {
         jLGeral.setFont(fonteLabel);
         this.add(jLGeral, gbc);
         gbc.gridx = 1;
-        jBGeral.setText(" ");
         this.add(jBGeral, gbc);
         jBGeral.addActionListener(e -> framePai.trocarTela(new MenuBalanco(framePai)));
 
@@ -128,6 +123,7 @@ public class MenuAcess extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(50, 20, 10, 40);
         this.add(jBNotif, gbc);
+              
 
         jBVoltar.addActionListener(e -> framePai.montarInterface());
     }
