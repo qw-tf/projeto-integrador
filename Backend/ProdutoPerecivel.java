@@ -1,17 +1,15 @@
 package Backend;
+
 import java.time.LocalDate;
 
 public class ProdutoPerecivel extends Produto {
-    // variaveis extras da classe
     private LocalDate dataDeValidade;
 
-    // construtor base
-    public ProdutoPerecivel(String nome, int quantidade, double preco, LocalDate dataDeValidade) {
-        super(nome, quantidade, preco);
+    public ProdutoPerecivel(String nome, int quantidade, double valorCompra, double valorVenda, LocalDate dataDeValidade) {
+        super(nome, quantidade, valorCompra, valorVenda);
         this.dataDeValidade = dataDeValidade;
     }
 
-    // gets e sets
     public LocalDate getDataDeValidade() {
         return dataDeValidade;
     }

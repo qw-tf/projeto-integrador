@@ -1,21 +1,32 @@
 package Backend;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Fiado {
+    // Controle de IDs
     private static int proximoId = 1;
     private static List<Integer> idsDisponiveis = new LinkedList<>();
 
+    // Campos principais
     private int idFiado;
     private String descricao;
     private int idCliente;
     private int idVenda;
 
-    public Fiado(String descricao, int idCliente, int idVenda) {
+    private double valorRestante;
+    private boolean quitado;
+    private LocalDate dataCriacao;
+
+    // Construtor principal
+    public Fiado(String descricao, int idCliente, int idVenda, double valorInicial) {
         this.descricao = descricao;
         this.idCliente = idCliente;
         this.idVenda = idVenda;
+        this.valorRestante = valorInicial;
+        this.quitado = false;
+        this.dataCriacao = LocalDate.now();
 
         if (!idsDisponiveis.isEmpty()) {
             this.idFiado = idsDisponiveis.remove(0);
@@ -24,7 +35,7 @@ public class Fiado {
         }
     }
 
-    // Getters e setters
+    // Getters e Setters
     public int getIdFiado() {
         return idFiado;
     }
@@ -57,12 +68,55 @@ public class Fiado {
         this.idVenda = idVenda;
     }
 
-    // Controle do próximo ID
+    public double getValorRestante() {
+        return valorRestante;
+    }
+
+    public boolean isQuitado() {
+        return quitado;
+    }
+
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    // Operações de ID global
     public static void liberarId(int id) {
         idsDisponiveis.add(id);
     }
 
     public static void setProximoId(int id) {
         proximoId = id;
+    }
+
+    // Métodos de lógica de pagamento
+    public void registrarPagamento(double valorPago) {
+        if (valorPago <= 0) {
+            throw new IllegalArgumentException("NÃO ME VEM COM TROCO DE PIRATA, VALOR TEM QUE SER POSITIVO!");
+        }
+        if (quitado) {
+            throw new IllegalStateException("JÁ TÁ QUITADO, MARUJO. PÁRA DE MEXER NESSE OURO!");
+        }
+
+        valorRestante -= valorPago;
+        if (valorRestante <= 0) {
+            valorRestante = 0.0;
+            quitado = true;
+        }
+    }
+
+    public void quitarTotalmente() {
+        this.valorRestante = 0.0;
+        this.quitado = true;
+    }
+
+    public String getResumoFiado() {
+        return "FIADO #" + idFiado +
+               " | Cliente: " + idCliente +
+               " | Venda: " + idVenda +
+               " | Descrição: " + descricao +
+               " | Valor Restante: " + valorRestante +
+               " | Data: " + dataCriacao +
+               " | Quitado: " + (quitado ? "SIM" : "NÃO");
     }
 }

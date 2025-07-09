@@ -4,9 +4,12 @@ import javax.swing.*;
 
 import java.awt.*;
 
+import Banco.BancoUtils;
+
 public class SistemaPrincipal extends javax.swing.JFrame {
 
     public SistemaPrincipal() {
+          BancoUtils.criarTabelaProduto();
         initComponents();
     }
 
@@ -110,8 +113,8 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         btnContinuar.addActionListener(e -> trocarTela(new MenuAcess(this)));
         btnSair.addActionListener(e -> System.exit(0));
 
-        painelBotoes.add(btnContinuar);
         painelBotoes.add(btnSair);
+        painelBotoes.add(btnContinuar);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;

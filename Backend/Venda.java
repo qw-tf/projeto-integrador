@@ -9,14 +9,20 @@ public class Venda {
     private int id;
     private List<ItemVenda> itens;
     private LocalDate data;
-        private String formaPagamento;
-   private double valorVenda;
-     private int id_cliente;
+    private String formaPagamento;
+    private double valorVenda;
+    private int idCliente;
 
-    public Venda(List<ItemVenda> itens) {
+    public Venda(List<ItemVenda> itens, String formaPagamento) {
         this.id = proximoId++;
         this.itens = itens;
         this.data = LocalDate.now();
+        this.formaPagamento = formaPagamento;
+        this.valorVenda = calcularTotal();
+    }
+
+    private double calcularTotal() {
+        return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
     }
 
     public int getId() {
@@ -32,7 +38,19 @@ public class Venda {
     }
 
     public double getTotal() {
-        return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
+        return valorVenda;
+    }
+
+    public double getValor() {
+        return valorVenda;
+    }
+
+    public int getIdCliente() {
+        return idCliente;
+    }
+
+    public String getFormaPagamento() {
+        return formaPagamento;
     }
 
     public String getResumoProdutos() {
@@ -48,16 +66,22 @@ public class Venda {
         return itens.stream().mapToInt(ItemVenda::getQuantidade).sum();
     }
 
-    public String getFormaPagamento(){
+    // ✅ NOVOS MÉTODOS PARA O BALANÇO
 
-        return formaPagamento;
-    } 
-     public double getValor(){
+    public double getLucroTotal() {
+        double total = 0;
+        for (ItemVenda item : itens) {
+            double lucroPorUnidade = item.getProduto().getValorVenda() - item.getProduto().getValorCompra();
+            total += lucroPorUnidade * item.getQuantidade();
+        }
+        return total;
+    }
 
-        return valorVenda;
-    } 
-    public int getIdCliente(){
-
-        return id_cliente;
-    } 
+    public double getGastoTotal() {
+        double total = 0;
+        for (ItemVenda item : itens) {
+            total += item.getProduto().getValorCompra() * item.getQuantidade();
+        }
+        return total;
+    }
 }

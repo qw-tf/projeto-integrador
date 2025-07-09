@@ -3,7 +3,7 @@ package Backend;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Estoque {
+public class EstoqueBanco {
     private static int proximoId = 1;
     private static List<Integer> idsDisponiveis = new LinkedList<>();
 
@@ -11,7 +11,7 @@ public class Estoque {
     private int idProduto;
     private int quantidade;
 
-    public Estoque(int idProduto, int quantidade) {
+    public EstoqueBanco(int idProduto, int quantidade) {
         this.idProduto = idProduto;
         this.quantidade = quantidade;
 

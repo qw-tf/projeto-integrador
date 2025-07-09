@@ -99,155 +99,171 @@ public class MenuVendas extends JPanel {
     }
 
     private void abrirAdicionarVenda() {
-        JPanel panelzao = new JPanel(new GridBagLayout());
-        panelzao.setBackground(new Color(156, 156, 156));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-    
-        List<JPanel> linhasProdutos = new ArrayList<>();
-        JPanel painelLinhas = new JPanel();
-        painelLinhas.setLayout(new BoxLayout(painelLinhas, BoxLayout.Y_AXIS));
-        painelLinhas.setBackground(new Color(156, 156, 156));
-    
-        JButton btnAdicionarLinha = new JButton("+ Produto");
-        estilizarBotaoPequeno(btnAdicionarLinha);
-    
-        JButton btnRemoverLinha = new JButton("- Produto");
-        estilizarBotaoPequeno(btnRemoverLinha);
-    
-        JButton confirmar = new JButton("Confirmar");
-        JButton cancelar = new JButton("Cancelar");
-        SistemaPrincipal.estilizarBotaoMaior(confirmar);
-        SistemaPrincipal.estilizarBotaoMaior(cancelar);
-    
-        // Painel para agrupar botões +/–
-        JPanel painelAddRemove = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        painelAddRemove.setBackground(new Color(156, 156, 156));
-        painelAddRemove.add(btnAdicionarLinha);
-        painelAddRemove.add(btnRemoverLinha);
-    
-        // Painel para Confirmar/Cancelar
-        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        painelBotoes.setBackground(new Color(156, 156, 156));
-        painelBotoes.add(cancelar);
-        painelBotoes.add(confirmar);
-    
-        // Método pra criar nova linha de venda
-        Runnable adicionarLinha = () -> {
-            JPanel linha = new JPanel(new GridBagLayout());
-            linha.setBackground(new Color(156, 156, 156));
-            GridBagConstraints gbcLinha = new GridBagConstraints();
-            gbcLinha.insets = new Insets(5, 5, 5, 5);
-            gbcLinha.fill = GridBagConstraints.HORIZONTAL;
-    
-            JLabel labelID = new JLabel("ID Produto:");
-            JTextField campoID = new JTextField(7);
-    
-            JLabel labelQtd = new JLabel("Qtd Venda:");
-            JTextField campoQtd = new JTextField(5);
-    
-            gbcLinha.gridx = 0;
-            linha.add(labelID, gbcLinha);
-            gbcLinha.gridx = 1;
-            linha.add(campoID, gbcLinha);
-    
-            gbcLinha.gridx = 2;
-            linha.add(labelQtd, gbcLinha);
-            gbcLinha.gridx = 3;
-            linha.add(campoQtd, gbcLinha);
-    
-            linha.putClientProperty("campoID", campoID);
-            linha.putClientProperty("campoQtd", campoQtd);
-    
-            linhasProdutos.add(linha);
-            painelLinhas.add(linha);
+    JPanel panelzao = new JPanel(new GridBagLayout());
+    panelzao.setBackground(new Color(156, 156, 156));
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 10, 5, 10);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.anchor = GridBagConstraints.WEST;
+
+    List<JPanel> linhasProdutos = new ArrayList<>();
+    JPanel painelLinhas = new JPanel();
+    painelLinhas.setLayout(new BoxLayout(painelLinhas, BoxLayout.Y_AXIS));
+    painelLinhas.setBackground(new Color(156, 156, 156));
+
+    JButton btnRemoverLinha = new JButton("- Produto");
+    estilizarBotaoPequeno(btnRemoverLinha);
+
+    JButton btnAdicionarLinha = new JButton("+ Produto");
+    estilizarBotaoPequeno(btnAdicionarLinha);
+
+    JButton confirmar = new JButton("Confirmar");
+    JButton cancelar = new JButton("Cancelar");
+    SistemaPrincipal.estilizarBotaoMaior(confirmar);
+    SistemaPrincipal.estilizarBotaoMaior(cancelar);
+
+    JComboBox<String> comboPagamento = new JComboBox<>(new String[] {
+        "Dinheiro", "Cartão Débito", "Cartão Crédito", "Pix", "Boleto"
+    });
+    comboPagamento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+    JPanel painelPagamento = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    painelPagamento.setBackground(new Color(156, 156, 156));
+    painelPagamento.add(new JLabel("Forma de Pagamento:"));
+    painelPagamento.add(comboPagamento);
+
+    JPanel painelAddRemove = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    painelAddRemove.setBackground(new Color(156, 156, 156));
+    painelAddRemove.add(btnRemoverLinha);
+    painelAddRemove.add(btnAdicionarLinha);
+
+    JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    painelBotoes.setBackground(new Color(156, 156, 156));
+    painelBotoes.add(cancelar);
+    painelBotoes.add(confirmar);
+
+    Runnable adicionarLinha = () -> {
+        JPanel linha = new JPanel(new GridBagLayout());
+        linha.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbcLinha = new GridBagConstraints();
+        gbcLinha.insets = new Insets(5, 5, 5, 5);
+        gbcLinha.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel labelID = new JLabel("ID Produto:");
+        JTextField campoID = new JTextField(7);
+
+        JLabel labelQtd = new JLabel("Qtd Venda:");
+        JTextField campoQtd = new JTextField(5);
+
+        gbcLinha.gridx = 0;
+        linha.add(labelID, gbcLinha);
+        gbcLinha.gridx = 1;
+        linha.add(campoID, gbcLinha);
+
+        gbcLinha.gridx = 2;
+        linha.add(labelQtd, gbcLinha);
+        gbcLinha.gridx = 3;
+        linha.add(campoQtd, gbcLinha);
+
+        linha.putClientProperty("campoID", campoID);
+        linha.putClientProperty("campoQtd", campoQtd);
+
+        linhasProdutos.add(linha);
+        painelLinhas.add(linha);
+        painelLinhas.revalidate();
+        painelLinhas.repaint();
+    };
+
+    btnAdicionarLinha.addActionListener(e -> adicionarLinha.run());
+
+    btnRemoverLinha.addActionListener(e -> {
+        if (linhasProdutos.size() > 1) {
+            JPanel ultima = linhasProdutos.remove(linhasProdutos.size() - 1);
+            painelLinhas.remove(ultima);
             painelLinhas.revalidate();
             painelLinhas.repaint();
-        };
-    
-        btnAdicionarLinha.addActionListener(e -> adicionarLinha.run());
-    
-        btnRemoverLinha.addActionListener(e -> {
-            if (linhasProdutos.size() > 1) {
-                JPanel ultima = linhasProdutos.remove(linhasProdutos.size() - 1);
-                painelLinhas.remove(ultima);
-                painelLinhas.revalidate();
-                painelLinhas.repaint();
-            } else {
-                JOptionPane.showMessageDialog(null, "Não pode ficar sem produtos na venda, marujo!", "Aviso",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        });
-    
-        confirmar.addActionListener(e -> {
-            try {
-                for (JPanel linha : linhasProdutos) {
-                    JTextField campoID = (JTextField) linha.getClientProperty("campoID");
-                    JTextField campoQtd = (JTextField) linha.getClientProperty("campoQtd");
-    
-                    int idProduto = Integer.parseInt(campoID.getText().trim());
-                    int qtdVenda = Integer.parseInt(campoQtd.getText().trim());
-    
-                    boolean sucesso = Estoque.removerProdutoPorId(idProduto, qtdVenda);
-                    if (!sucesso) {
-                        JOptionPane.showMessageDialog(null,
-                                "Erro ao registrar venda: Produto não encontrado ou quantidade insuficiente!",
-                                "Erro", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
+        } else {
+            JOptionPane.showMessageDialog(null, "Não pode ficar sem produtos na venda!", "AVISO",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    });
+
+    confirmar.addActionListener(e -> {
+        try {
+            List<ItemVenda> itensVenda = new ArrayList<>();
+
+            for (JPanel linha : linhasProdutos) {
+                JTextField campoID = (JTextField) linha.getClientProperty("campoID");
+                JTextField campoQtd = (JTextField) linha.getClientProperty("campoQtd");
+
+                int idProduto = Integer.parseInt(campoID.getText().trim());
+                int qtdVenda = Integer.parseInt(campoQtd.getText().trim());
+
+                Produto produto = Estoque.buscarProduto(idProduto);
+                if (produto == null || produto.getQuantidade() < qtdVenda) {
+                    JOptionPane.showMessageDialog(null,
+                            "Produto inválido ou estoque insuficiente!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
-    
-                JOptionPane.showMessageDialog(null, "Venda registrada com sucesso, marujo!", "SUCESSO",
-                        JOptionPane.INFORMATION_MESSAGE);
-    
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+
+                itensVenda.add(new ItemVenda(produto, qtdVenda));
             }
-        });
-    
-        cancelar.addActionListener(e -> {
+
+            String formaPagamento = (String) comboPagamento.getSelectedItem();
+            RegistroVendas.adicionarVenda(itensVenda, formaPagamento);
+
+            JOptionPane.showMessageDialog(null, "Venda registrada com sucesso!", "SUCESSO",
+                    JOptionPane.INFORMATION_MESSAGE);
             SwingUtilities.getWindowAncestor(panelzao).dispose();
-        });
-    
-        adicionarLinha.run(); // Cria a primeira linha
-    
-        JScrollPane scrollPaneLinhas = new JScrollPane(painelLinhas);
-        scrollPaneLinhas.setPreferredSize(new Dimension(400, 200));
-        scrollPaneLinhas.setBorder(null);
-        scrollPaneLinhas.getVerticalScrollBar().setUnitIncrement(16);
-    
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        panelzao.add(scrollPaneLinhas, gbc);
-    
-        gbc.gridy++;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weighty = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        panelzao.add(painelAddRemove, gbc);
-    
-        gbc.gridy++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        panelzao.add(painelBotoes, gbc);
-    
-        JDialog popUp = framePai.criarPopUp("REGISTRAR VENDA", panelzao, 500, 400);
-        popUp.setVisible(true);
-    }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    });
+
+    cancelar.addActionListener(e -> {
+        SwingUtilities.getWindowAncestor(panelzao).dispose();
+    });
+
+    adicionarLinha.run(); // Cria a primeira linha
+
+    JScrollPane scrollPaneLinhas = new JScrollPane(painelLinhas);
+    scrollPaneLinhas.setPreferredSize(new Dimension(400, 200));
+    scrollPaneLinhas.setBorder(null);
+    scrollPaneLinhas.getVerticalScrollBar().setUnitIncrement(16);
+
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = 2;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    panelzao.add(scrollPaneLinhas, gbc);
+
+    gbc.gridy++;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.weighty = 0;
+    panelzao.add(painelPagamento, gbc);
+
+    gbc.gridy++;
+    panelzao.add(painelAddRemove, gbc);
+
+    gbc.gridy++;
+    panelzao.add(painelBotoes, gbc);
+
+    JDialog popUp = framePai.criarPopUp("REGISTRAR VENDA", panelzao, 500, 450);
+    popUp.setVisible(true);
+}
+
     
     
    private void abrirListarVendas() {
-    String[] colunas = { "ID", "Produtos", "Data", "Total" };
+    String[] colunas = { "ID", "Produtos", "Data", "Total", "Pagamento", "Ganho Bruto" };
     List<Venda> vendas = RegistroVendas.getTodasVendas();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    Object[][] dados = new Object[vendas.size()][4];
+    Object[][] dados = new Object[vendas.size()][6];  // Agora 6 colunas
 
     for (int i = 0; i < vendas.size(); i++) {
         Venda v = vendas.get(i);
@@ -255,6 +271,18 @@ public class MenuVendas extends JPanel {
         dados[i][1] = v.getResumoProdutos();
         dados[i][2] = v.getData().format(formatter);
         dados[i][3] = String.format("R$ %.2f", v.getTotal());
+        dados[i][4] = v.getFormaPagamento();
+
+        // Calcular ganho bruto da venda
+        double ganhoBruto = 0.0;
+        for (ItemVenda item : v.getItens()) {
+            double valorVenda = item.getProduto().getValorVenda();
+            double valorCompra = item.getProduto().getValorCompra();
+            int qtd = item.getQuantidade();
+
+            ganhoBruto += (valorVenda - valorCompra) * qtd;
+        }
+        dados[i][5] = String.format("R$ %.2f", ganhoBruto);
     }
 
     DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
@@ -271,6 +299,8 @@ public class MenuVendas extends JPanel {
     tabelaVendas.setShowGrid(true);
     tabelaVendas.setAutoCreateRowSorter(true);
     tabelaVendas.getColumnModel().getColumn(1).setPreferredWidth(300); // Produtos
+    tabelaVendas.getColumnModel().getColumn(4).setPreferredWidth(100); // Pagamento
+    tabelaVendas.getColumnModel().getColumn(5).setPreferredWidth(100); // Ganho Bruto
 
     JTableHeader header = tabelaVendas.getTableHeader();
     header.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -296,17 +326,14 @@ public class MenuVendas extends JPanel {
     painel.setBackground(new Color(156, 156, 156));
     painel.add(scroll, BorderLayout.CENTER);
 
-    // Força fechamento do popup antigo, se existir
     if (popUpListar != null) {
         popUpListar.dispose();
         popUpListar = null;
     }
 
-    popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 800, 450);
+    popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 900, 450);
     popUpListar.setVisible(true);
 }
-
-
 
 
 
@@ -343,7 +370,7 @@ public class MenuVendas extends JPanel {
                 int id = Integer.parseInt(campoId.getText().trim());
                 boolean ok = RegistroVendas.excluirVenda(id);
                 if (ok) {
-                    JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "Sucesso",
+                    JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "SUCESSO",
                             JOptionPane.INFORMATION_MESSAGE);
                     popUp.dispose();
                 } else {

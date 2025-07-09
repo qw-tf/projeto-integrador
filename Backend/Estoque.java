@@ -1,22 +1,24 @@
 package Backend;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Estoque {
     private static List<Produto> produtos = new ArrayList<>();
 
-    public static void adicionarProduto(String nome, int quantidade, double preco, boolean perecivel, java.time.LocalDate validade) throws ValidacaoException {
+    public static void adicionarProduto(String nome, int quantidade, double valorCompra, double valorVenda, boolean perecivel, LocalDate validade) throws ValidacaoException {
         if (nome == null || nome.isEmpty()) throw new ValidacaoException("Nome não pode ser vazio.");
         if (quantidade < 0) throw new ValidacaoException("Quantidade não pode ser negativa.");
-        if (preco < 0) throw new ValidacaoException("Preço não pode ser negativo.");
+        if (valorCompra < 0) throw new ValidacaoException("Valor de compra não pode ser negativo.");
+        if (valorVenda < 0) throw new ValidacaoException("Valor de venda não pode ser negativo.");
 
         Produto novoProduto;
         if (perecivel) {
             if (validade == null) throw new ValidacaoException("Data de validade obrigatória para produto perecível.");
-            novoProduto = new ProdutoPerecivel(nome, quantidade, preco, validade);
+            novoProduto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade);
         } else {
-            novoProduto = new Produto(nome, quantidade, preco);
+            novoProduto = new Produto(nome, quantidade, valorCompra, valorVenda);
         }
         produtos.add(novoProduto);
     }
@@ -31,18 +33,16 @@ public class Estoque {
                 throw new ValidacaoException("Quantidade em estoque insuficiente!");
             }
             produto.setQuantidade(produto.getQuantidade() - quantidade);
-    
-            // Se esgotou, remove da lista
+
             if (produto.getQuantidade() == 0) {
                 produtos.remove(produto);
                 Produto.liberarCodigo(produto.getCodigo());
             }
-    
+
             return true;
         }
-        return false; // Produto não encontrado
+        return false;
     }
-    
 
     public static boolean excluirProduto(int codigo) {
         Produto produto = buscarProduto(codigo);

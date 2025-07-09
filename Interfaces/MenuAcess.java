@@ -89,7 +89,7 @@ public class MenuAcess extends JPanel {
 
         gbc.gridy = 4;
         gbc.gridx = 0;
-        jLGastos.setText("GASTOS MENSAIS");
+        jLGastos.setText("GASTOS");
         jLGastos.setFont(fonteLabel);
         this.add(jLGastos, gbc);
         gbc.gridx = 1;
@@ -123,7 +123,6 @@ public class MenuAcess extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(50, 20, 10, 40);
         this.add(jBNotif, gbc);
-              
 
         jBVoltar.addActionListener(e -> framePai.montarInterface());
     }

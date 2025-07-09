@@ -1,3 +1,4 @@
+// Produto.java
 package Backend;
 
 import java.util.LinkedList;
@@ -7,15 +8,18 @@ public class Produto {
     private String nome;
     private int quantidade, codigo;
     private double preco;
+    private double valorCompra;
+    private double valorVenda;
 
-    // Controle de códigos
     private static int proximoCodigo = 1;
     private static List<Integer> codigosDisponiveis = new LinkedList<>();
 
-    public Produto(String nome, int quantidade, double preco) {
+    public Produto(String nome, int quantidade, double valorCompra, double valorVenda) {
         this.nome = nome;
-        this.preco = preco;
         this.quantidade = quantidade;
+        this.valorCompra = valorCompra;
+        this.valorVenda = valorVenda;
+        this.preco = valorVenda; // preco exibe valorVenda no sistema
 
         if (!codigosDisponiveis.isEmpty()) {
             this.codigo = codigosDisponiveis.remove(0);
@@ -40,8 +44,12 @@ public class Produto {
         return preco;
     }
 
-    public static int getProximoCodigo() {
-        return proximoCodigo;
+    public double getValorCompra() {
+        return valorCompra;
+    }
+
+    public double getValorVenda() {
+        return valorVenda;
     }
 
     public void setCodigo(int codigo) {
@@ -52,12 +60,25 @@ public class Produto {
         this.nome = nome;
     }
 
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
     public void setPreco(double preco) {
         this.preco = preco;
     }
 
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
+    public void setValorCompra(double valorCompra) {
+        this.valorCompra = valorCompra;
+    }
+
+    public void setValorVenda(double valorVenda) {
+        this.valorVenda = valorVenda;
+        this.preco = valorVenda; // Atualiza o preco mostrado
+    }
+
+    public static int getProximoCodigo() {
+        return proximoCodigo;
     }
 
     public static void setProximoCodigo(int codigo) {
@@ -67,5 +88,4 @@ public class Produto {
     public static void liberarCodigo(int codigo) {
         codigosDisponiveis.add(codigo);
     }
-    
 }

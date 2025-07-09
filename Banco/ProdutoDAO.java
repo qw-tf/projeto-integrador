@@ -1,33 +1,24 @@
 package Banco;
-
 import Backend.Produto;
-import Banco.Conexao;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class ProdutoDAO {
 
-    public void inserir(Produto produto) {
-        String sql = "INSERT INTO produto (codigo, nome, preco, quantidade) VALUES (?, ?, ?, ?)";
+    public void inserirProduto(Produto produto) {
+        String sql = "INSERT INTO produto (nome, quantidade, valor_compra, valor_venda) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = Conexao.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, produto.getCodigo());    // código gerado no Java
-            stmt.setString(2, produto.getNome());
-            stmt.setDouble(3, produto.getPreco());
-            stmt.setInt(4, produto.getQuantidade());
+        try (Connection conn = Conexao.conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, produto.getNome());
+            stmt.setInt(2, produto.getQuantidade());
+            stmt.setDouble(3, produto.getValorCompra());
+            stmt.setDouble(4, produto.getValorVenda());
 
             stmt.executeUpdate();
+            System.out.println("Produto inserido no banco com sucesso.");
 
-            System.out.println("Produto inserido com sucesso! Código: " + produto.getCodigo());
-
-        } catch (SQLException e) {
-            System.out.println("Erro ao inserir produto:");
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Erro ao inserir produto: " + e.getMessage());
         }
     }
-
 }
