@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 
 import Backend.Gasto;
 import Backend.RepositorioGastos;
@@ -103,13 +104,58 @@ public class MenuGastos extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
 
         JLabel labelDescricao = new JLabel("Descrição:");
-        JTextField campoDescricao = new JTextField(20);
+
+        // Descrição com área expansível
+        JTextArea campoDescricao = new JTextArea(3, 20);
+        campoDescricao.setLineWrap(true);
+        campoDescricao.setWrapStyleWord(true);
+        campoDescricao.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        JScrollPane scrollDescricao = new JScrollPane(campoDescricao);
+        scrollDescricao.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollDescricao.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        int alturaMinima = 60;
+        int alturaMaxima = 6 * campoDescricao.getFontMetrics(campoDescricao.getFont()).getHeight() + 10;
+
+        campoDescricao.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void ajustarAltura() {
+                int linhas = campoDescricao.getLineCount();
+                int alturaLinha = campoDescricao.getFontMetrics(campoDescricao.getFont()).getHeight();
+                int alturaDesejada = Math.min(alturaMaxima, Math.max(alturaMinima, linhas * alturaLinha + 10));
+                scrollDescricao.setPreferredSize(new Dimension(250, alturaDesejada));
+                scrollDescricao.revalidate();
+                scrollDescricao.repaint();
+            }
+
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                ajustarAltura();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                ajustarAltura();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+            }
+        });
 
         JLabel labelValor = new JLabel("Valor:");
         JTextField campoValor = new JTextField(10);
 
         JLabel labelData = new JLabel("Data (dd/MM/yyyy):");
         JTextField campoData = new JTextField(10);
+        JCheckBox checkHoje = new JCheckBox("Usar data de hoje");
+        checkHoje.setBackground(new Color(156, 156, 156));
+        checkHoje.addActionListener(e -> {
+            if (checkHoje.isSelected()) {
+                campoData.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                campoData.setEditable(false);
+            } else {
+                campoData.setEditable(true);
+                campoData.setText("");
+            }
+        });
 
         JLabel labelTipo = new JLabel("Tipo de Gasto:");
         String[] opcoes = { "Pessoal", "Empresarial" };
@@ -119,7 +165,7 @@ public class MenuGastos extends JPanel {
         gbc.gridy = 0;
         panelzao.add(labelDescricao, gbc);
         gbc.gridx = 1;
-        panelzao.add(campoDescricao, gbc);
+        panelzao.add(scrollDescricao, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -133,8 +179,12 @@ public class MenuGastos extends JPanel {
         gbc.gridx = 1;
         panelzao.add(campoData, gbc);
 
-        gbc.gridx = 0;
+        gbc.gridx = 1;
         gbc.gridy = 3;
+        panelzao.add(checkHoje, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         panelzao.add(labelTipo, gbc);
         gbc.gridx = 1;
         panelzao.add(comboTipo, gbc);
@@ -144,7 +194,7 @@ public class MenuGastos extends JPanel {
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 1;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -161,7 +211,7 @@ public class MenuGastos extends JPanel {
         confirmar.setPreferredSize(botaoTamanho);
         cancelar.setPreferredSize(botaoTamanho);
 
-        JDialog popUp = framePai.criarPopUp("ADICIONAR GASTO", panelzao, 450, 250);
+        JDialog popUp = framePai.criarPopUp("ADICIONAR GASTO", panelzao, 480, 320);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -185,7 +235,6 @@ public class MenuGastos extends JPanel {
                 LocalDate data = LocalDate.parse(dataStr, formatter);
 
                 String tipo = (String) comboTipo.getSelectedItem();
-
                 Gasto novoGasto = new Gasto(descricao, valor, data, tipo.equals("Pessoal"));
 
                 RepositorioGastos.adicionarGasto(novoGasto);
@@ -212,67 +261,104 @@ public class MenuGastos extends JPanel {
     }
 
     private void abrirListarGastos(boolean pessoal) {
-        List<Gasto> lista = pessoal ? RepositorioGastos.listarPessoais() : RepositorioGastos.listarEmpresariais();
+    List<Gasto> lista = pessoal ? RepositorioGastos.listarPessoais() : RepositorioGastos.listarEmpresariais();
 
-        String titulo = pessoal ? "LISTA DE GASTOS PESSOAIS" : "LISTA DE GASTOS EMPRESARIAIS";
+    String titulo = pessoal ? "LISTA DE GASTOS PESSOAIS" : "LISTA DE GASTOS EMPRESARIAIS";
 
-        String[] colunas = { "Descrição", "Valor", "Data" };
-        Object[][] dados = new Object[lista.size()][3];
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String[] colunas = { "Descrição", "Valor", "Data" };
+    Object[][] dados = new Object[lista.size()][3];
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        for (int i = 0; i < lista.size(); i++) {
-            Gasto g = lista.get(i);
-            dados[i][0] = g.getDescricao();
-            dados[i][1] = String.format("R$ %.2f", g.getValor());
-            dados[i][2] = g.getData().format(formatter);
-        }
-
-        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        tabelaGastos = new JTable(modelo);
-        tabelaGastos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabelaGastos.setRowHeight(22);
-        tabelaGastos.setGridColor(new Color(120, 120, 120));
-        tabelaGastos.setShowGrid(true);
-        tabelaGastos.setAutoCreateRowSorter(true);
-
-        JTableHeader header = tabelaGastos.getTableHeader();
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
-        header.setDefaultRenderer(new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-
-                JLabel label = new JLabel(value.toString(), JLabel.CENTER);
-                label.setOpaque(true);
-                label.setBackground(Color.DARK_GRAY);
-                label.setForeground(Color.WHITE);
-                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-                return label;
-            }
-        });
-
-        JScrollPane scrollPane = new JScrollPane(tabelaGastos);
-        scrollPane.getViewport().setBackground(new Color(156, 156, 156));
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        JPanel painelPrincipal = new JPanel(new BorderLayout());
-        painelPrincipal.setBackground(new Color(156, 156, 156));
-        painelPrincipal.add(scrollPane, BorderLayout.CENTER);
-
-        if (popUpListar != null && popUpListar.isVisible()) {
-            popUpListar.toFront();
-        } else {
-            popUpListar = framePai.criarPopUp(titulo, painelPrincipal, 600, 400);
-            popUpListar.setVisible(true);
-        }
+    for (int i = 0; i < lista.size(); i++) {
+        Gasto g = lista.get(i);
+        dados[i][0] = g.getDescricao();
+        dados[i][1] = String.format("R$ %.2f", g.getValor());
+        dados[i][2] = g.getData().format(formatter);
     }
+
+    DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
+    tabelaGastos = new JTable(modelo) {
+        @Override
+        public TableCellRenderer getCellRenderer(int row, int column) {
+            if (column == 0) {
+                return new TextAreaRenderer(); // 👈 agora usa a nova classe
+            }
+            return super.getCellRenderer(row, column);
+        }
+    };
+    tabelaGastos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    tabelaGastos.setGridColor(new Color(120, 120, 120));
+    tabelaGastos.setShowGrid(true);
+    tabelaGastos.setAutoCreateRowSorter(true);
+
+    JTableHeader header = tabelaGastos.getTableHeader();
+    header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
+    header.setDefaultRenderer(new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel label = new JLabel(value.toString(), JLabel.CENTER);
+            label.setOpaque(true);
+            label.setBackground(Color.DARK_GRAY);
+            label.setForeground(Color.WHITE);
+            label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            return label;
+        }
+    });
+
+    JScrollPane scrollPane = new JScrollPane(tabelaGastos);
+    scrollPane.getViewport().setBackground(new Color(156, 156, 156));
+    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    JPanel painelPrincipal = new JPanel(new BorderLayout());
+    painelPrincipal.setBackground(new Color(156, 156, 156));
+    painelPrincipal.add(scrollPane, BorderLayout.CENTER);
+
+    if (popUpListar != null && popUpListar.isVisible()) {
+        popUpListar.toFront();
+    } else {
+        popUpListar = framePai.criarPopUp(titulo, painelPrincipal, 600, 400);
+        popUpListar.setVisible(true);
+    }
+}
+
+
+    class TextAreaRenderer extends JTextArea implements TableCellRenderer {
+    public TextAreaRenderer() {
+        setLineWrap(true);
+        setWrapStyleWord(true);
+        setOpaque(true);
+        setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+
+        setText(value != null ? value.toString() : "");
+        setForeground(Color.BLACK);
+        setBackground(row % 2 == 0 ? new Color(220, 220, 220) : Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        // 👇 ESSENCIAL: define largura antes de calcular altura preferida
+        setSize(table.getColumnModel().getColumn(column).getWidth(), Short.MAX_VALUE);
+        int alturaLinha = getPreferredSize().height;
+
+        if (table.getRowHeight(row) != alturaLinha) {
+            table.setRowHeight(row, alturaLinha);
+        }
+
+        return this;
+    }
+}
+
 
     private javax.swing.JButton jBVoltar;
     private javax.swing.JButton jBPopUpListarGastosPer;
