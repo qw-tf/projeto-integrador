@@ -1,9 +1,8 @@
+// SistemaPrincipal.java
 package Interfaces;
 
 import javax.swing.*;
-
 import java.awt.*;
-
 import Banco.BancoUtils;
 
 public class SistemaPrincipal extends javax.swing.JFrame {
@@ -20,42 +19,39 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     }
 
     public JDialog criarPopUp(String titulo, JPanel conteudo, int width, int height) {
-        JDialog popUp = new JDialog(this, titulo, true); // true = modal
+        JDialog popUp = new JDialog(this, titulo, true);
         popUp.setSize(width, height);
         popUp.setResizable(false);
         popUp.setLocationRelativeTo(null);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         conteudo.setBackground(new Color(156, 156, 156));
-
         popUp.setContentPane(conteudo);
         return popUp;
     }
 
     public JDialog criarPopUp(String titulo, JScrollPane conteudo, int width, int height) {
-        JDialog popUp = new JDialog(this, titulo, true); // true = modal
+        JDialog popUp = new JDialog(this, titulo, true);
         popUp.setSize(width, height);
         popUp.setResizable(false);
         popUp.setLocationRelativeTo(null);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         conteudo.setBackground(new Color(156, 156, 156));
-
         popUp.setContentPane(conteudo);
         return popUp;
     }
 
-    public JDialog criarPopUp(String titulo, JPanel conteudo) {
-        JDialog popUp = new JDialog(this, titulo, true); // true = modal
-        popUp.setSize(800, 500);
-        popUp.setResizable(false);
-        popUp.setLocationRelativeTo(null);
+    public JDialog criarPopUpNotificacoesTopoEsquerdo(JScrollPane conteudo) {
+        JDialog popUp = new JDialog(this, "Notificações", false);
+        popUp.setSize(400, 300);
+        popUp.setResizable(true);
+        popUp.setLocation(20, 20);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        conteudo.setBackground(new Color(156, 156, 156));
-
+        conteudo.setBorder(BorderFactory.createEmptyBorder());
         popUp.setContentPane(conteudo);
         return popUp;
     }
 
-    public static void estilizarBotaoMaior(javax.swing.JButton botao) {
+    public static void estilizarBotaoMaior(JButton botao) {
         botao.setBackground(Color.BLACK);
         botao.setForeground(Color.WHITE);
         botao.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -65,7 +61,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    public static void estilizarBotaoMenor(javax.swing.JButton botao) {
+    public static void estilizarBotaoMenor(JButton botao) {
         botao.setBackground(Color.BLACK);
         botao.setForeground(Color.WHITE);
         botao.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -79,9 +75,9 @@ public class SistemaPrincipal extends javax.swing.JFrame {
 
     private void initComponents() {
         setTitle("Canaã");
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(600, 600));
-        getContentPane().setLayout(new java.awt.GridBagLayout());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(600, 600));
+        getContentPane().setLayout(new GridBagLayout());
         getContentPane().setBackground(new Color(156, 156, 156));
         pack();
     }
@@ -129,23 +125,21 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         trocarTela(telaInicial);
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
         } catch (Exception ex) {
-            System.out.println("Erro");
-            System.exit(ABORT);
+            System.out.println("Erro ao definir tema.");
         }
-        UIManager.put("Button.select", new Color(20, 20, 20)); // Cor do clique
+        UIManager.put("Button.select", new Color(20, 20, 20));
         SistemaPrincipal telas = new SistemaPrincipal();
         telas.setExtendedState(JFrame.MAXIMIZED_BOTH);
         telas.setVisible(true);
-        telas.montarInterface(); // já troca pra tela inicial
+        telas.montarInterface();
     }
-
 }

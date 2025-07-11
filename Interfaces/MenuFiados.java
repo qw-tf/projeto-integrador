@@ -73,21 +73,18 @@ public class MenuFiados extends JPanel {
         gbc.gridx = 0;
         add(jLAdicionar, gbc);
         gbc.gridx = 1;
-        jBPopUpAdicionar.setText(" ");
         add(jBPopUpAdicionar, gbc);
 
         gbc.gridy = 2;
         gbc.gridx = 0;
         add(jLListar, gbc);
         gbc.gridx = 1;
-        jBPopUpListar.setText(" ");
         add(jBPopUpListar, gbc);
 
         gbc.gridy = 3;
         gbc.gridx = 0;
         add(jLQuitar, gbc);
         gbc.gridx = 1;
-        jBPopUpQuitar.setText(" ");
         add(jBPopUpQuitar, gbc);
 
         gbc.gridx = 0;
@@ -154,13 +151,12 @@ public class MenuFiados extends JPanel {
                 }
 
                 if (venda == null) {
-                    throw new IllegalArgumentException("Venda não encontrada! Não posso criar fiado sem venda real!");
+                    throw new IllegalArgumentException("Venda não encontrada! Não é possível criar fiado sem venda real!");
                 }
 
                 // Remove venda da lista de vendas e cria fiado
                 Backend.RegistroVendas.converterVendaEmFiado(venda);
-
-                JOptionPane.showMessageDialog(this, "Fiado registrado com sucesso!", "SUCESSO",
+                JOptionPane.showMessageDialog(panelzao, "Fiado registrado com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
                 popUp.dispose();
 
