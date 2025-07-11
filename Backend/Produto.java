@@ -88,4 +88,10 @@ public class Produto {
     public static void liberarCodigo(int codigo) {
         codigosDisponiveis.add(codigo);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
+    }
+
 }

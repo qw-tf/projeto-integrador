@@ -9,7 +9,7 @@ import java.util.TreeMap;
 public class RegistroVendas {
     private static List<Venda> vendas = new ArrayList<>();
 
-    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento) {
+    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento, int idCliente) {
         // Valida estoque
         for (ItemVenda item : itens) {
             Produto p = item.getProduto();
@@ -24,9 +24,13 @@ public class RegistroVendas {
             p.setQuantidade(p.getQuantidade() - item.getQuantidade());
         }
 
-        // Cria e salva a venda
-        Venda novaVenda = new Venda(itens, formaPagamento);
+        // Cria e salva a venda COM ID DO CLIENTE!
+        Venda novaVenda = new Venda(itens, formaPagamento, idCliente);
         vendas.add(novaVenda);
+    }
+
+    public static void adicionarVendaDireto(Venda v) {
+        vendas.add(v);
     }
 
     public static List<Venda> getTodasVendas() {
@@ -37,7 +41,27 @@ public class RegistroVendas {
         return vendas.removeIf(v -> v.getId() == id);
     }
 
-    // 🔹 BALANÇO POR DIA
+    public static boolean removerVenda(Venda v) {
+        return vendas.remove(v);
+    }
+
+    public static void converterVendaEmFiado(Venda v) {
+        if (removerVenda(v)) {
+            Fiado novoFiado = new Fiado("Fiado gerado da venda ID: " + v.getId(), v);
+            FiadoRepositorio.adicionarFiado(novoFiado);
+        } else {
+            throw new IllegalStateException("Venda não encontrada pra converter em fiado!");
+        }
+    }
+
+    public static void quitarFiadoERegistrarVenda(Fiado f, List<ItemVenda> itens, String formaPagamento) {
+        f.quitarTotalmente();
+        FiadoRepositorio.removerFiado(f);
+        // O cliente tem que ser o mesmo do fiado original
+        Venda novaVenda = new Venda(itens, formaPagamento, f.getIdCliente());
+        adicionarVendaDireto(novaVenda);
+    }
+
     public static Map<LocalDate, Double[]> calcularBalancoPorDia(LocalDate inicio, LocalDate fim) {
         Map<LocalDate, Double[]> resultado = new TreeMap<>();
 
@@ -47,7 +71,7 @@ public class RegistroVendas {
                 double lucro = venda.getLucroTotal();
                 double gasto = venda.getGastoTotal();
 
-                resultado.putIfAbsent(data, new Double[]{0.0, 0.0});
+                resultado.putIfAbsent(data, new Double[] { 0.0, 0.0 });
                 Double[] valores = resultado.get(data);
                 valores[0] += lucro;
                 valores[1] += gasto;
@@ -57,7 +81,6 @@ public class RegistroVendas {
         return resultado;
     }
 
-    // 🔹 BALANÇO POR MÊS
     public static Map<Integer, Double[]> calcularBalancoPorMes(LocalDate inicio, LocalDate fim) {
         Map<Integer, Double[]> resultado = new TreeMap<>();
 
@@ -68,7 +91,7 @@ public class RegistroVendas {
                 double lucro = venda.getLucroTotal();
                 double gasto = venda.getGastoTotal();
 
-                resultado.putIfAbsent(mes, new Double[]{0.0, 0.0});
+                resultado.putIfAbsent(mes, new Double[] { 0.0, 0.0 });
                 Double[] valores = resultado.get(mes);
                 valores[0] += lucro;
                 valores[1] += gasto;

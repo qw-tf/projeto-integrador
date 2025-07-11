@@ -19,12 +19,12 @@ public class Fiado {
     private boolean quitado;
     private LocalDate dataCriacao;
 
-    // Construtor principal
-    public Fiado(String descricao, int idCliente, int idVenda, double valorInicial) {
+    // ⚓ Novo construtor para Fiado
+    public Fiado(String descricao, Venda venda) {
         this.descricao = descricao;
-        this.idCliente = idCliente;
-        this.idVenda = idVenda;
-        this.valorRestante = valorInicial;
+        this.idCliente = venda.getIdCliente();
+        this.idVenda = venda.getId();
+        this.valorRestante = venda.getValor(); // OU getTotal()
         this.quitado = false;
         this.dataCriacao = LocalDate.now();
 
@@ -112,11 +112,11 @@ public class Fiado {
 
     public String getResumoFiado() {
         return "FIADO #" + idFiado +
-               " | Cliente: " + idCliente +
-               " | Venda: " + idVenda +
-               " | Descrição: " + descricao +
-               " | Valor Restante: " + valorRestante +
-               " | Data: " + dataCriacao +
-               " | Quitado: " + (quitado ? "SIM" : "NÃO");
+                " | Cliente: " + idCliente +
+                " | Venda: " + idVenda +
+                " | Descrição: " + descricao +
+                " | Valor Restante: " + valorRestante +
+                " | Data: " + dataCriacao +
+                " | Quitado: " + (quitado ? "SIM" : "NÃO");
     }
 }

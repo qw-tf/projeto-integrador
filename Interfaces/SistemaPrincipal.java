@@ -9,7 +9,7 @@ import Banco.BancoUtils;
 public class SistemaPrincipal extends javax.swing.JFrame {
 
     public SistemaPrincipal() {
-          BancoUtils.criarTabelaProduto();
+        BancoUtils.criarTabelaProduto();
         initComponents();
     }
 
@@ -71,7 +71,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         botao.setFont(new Font("Segoe UI", Font.BOLD, 24));
         botao.setBorderPainted(false);
         botao.putClientProperty("JButton.arc", 20);
-        botao.setText("●");
+        botao.setText("  ►  ");
         botao.setFocusPainted(false);
         botao.setOpaque(false);
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));

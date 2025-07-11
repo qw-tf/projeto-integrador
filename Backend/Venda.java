@@ -13,12 +13,13 @@ public class Venda {
     private double valorVenda;
     private int idCliente;
 
-    public Venda(List<ItemVenda> itens, String formaPagamento) {
+    public Venda(List<ItemVenda> itens, String formaPagamento, int idCliente) {
         this.id = proximoId++;
         this.itens = itens;
         this.data = LocalDate.now();
         this.formaPagamento = formaPagamento;
         this.valorVenda = calcularTotal();
+        this.idCliente = idCliente; // ⚓ não esquece disso!
     }
 
     private double calcularTotal() {
@@ -57,7 +58,7 @@ public class Venda {
         StringBuilder sb = new StringBuilder();
         for (ItemVenda item : itens) {
             sb.append(item.getProduto().getNome())
-              .append(" (x").append(item.getQuantidade()).append("), ");
+                    .append(" (x").append(item.getQuantidade()).append("), ");
         }
         return sb.length() > 0 ? sb.substring(0, sb.length() - 2) : "";
     }

@@ -261,104 +261,102 @@ public class MenuGastos extends JPanel {
     }
 
     private void abrirListarGastos(boolean pessoal) {
-    List<Gasto> lista = pessoal ? RepositorioGastos.listarPessoais() : RepositorioGastos.listarEmpresariais();
+        List<Gasto> lista = pessoal ? RepositorioGastos.listarPessoais() : RepositorioGastos.listarEmpresariais();
 
-    String titulo = pessoal ? "LISTA DE GASTOS PESSOAIS" : "LISTA DE GASTOS EMPRESARIAIS";
+        String titulo = pessoal ? "LISTA DE GASTOS PESSOAIS" : "LISTA DE GASTOS EMPRESARIAIS";
 
-    String[] colunas = { "Descrição", "Valor", "Data" };
-    Object[][] dados = new Object[lista.size()][3];
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String[] colunas = { "Descrição", "Valor", "Data" };
+        Object[][] dados = new Object[lista.size()][3];
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    for (int i = 0; i < lista.size(); i++) {
-        Gasto g = lista.get(i);
-        dados[i][0] = g.getDescricao();
-        dados[i][1] = String.format("R$ %.2f", g.getValor());
-        dados[i][2] = g.getData().format(formatter);
+        for (int i = 0; i < lista.size(); i++) {
+            Gasto g = lista.get(i);
+            dados[i][0] = g.getDescricao();
+            dados[i][1] = String.format("R$ %.2f", g.getValor());
+            dados[i][2] = g.getData().format(formatter);
+        }
+
+        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tabelaGastos = new JTable(modelo) {
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                if (column == 0) {
+                    return new TextAreaRenderer(); // 👈 agora usa a nova classe
+                }
+                return super.getCellRenderer(row, column);
+            }
+        };
+        tabelaGastos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabelaGastos.setGridColor(new Color(120, 120, 120));
+        tabelaGastos.setShowGrid(true);
+        tabelaGastos.setAutoCreateRowSorter(true);
+
+        JTableHeader header = tabelaGastos.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = new JLabel(value.toString(), JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.DARK_GRAY);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                return label;
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(tabelaGastos);
+        scrollPane.getViewport().setBackground(new Color(156, 156, 156));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        JPanel painelPrincipal = new JPanel(new BorderLayout());
+        painelPrincipal.setBackground(new Color(156, 156, 156));
+        painelPrincipal.add(scrollPane, BorderLayout.CENTER);
+
+        if (popUpListar != null && popUpListar.isVisible()) {
+            popUpListar.toFront();
+        } else {
+            popUpListar = framePai.criarPopUp(titulo, painelPrincipal, 600, 400);
+            popUpListar.setVisible(true);
+        }
     }
 
-    DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
+    class TextAreaRenderer extends JTextArea implements TableCellRenderer {
+        public TextAreaRenderer() {
+            setLineWrap(true);
+            setWrapStyleWord(true);
+            setOpaque(true);
+            setFont(new Font("Segoe UI", Font.PLAIN, 14));
         }
-    };
 
-    tabelaGastos = new JTable(modelo) {
-        @Override
-        public TableCellRenderer getCellRenderer(int row, int column) {
-            if (column == 0) {
-                return new TextAreaRenderer(); // 👈 agora usa a nova classe
-            }
-            return super.getCellRenderer(row, column);
-        }
-    };
-    tabelaGastos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    tabelaGastos.setGridColor(new Color(120, 120, 120));
-    tabelaGastos.setShowGrid(true);
-    tabelaGastos.setAutoCreateRowSorter(true);
-
-    JTableHeader header = tabelaGastos.getTableHeader();
-    header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
-    header.setDefaultRenderer(new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel label = new JLabel(value.toString(), JLabel.CENTER);
-            label.setOpaque(true);
-            label.setBackground(Color.DARK_GRAY);
-            label.setForeground(Color.WHITE);
-            label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            return label;
+
+            setText(value != null ? value.toString() : "");
+            setForeground(Color.BLACK);
+            setBackground(row % 2 == 0 ? new Color(220, 220, 220) : Color.WHITE);
+            setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+            // 👇 ESSENCIAL: define largura antes de calcular altura preferida
+            setSize(table.getColumnModel().getColumn(column).getWidth(), Short.MAX_VALUE);
+            int alturaLinha = getPreferredSize().height;
+
+            if (table.getRowHeight(row) != alturaLinha) {
+                table.setRowHeight(row, alturaLinha);
+            }
+
+            return this;
         }
-    });
-
-    JScrollPane scrollPane = new JScrollPane(tabelaGastos);
-    scrollPane.getViewport().setBackground(new Color(156, 156, 156));
-    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-    scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-    JPanel painelPrincipal = new JPanel(new BorderLayout());
-    painelPrincipal.setBackground(new Color(156, 156, 156));
-    painelPrincipal.add(scrollPane, BorderLayout.CENTER);
-
-    if (popUpListar != null && popUpListar.isVisible()) {
-        popUpListar.toFront();
-    } else {
-        popUpListar = framePai.criarPopUp(titulo, painelPrincipal, 600, 400);
-        popUpListar.setVisible(true);
     }
-}
-
-
-    class TextAreaRenderer extends JTextArea implements TableCellRenderer {
-    public TextAreaRenderer() {
-        setLineWrap(true);
-        setWrapStyleWord(true);
-        setOpaque(true);
-        setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-
-        setText(value != null ? value.toString() : "");
-        setForeground(Color.BLACK);
-        setBackground(row % 2 == 0 ? new Color(220, 220, 220) : Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        // 👇 ESSENCIAL: define largura antes de calcular altura preferida
-        setSize(table.getColumnModel().getColumn(column).getWidth(), Short.MAX_VALUE);
-        int alturaLinha = getPreferredSize().height;
-
-        if (table.getRowHeight(row) != alturaLinha) {
-            table.setRowHeight(row, alturaLinha);
-        }
-
-        return this;
-    }
-}
-
 
     private javax.swing.JButton jBVoltar;
     private javax.swing.JButton jBPopUpListarGastosPer;

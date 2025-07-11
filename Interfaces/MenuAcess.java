@@ -5,9 +5,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.List;
 
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import Backend.Notificador;
 
 public class MenuAcess extends JPanel {
 
@@ -110,7 +114,6 @@ public class MenuAcess extends JPanel {
         gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.weightx = 0;
-
         gbc.anchor = GridBagConstraints.SOUTHWEST;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(50, 40, 10, 10);
@@ -125,6 +128,35 @@ public class MenuAcess extends JPanel {
         this.add(jBNotif, gbc);
 
         jBVoltar.addActionListener(e -> framePai.montarInterface());
+
+        // 🎯 AÇÃO DO BOTÃO DE NOTIFICAÇÕES
+        jBNotif.addActionListener(e -> {
+            List<String> avisos = Notificador.gerarNotificacoes();
+
+            JPanel painel = new JPanel(new GridBagLayout());
+            painel.setBackground(new Color(156, 156, 156));
+            GridBagConstraints gbcNotif = new GridBagConstraints();
+            gbcNotif.gridx = 0;
+            gbcNotif.gridy = 0;
+            gbcNotif.insets = new Insets(10, 10, 10, 10);
+            gbcNotif.anchor = GridBagConstraints.WEST;
+
+            if (avisos.isEmpty()) {
+                JLabel semAvisos = new JLabel("Sem notificações no momento.");
+                semAvisos.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+                painel.add(semAvisos, gbcNotif);
+            } else {
+                for (String aviso : avisos) {
+                    JLabel label = new JLabel("• " + aviso);
+                    label.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+                    painel.add(label, gbcNotif);
+                    gbcNotif.gridy++;
+                }
+            }
+
+            JDialog popUp = framePai.criarPopUp("Notificações", painel, 700, 400);
+            popUp.setVisible(true);
+        });
     }
 
     private javax.swing.JLabel jLAcessar;

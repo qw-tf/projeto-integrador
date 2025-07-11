@@ -36,7 +36,7 @@ public class Verificador {
     }
 
     public static void verificarQuantidade(int quantidade) {
-        if (quantidade < 0) {
+        if (quantidade <= 0) {
             throw new ValidacaoException("Quantidade inválida! Deve ser maior que zero!");
         }
     }

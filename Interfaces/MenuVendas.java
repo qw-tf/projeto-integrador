@@ -7,11 +7,7 @@ import Backend.Produto;
 import Backend.RegistroVendas;
 
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +15,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableRowSorter;
 
 public class MenuVendas extends JPanel {
 
@@ -63,7 +58,6 @@ public class MenuVendas extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20, 40, 20, 40);
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridwidth = 1;
 
         gbc.gridy = 0;
         gbc.gridx = 0;
@@ -99,243 +93,279 @@ public class MenuVendas extends JPanel {
     }
 
     private void abrirAdicionarVenda() {
-    JPanel panelzao = new JPanel(new GridBagLayout());
-    panelzao.setBackground(new Color(156, 156, 156));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(5, 10, 5, 10);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.anchor = GridBagConstraints.WEST;
+        JPanel panelzao = new JPanel(new GridBagLayout());
+        panelzao.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-    List<JPanel> linhasProdutos = new ArrayList<>();
-    JPanel painelLinhas = new JPanel();
-    painelLinhas.setLayout(new BoxLayout(painelLinhas, BoxLayout.Y_AXIS));
-    painelLinhas.setBackground(new Color(156, 156, 156));
+        List<JPanel> linhasProdutos = new ArrayList<>();
+        JPanel painelLinhas = new JPanel();
+        painelLinhas.setLayout(new BoxLayout(painelLinhas, BoxLayout.Y_AXIS));
+        painelLinhas.setBackground(new Color(156, 156, 156));
 
-    JButton btnRemoverLinha = new JButton("- Produto");
-    estilizarBotaoPequeno(btnRemoverLinha);
+        JButton btnRemoverLinha = new JButton("- Produto");
+        estilizarBotaoPequeno(btnRemoverLinha);
 
-    JButton btnAdicionarLinha = new JButton("+ Produto");
-    estilizarBotaoPequeno(btnAdicionarLinha);
+        JButton btnAdicionarLinha = new JButton("+ Produto");
+        estilizarBotaoPequeno(btnAdicionarLinha);
 
-    JButton confirmar = new JButton("Confirmar");
-    JButton cancelar = new JButton("Cancelar");
-    SistemaPrincipal.estilizarBotaoMaior(confirmar);
-    SistemaPrincipal.estilizarBotaoMaior(cancelar);
+        JButton confirmar = new JButton("Confirmar");
+        JButton cancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(confirmar);
+        SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-    JComboBox<String> comboPagamento = new JComboBox<>(new String[] {
-        "Dinheiro", "Cartão Débito", "Cartão Crédito", "Pix", "Boleto"
-    });
-    comboPagamento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JComboBox<String> comboPagamento = new JComboBox<>(new String[] {
+                "Dinheiro", "Cartão Débito", "Cartão Crédito", "Pix", "Boleto"
+        });
+        comboPagamento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-    JPanel painelPagamento = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    painelPagamento.setBackground(new Color(156, 156, 156));
-    painelPagamento.add(new JLabel("Forma de Pagamento:"));
-    painelPagamento.add(comboPagamento);
+        // NOVO CAMPO ID CLIENTE
+        JTextField campoIdCliente = new JTextField(5);
+        JPanel painelIdCliente = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        painelIdCliente.setBackground(new Color(156, 156, 156));
+        painelIdCliente.add(new JLabel("ID Cliente:"));
+        painelIdCliente.add(campoIdCliente);
 
-    JPanel painelAddRemove = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    painelAddRemove.setBackground(new Color(156, 156, 156));
-    painelAddRemove.add(btnRemoverLinha);
-    painelAddRemove.add(btnAdicionarLinha);
+        JPanel painelPagamento = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        painelPagamento.setBackground(new Color(156, 156, 156));
+        painelPagamento.add(new JLabel("Forma de Pagamento:"));
+        painelPagamento.add(comboPagamento);
 
-    JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    painelBotoes.setBackground(new Color(156, 156, 156));
-    painelBotoes.add(cancelar);
-    painelBotoes.add(confirmar);
+        JPanel painelAddRemove = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        painelAddRemove.setBackground(new Color(156, 156, 156));
+        painelAddRemove.add(btnRemoverLinha);
+        painelAddRemove.add(btnAdicionarLinha);
 
-    Runnable adicionarLinha = () -> {
-        JPanel linha = new JPanel(new GridBagLayout());
-        linha.setBackground(new Color(156, 156, 156));
-        GridBagConstraints gbcLinha = new GridBagConstraints();
-        gbcLinha.insets = new Insets(5, 5, 5, 5);
-        gbcLinha.fill = GridBagConstraints.HORIZONTAL;
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        painelBotoes.setBackground(new Color(156, 156, 156));
+        painelBotoes.add(cancelar);
+        painelBotoes.add(confirmar);
 
-        JLabel labelID = new JLabel("ID Produto:");
-        JTextField campoID = new JTextField(7);
+        Runnable adicionarLinha = () -> {
+            JPanel linha = new JPanel(new GridBagLayout());
+            linha.setBackground(new Color(156, 156, 156));
+            GridBagConstraints gbcLinha = new GridBagConstraints();
+            gbcLinha.insets = new Insets(5, 5, 5, 5);
+            gbcLinha.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel labelQtd = new JLabel("Qtd Venda:");
-        JTextField campoQtd = new JTextField(5);
+            JLabel labelNome = new JLabel("Nome Produto:");
+            JTextField campoNome = new JTextField(15);
 
-        gbcLinha.gridx = 0;
-        linha.add(labelID, gbcLinha);
-        gbcLinha.gridx = 1;
-        linha.add(campoID, gbcLinha);
+            JLabel labelQtd = new JLabel("Qtd Venda:");
+            JTextField campoQtd = new JTextField(5);
 
-        gbcLinha.gridx = 2;
-        linha.add(labelQtd, gbcLinha);
-        gbcLinha.gridx = 3;
-        linha.add(campoQtd, gbcLinha);
+            gbcLinha.gridx = 0;
+            linha.add(labelNome, gbcLinha);
+            gbcLinha.gridx = 1;
+            linha.add(campoNome, gbcLinha);
 
-        linha.putClientProperty("campoID", campoID);
-        linha.putClientProperty("campoQtd", campoQtd);
+            gbcLinha.gridx = 2;
+            linha.add(labelQtd, gbcLinha);
+            gbcLinha.gridx = 3;
+            linha.add(campoQtd, gbcLinha);
 
-        linhasProdutos.add(linha);
-        painelLinhas.add(linha);
-        painelLinhas.revalidate();
-        painelLinhas.repaint();
-    };
-
-    btnAdicionarLinha.addActionListener(e -> adicionarLinha.run());
-
-    btnRemoverLinha.addActionListener(e -> {
-        if (linhasProdutos.size() > 1) {
-            JPanel ultima = linhasProdutos.remove(linhasProdutos.size() - 1);
-            painelLinhas.remove(ultima);
-            painelLinhas.revalidate();
-            painelLinhas.repaint();
-        } else {
-            JOptionPane.showMessageDialog(null, "Não pode ficar sem produtos na venda!", "AVISO",
-                    JOptionPane.WARNING_MESSAGE);
-        }
-    });
-
-    confirmar.addActionListener(e -> {
-        try {
-            List<ItemVenda> itensVenda = new ArrayList<>();
-
-            for (JPanel linha : linhasProdutos) {
-                JTextField campoID = (JTextField) linha.getClientProperty("campoID");
-                JTextField campoQtd = (JTextField) linha.getClientProperty("campoQtd");
-
-                int idProduto = Integer.parseInt(campoID.getText().trim());
-                int qtdVenda = Integer.parseInt(campoQtd.getText().trim());
-
-                Produto produto = Estoque.buscarProduto(idProduto);
-                if (produto == null || produto.getQuantidade() < qtdVenda) {
-                    JOptionPane.showMessageDialog(null,
-                            "Produto inválido ou estoque insuficiente!", "Erro", JOptionPane.ERROR_MESSAGE);
+            campoNome.addActionListener(e -> {
+                String nomeBuscado = campoNome.getText().trim().toLowerCase();
+                List<Produto> encontrados = new ArrayList<>();
+                for (Produto p : Estoque.getProdutos()) {
+                    if (p.getNome().toLowerCase().contains(nomeBuscado)) {
+                        encontrados.add(p);
+                    }
+                }
+                if (encontrados.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Produto não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                Produto selecionado = (Produto) JOptionPane.showInputDialog(
+                        null,
+                        "Selecione o produto:",
+                        "Escolher Produto",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        encontrados.toArray(),
+                        encontrados.get(0));
+                if (selecionado != null) {
+                    campoNome.setText(selecionado.getNome());
+                    linha.putClientProperty("produtoSelecionado", selecionado);
+                }
+            });
 
-                itensVenda.add(new ItemVenda(produto, qtdVenda));
+            linha.putClientProperty("campoNome", campoNome);
+            linha.putClientProperty("campoQtd", campoQtd);
+
+            linhasProdutos.add(linha);
+            painelLinhas.add(linha);
+            painelLinhas.revalidate();
+            painelLinhas.repaint();
+        };
+
+        btnAdicionarLinha.addActionListener(e -> adicionarLinha.run());
+
+        btnRemoverLinha.addActionListener(e -> {
+            if (linhasProdutos.size() > 1) {
+                JPanel ultima = linhasProdutos.remove(linhasProdutos.size() - 1);
+                painelLinhas.remove(ultima);
+                painelLinhas.revalidate();
+                painelLinhas.repaint();
+            } else {
+                JOptionPane.showMessageDialog(null, "Não pode ficar sem produtos na venda!", "AVISO",
+                        JOptionPane.WARNING_MESSAGE);
             }
+        });
 
-            String formaPagamento = (String) comboPagamento.getSelectedItem();
-            RegistroVendas.adicionarVenda(itensVenda, formaPagamento);
+        confirmar.addActionListener(e -> {
+            try {
+                List<ItemVenda> itensVenda = new ArrayList<>();
 
-            JOptionPane.showMessageDialog(null, "Venda registrada com sucesso!", "SUCESSO",
-                    JOptionPane.INFORMATION_MESSAGE);
-            SwingUtilities.getWindowAncestor(panelzao).dispose();
+                for (JPanel linha : linhasProdutos) {
+                    JTextField campoQtd = (JTextField) linha.getClientProperty("campoQtd");
+                    Produto produto = (Produto) linha.getClientProperty("produtoSelecionado");
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
-        }
-    });
+                    if (produto == null) {
+                        JOptionPane.showMessageDialog(null, "Você deve selecionar um produto!", "Erro",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-    cancelar.addActionListener(e -> {
-        SwingUtilities.getWindowAncestor(panelzao).dispose();
-    });
+                    int qtdVenda = Integer.parseInt(campoQtd.getText().trim());
 
-    adicionarLinha.run(); // Cria a primeira linha
+                    if (produto.getQuantidade() < qtdVenda) {
+                        JOptionPane.showMessageDialog(null,
+                                "Estoque insuficiente para: " + produto.getNome(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-    JScrollPane scrollPaneLinhas = new JScrollPane(painelLinhas);
-    scrollPaneLinhas.setPreferredSize(new Dimension(400, 200));
-    scrollPaneLinhas.setBorder(null);
-    scrollPaneLinhas.getVerticalScrollBar().setUnitIncrement(16);
+                    itensVenda.add(new ItemVenda(produto, qtdVenda));
+                }
 
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.gridwidth = 2;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.weightx = 1.0;
-    gbc.weighty = 1.0;
-    panelzao.add(scrollPaneLinhas, gbc);
+                int idCliente = Integer.parseInt(campoIdCliente.getText().trim());
 
-    gbc.gridy++;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.weighty = 0;
-    panelzao.add(painelPagamento, gbc);
+                String formaPagamento = (String) comboPagamento.getSelectedItem();
+                RegistroVendas.adicionarVenda(itensVenda, formaPagamento, idCliente);
 
-    gbc.gridy++;
-    panelzao.add(painelAddRemove, gbc);
+                JOptionPane.showMessageDialog(null, "Venda registrada com sucesso!", "SUCESSO",
+                        JOptionPane.INFORMATION_MESSAGE);
+                SwingUtilities.getWindowAncestor(panelzao).dispose();
 
-    gbc.gridy++;
-    panelzao.add(painelBotoes, gbc);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
 
-    JDialog popUp = framePai.criarPopUp("REGISTRAR VENDA", panelzao, 500, 450);
-    popUp.setVisible(true);
-}
+        cancelar.addActionListener(e -> SwingUtilities.getWindowAncestor(panelzao).dispose());
 
-    
-    
-   private void abrirListarVendas() {
-    String[] colunas = { "ID", "Produtos", "Data", "Total", "Pagamento", "Ganho Bruto" };
-    List<Venda> vendas = RegistroVendas.getTodasVendas();
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        adicionarLinha.run();
 
-    Object[][] dados = new Object[vendas.size()][6];  // Agora 6 colunas
+        JScrollPane scrollPaneLinhas = new JScrollPane(painelLinhas);
+        scrollPaneLinhas.setPreferredSize(new Dimension(400, 200));
+        scrollPaneLinhas.setBorder(null);
+        scrollPaneLinhas.getVerticalScrollBar().setUnitIncrement(16);
 
-    for (int i = 0; i < vendas.size(); i++) {
-        Venda v = vendas.get(i);
-        dados[i][0] = v.getId();
-        dados[i][1] = v.getResumoProdutos();
-        dados[i][2] = v.getData().format(formatter);
-        dados[i][3] = String.format("R$ %.2f", v.getTotal());
-        dados[i][4] = v.getFormaPagamento();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panelzao.add(scrollPaneLinhas, gbc);
 
-        // Calcular ganho bruto da venda
-        double ganhoBruto = 0.0;
-        for (ItemVenda item : v.getItens()) {
-            double valorVenda = item.getProduto().getValorVenda();
-            double valorCompra = item.getProduto().getValorCompra();
-            int qtd = item.getQuantidade();
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+        panelzao.add(painelIdCliente, gbc); // ADICIONA O PAINEL DO ID CLIENTE
 
-            ganhoBruto += (valorVenda - valorCompra) * qtd;
-        }
-        dados[i][5] = String.format("R$ %.2f", ganhoBruto);
+        gbc.gridy++;
+        panelzao.add(painelPagamento, gbc);
+
+        gbc.gridy++;
+        panelzao.add(painelAddRemove, gbc);
+
+        gbc.gridy++;
+        panelzao.add(painelBotoes, gbc);
+
+        JDialog popUp = framePai.criarPopUp("REGISTRAR VENDA", panelzao, 500, 500);
+        popUp.setVisible(true);
     }
 
-    DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
+    private void abrirListarVendas() {
+        String[] colunas = { "ID", "Produtos", "Data", "Total", "Pagamento", "Ganho Bruto" };
+        List<Venda> vendas = RegistroVendas.getTodasVendas();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        Object[][] dados = new Object[vendas.size()][6]; // Agora 6 colunas
+
+        for (int i = 0; i < vendas.size(); i++) {
+            Venda v = vendas.get(i);
+            dados[i][0] = v.getId();
+            dados[i][1] = v.getResumoProdutos();
+            dados[i][2] = v.getData().format(formatter);
+            dados[i][3] = String.format("R$ %.2f", v.getTotal());
+            dados[i][4] = v.getFormaPagamento();
+
+            // Calcular ganho bruto da venda
+            double ganhoBruto = 0.0;
+            for (ItemVenda item : v.getItens()) {
+                double valorVenda = item.getProduto().getValorVenda();
+                double valorCompra = item.getProduto().getValorCompra();
+                int qtd = item.getQuantidade();
+
+                ganhoBruto += (valorVenda - valorCompra) * qtd;
+            }
+            dados[i][5] = String.format("R$ %.2f", ganhoBruto);
         }
-    };
 
-    JTable tabelaVendas = new JTable(modelo);
-    tabelaVendas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    tabelaVendas.setRowHeight(22);
-    tabelaVendas.setGridColor(Color.BLACK);
-    tabelaVendas.setShowGrid(true);
-    tabelaVendas.setAutoCreateRowSorter(true);
-    tabelaVendas.getColumnModel().getColumn(1).setPreferredWidth(300); // Produtos
-    tabelaVendas.getColumnModel().getColumn(4).setPreferredWidth(100); // Pagamento
-    tabelaVendas.getColumnModel().getColumn(5).setPreferredWidth(100); // Ganho Bruto
+        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-    JTableHeader header = tabelaVendas.getTableHeader();
-    header.setFont(new Font("Segoe UI", Font.BOLD, 14));
-    header.setOpaque(true);
-    header.setDefaultRenderer(new DefaultTableCellRenderer() {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel label = new JLabel(value.toString(), JLabel.CENTER);
-            label.setOpaque(true);
-            label.setBackground(Color.BLACK);
-            label.setForeground(Color.WHITE);
-            label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            return label;
+        JTable tabelaVendas = new JTable(modelo);
+        tabelaVendas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabelaVendas.setRowHeight(22);
+        tabelaVendas.setGridColor(Color.BLACK);
+        tabelaVendas.setShowGrid(true);
+        tabelaVendas.setAutoCreateRowSorter(true);
+        tabelaVendas.getColumnModel().getColumn(1).setPreferredWidth(300); // Produtos
+        tabelaVendas.getColumnModel().getColumn(4).setPreferredWidth(100); // Pagamento
+        tabelaVendas.getColumnModel().getColumn(5).setPreferredWidth(100); // Ganho Bruto
+
+        JTableHeader header = tabelaVendas.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setOpaque(true);
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = new JLabel(value.toString(), JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.BLACK);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                return label;
+            }
+        });
+
+        JScrollPane scroll = new JScrollPane(tabelaVendas);
+        scroll.getViewport().setBackground(new Color(156, 156, 156));
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+
+        JPanel painel = new JPanel(new BorderLayout());
+        painel.setBackground(new Color(156, 156, 156));
+        painel.add(scroll, BorderLayout.CENTER);
+
+        if (popUpListar != null) {
+            popUpListar.dispose();
+            popUpListar = null;
         }
-    });
 
-    JScrollPane scroll = new JScrollPane(tabelaVendas);
-    scroll.getViewport().setBackground(new Color(156, 156, 156));
-    scroll.setBorder(BorderFactory.createEmptyBorder());
-
-    JPanel painel = new JPanel(new BorderLayout());
-    painel.setBackground(new Color(156, 156, 156));
-    painel.add(scroll, BorderLayout.CENTER);
-
-    if (popUpListar != null) {
-        popUpListar.dispose();
-        popUpListar = null;
+        popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 900, 450);
+        popUpListar.setVisible(true);
     }
-
-    popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 900, 450);
-    popUpListar.setVisible(true);
-}
-
-
 
     private void abrirExcluirVenda() {
         JPanel painel = new JPanel(new GridBagLayout());
@@ -388,13 +418,12 @@ public class MenuVendas extends JPanel {
     public static void estilizarBotaoPequeno(javax.swing.JButton botao) {
         botao.setBackground(Color.BLACK);
         botao.setForeground(Color.WHITE);
-        botao.setFont(new Font("Segoe UI", Font.BOLD, 14)); // MENOR que 18!
+        botao.setFont(new Font("Segoe UI", Font.BOLD, 14));
         botao.setBorderPainted(false);
         botao.setFocusPainted(false);
         botao.setOpaque(false);
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
-    
 
     private JButton jBVoltar;
     private JButton jBPopUpVendasAdicionar;
