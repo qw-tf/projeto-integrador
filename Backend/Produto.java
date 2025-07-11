@@ -1,4 +1,3 @@
-// Produto.java
 package Backend;
 
 import java.util.LinkedList;
@@ -7,7 +6,6 @@ import java.util.List;
 public class Produto {
     private String nome;
     private int quantidade, codigo;
-    private double preco;
     private double valorCompra;
     private double valorVenda;
 
@@ -19,7 +17,6 @@ public class Produto {
         this.quantidade = quantidade;
         this.valorCompra = valorCompra;
         this.valorVenda = valorVenda;
-        this.preco = valorVenda; // preco exibe valorVenda no sistema
 
         if (!codigosDisponiveis.isEmpty()) {
             this.codigo = codigosDisponiveis.remove(0);
@@ -38,10 +35,6 @@ public class Produto {
 
     public String getNome() {
         return nome;
-    }
-
-    public double getPreco() {
-        return preco;
     }
 
     public double getValorCompra() {
@@ -64,17 +57,12 @@ public class Produto {
         this.quantidade = quantidade;
     }
 
-    public void setPreco(double preco) {
-        this.preco = preco;
-    }
-
     public void setValorCompra(double valorCompra) {
         this.valorCompra = valorCompra;
     }
 
     public void setValorVenda(double valorVenda) {
         this.valorVenda = valorVenda;
-        this.preco = valorVenda; // Atualiza o preco mostrado
     }
 
     public static int getProximoCodigo() {
@@ -93,5 +81,4 @@ public class Produto {
     public String toString() {
         return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
     }
-
 }

@@ -12,7 +12,6 @@ public class Fiado {
     // Campos principais
     private int idFiado;
     private String descricao;
-    private int idCliente;
     private int idVenda;
 
     private double valorRestante;
@@ -22,7 +21,6 @@ public class Fiado {
     // ⚓ Novo construtor para Fiado
     public Fiado(String descricao, Venda venda) {
         this.descricao = descricao;
-        this.idCliente = venda.getIdCliente();
         this.idVenda = venda.getId();
         this.valorRestante = venda.getValor(); // OU getTotal()
         this.quitado = false;
@@ -50,14 +48,6 @@ public class Fiado {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public int getIdCliente() {
-        return idCliente;
-    }
-
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
     }
 
     public int getIdVenda() {
@@ -112,9 +102,8 @@ public class Fiado {
 
     public String getResumoFiado() {
         return "FIADO #" + idFiado +
-                " | Cliente: " + idCliente +
+                " | Cliente: " + descricao +
                 " | Venda: " + idVenda +
-                " | Descrição: " + descricao +
                 " | Valor Restante: " + valorRestante +
                 " | Data: " + dataCriacao +
                 " | Quitado: " + (quitado ? "SIM" : "NÃO");

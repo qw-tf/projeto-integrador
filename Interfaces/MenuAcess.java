@@ -127,11 +127,13 @@ public class MenuAcess extends JPanel {
 
         painelNotificacoes = new JPanel();
         painelNotificacoes.setLayout(new BoxLayout(painelNotificacoes, BoxLayout.Y_AXIS));
-        painelNotificacoes.setBackground(Color.WHITE);
+        painelNotificacoes.setBackground(Color.BLACK);
 
         scrollNotificacoes = new JScrollPane(painelNotificacoes);
         scrollNotificacoes.setPreferredSize(new Dimension(400, 300));
         scrollNotificacoes.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        scrollNotificacoes.getViewport().setBackground(Color.BLACK);
+        scrollNotificacoes.setBackground(Color.BLACK);
 
         popUpNotificacoes = framePai.criarPopUpNotificacoesTopoEsquerdo(scrollNotificacoes);
         popUpNotificacoes.setVisible(true);
@@ -162,6 +164,9 @@ public class MenuAcess extends JPanel {
         if (avisos.isEmpty()) {
             JLabel label = new JLabel("Sem notificações no momento.");
             label.setFont(new Font("Segoe UI", Font.ITALIC, 16));
+            label.setForeground(Color.WHITE);
+            label.setBackground(Color.BLACK);
+            label.setOpaque(true);
             painelNotificacoes.add(label);
         } else {
             for (String aviso : avisos) {
@@ -170,7 +175,9 @@ public class MenuAcess extends JPanel {
                 area.setLineWrap(true);
                 area.setWrapStyleWord(true);
                 area.setEditable(false);
-                area.setOpaque(false);
+                area.setOpaque(true);
+                area.setForeground(Color.WHITE);
+                area.setBackground(Color.BLACK);
                 area.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 painelNotificacoes.add(area);
             }
@@ -181,7 +188,7 @@ public class MenuAcess extends JPanel {
     }
 
     private void iniciarAtualizacaoAutomatica() {
-        new javax.swing.Timer(10000, e -> {
+        new javax.swing.Timer(5, e -> {
             if (popUpNotificacoes != null && popUpNotificacoes.isVisible()) {
                 atualizarNotificacoes();
             }

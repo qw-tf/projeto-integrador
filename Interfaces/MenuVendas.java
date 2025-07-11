@@ -9,6 +9,7 @@ import Backend.RegistroVendas;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import javax.swing.*;
@@ -121,12 +122,7 @@ public class MenuVendas extends JPanel {
         });
         comboPagamento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // NOVO CAMPO ID CLIENTE
-        JTextField campoIdCliente = new JTextField(5);
-        JPanel painelIdCliente = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        painelIdCliente.setBackground(new Color(156, 156, 156));
-        painelIdCliente.add(new JLabel("ID Cliente:"));
-        painelIdCliente.add(campoIdCliente);
+        // --- REMOVIDO: Campo ID Cliente
 
         JPanel painelPagamento = new JPanel(new FlowLayout(FlowLayout.CENTER));
         painelPagamento.setBackground(new Color(156, 156, 156));
@@ -240,15 +236,17 @@ public class MenuVendas extends JPanel {
                     itensVenda.add(new ItemVenda(produto, qtdVenda));
                 }
 
-                int idCliente = Integer.parseInt(campoIdCliente.getText().trim());
-
                 String formaPagamento = (String) comboPagamento.getSelectedItem();
-                RegistroVendas.adicionarVenda(itensVenda, formaPagamento, idCliente);
+
+                RegistroVendas.adicionarVenda(itensVenda, formaPagamento);
 
                 JOptionPane.showMessageDialog(null, "Venda registrada com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
                 SwingUtilities.getWindowAncestor(panelzao).dispose();
 
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Erro na quantidade", "ERRO", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
@@ -275,9 +273,6 @@ public class MenuVendas extends JPanel {
         gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weighty = 0;
-        panelzao.add(painelIdCliente, gbc); // ADICIONA O PAINEL DO ID CLIENTE
-
-        gbc.gridy++;
         panelzao.add(painelPagamento, gbc);
 
         gbc.gridy++;

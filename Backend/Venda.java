@@ -11,15 +11,20 @@ public class Venda {
     private LocalDate data;
     private String formaPagamento;
     private double valorVenda;
-    private int idCliente;
+    private int idCliente; // ⚓ ISSO AQUI TEM QUE EXISTIR!
+    // Na classe Venda
 
-    public Venda(List<ItemVenda> itens, String formaPagamento, int idCliente) {
+    public Venda(List<ItemVenda> itens, String formaPagamento) {
         this.id = proximoId++;
         this.itens = itens;
         this.data = LocalDate.now();
         this.formaPagamento = formaPagamento;
         this.valorVenda = calcularTotal();
-        this.idCliente = idCliente; // ⚓ não esquece disso!
+        this.idCliente = -1; // ou 0, ou algum valor padrão indicando "sem cliente"
+    }
+
+    public int getIdCliente() { // ⚓ ISSO AQUI TEM QUE EXISTIR!
+        return idCliente;
     }
 
     private double calcularTotal() {
@@ -46,10 +51,6 @@ public class Venda {
         return valorVenda;
     }
 
-    public int getIdCliente() {
-        return idCliente;
-    }
-
     public String getFormaPagamento() {
         return formaPagamento;
     }
@@ -66,8 +67,6 @@ public class Venda {
     public int getQuantidadeTotal() {
         return itens.stream().mapToInt(ItemVenda::getQuantidade).sum();
     }
-
-    // ✅ NOVOS MÉTODOS PARA O BALANÇO
 
     public double getLucroTotal() {
         double total = 0;

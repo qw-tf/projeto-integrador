@@ -18,6 +18,6 @@ public class ItemVenda {
     }
 
     public double getSubtotal() {
-        return produto.getPreco() * quantidade;
+        return produto.getValorVenda() * quantidade;
     }
 }

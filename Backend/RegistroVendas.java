@@ -9,7 +9,8 @@ import java.util.TreeMap;
 public class RegistroVendas {
     private static List<Venda> vendas = new ArrayList<>();
 
-    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento, int idCliente) {
+    // Método modificado: remove o parâmetro idCliente
+    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento) {
         // Valida estoque
         for (ItemVenda item : itens) {
             Produto p = item.getProduto();
@@ -24,8 +25,8 @@ public class RegistroVendas {
             p.setQuantidade(p.getQuantidade() - item.getQuantidade());
         }
 
-        // Cria e salva a venda COM ID DO CLIENTE!
-        Venda novaVenda = new Venda(itens, formaPagamento, idCliente);
+        // Cria e salva a venda SEM ID DO CLIENTE
+        Venda novaVenda = new Venda(itens, formaPagamento);
         vendas.add(novaVenda);
     }
 
@@ -57,8 +58,9 @@ public class RegistroVendas {
     public static void quitarFiadoERegistrarVenda(Fiado f, List<ItemVenda> itens, String formaPagamento) {
         f.quitarTotalmente();
         FiadoRepositorio.removerFiado(f);
-        // O cliente tem que ser o mesmo do fiado original
-        Venda novaVenda = new Venda(itens, formaPagamento, f.getIdCliente());
+        // Como o idCliente vem do fiado, e agora não usamos, vamos criar a venda sem
+        // idCliente
+        Venda novaVenda = new Venda(itens, formaPagamento);
         adicionarVendaDireto(novaVenda);
     }
 

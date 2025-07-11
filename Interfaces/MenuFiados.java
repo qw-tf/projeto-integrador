@@ -105,17 +105,17 @@ public class MenuFiados extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel labelDescricao = new JLabel("Descrição:");
-        JTextField campoDescricao = new JTextField(20);
+        JLabel labelNomeCliente = new JLabel("Nome Cliente:");
+        JTextField campoNomeCliente = new JTextField(20);
 
         JLabel labelIdVenda = new JLabel("ID Venda:");
         JTextField campoIdVenda = new JTextField(10);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panelzao.add(labelDescricao, gbc);
+        panelzao.add(labelNomeCliente, gbc);
         gbc.gridx = 1;
-        panelzao.add(campoDescricao, gbc);
+        panelzao.add(campoNomeCliente, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -128,20 +128,18 @@ public class MenuFiados extends JPanel {
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridx = 0;
         panelzao.add(cancelar, gbc);
         gbc.gridx = 1;
         panelzao.add(confirmar, gbc);
 
-        JDialog popUp = framePai.criarPopUp("ADICIONAR FIADO", panelzao, 400, 200);
-
+        JDialog popUp = framePai.criarPopUp("ADICIONAR FIADO", panelzao, 400, 250);
         confirmar.addActionListener(e -> {
             try {
-                String descricao = campoDescricao.getText().trim();
+                String nomeCliente = campoNomeCliente.getText().trim();
                 int idVenda = Integer.parseInt(campoIdVenda.getText().trim());
 
-                // BUSCA A VENDA EXISTENTE — ESSA É A PARTE NOVA!
                 Backend.Venda venda = null;
                 for (Backend.Venda v : Backend.RegistroVendas.getTodasVendas()) {
                     if (v.getId() == idVenda) {
@@ -151,15 +149,22 @@ public class MenuFiados extends JPanel {
                 }
 
                 if (venda == null) {
-                    throw new IllegalArgumentException("Venda não encontrada! Não é possível criar fiado sem venda real!");
+                    throw new IllegalArgumentException(
+                            "Venda não encontrada! Não é possível criar fiado sem venda real!");
                 }
 
-                // Remove venda da lista de vendas e cria fiado
-                Backend.RegistroVendas.converterVendaEmFiado(venda);
+                Backend.RegistroVendas.removerVenda(venda);
+                Backend.Fiado fiado = new Backend.Fiado(nomeCliente, venda);
+                Backend.FiadoRepositorio.adicionarFiado(fiado);
+
                 JOptionPane.showMessageDialog(panelzao, "Fiado registrado com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
                 popUp.dispose();
 
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Erro com os números", "ERRO",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "ERRO",
                         JOptionPane.ERROR_MESSAGE);
@@ -174,21 +179,20 @@ public class MenuFiados extends JPanel {
     private Object[][] montarDadosTabela() {
         List<Fiado> fiados = FiadoRepositorio.getFiados();
 
-        Object[][] dados = new Object[fiados.size()][6];
+        Object[][] dados = new Object[fiados.size()][5]; // ⚓ CORRIGIDO PRA 5!
         for (int i = 0; i < fiados.size(); i++) {
             Fiado f = fiados.get(i);
             dados[i][0] = f.getIdFiado();
             dados[i][1] = f.getDescricao();
-            dados[i][2] = f.getIdCliente();
-            dados[i][3] = f.getIdVenda();
-            dados[i][4] = f.getValorRestante();
-            dados[i][5] = f.isQuitado() ? "Sim" : "Não";
+            dados[i][2] = f.getIdVenda();
+            dados[i][3] = f.getValorRestante();
+            dados[i][4] = f.isQuitado() ? "Sim" : "Não";
         }
         return dados;
     }
 
     private void abrirListarFiados() {
-        String[] colunas = { "ID", "DESCRIÇÃO", "ID CLIENTE", "ID VENDA", "VALOR RESTANTE", "QUITADO" };
+        String[] colunas = { "ID", "DESCRIÇÃO", "ID VENDA", "VALOR RESTANTE", "QUITADO" };
         Object[][] dados = montarDadosTabela();
 
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
@@ -249,11 +253,9 @@ public class MenuFiados extends JPanel {
         JLabel labelValor = new JLabel("Valor Pago:");
         JTextField campoValor = new JTextField(10);
 
-        // Por padrão, escondidos
         labelValor.setVisible(false);
         campoValor.setVisible(false);
 
-        // Listener pra alternar visibilidade
         checkParcial.addActionListener(e -> {
             boolean parcial = checkParcial.isSelected();
             labelValor.setVisible(parcial);
@@ -292,7 +294,6 @@ public class MenuFiados extends JPanel {
         painel.add(confirmar, gbc);
 
         JDialog popUp = framePai.criarPopUp("QUITAR FIADO", painel, 400, 250);
-
         confirmar.addActionListener(e -> {
             try {
                 int id = Integer.parseInt(campoId.getText().trim());
