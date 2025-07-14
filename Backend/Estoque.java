@@ -2,20 +2,27 @@ package Backend;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Estoque {
     private static List<Produto> produtos = new ArrayList<>();
 
-    public static void adicionarProduto(String nome, int quantidade, double valorCompra, double valorVenda, boolean perecivel, LocalDate validade) throws ValidacaoException {
-        if (nome == null || nome.isEmpty()) throw new ValidacaoException("Nome não pode ser vazio.");
-        if (quantidade < 0) throw new ValidacaoException("Quantidade não pode ser negativa.");
-        if (valorCompra < 0) throw new ValidacaoException("Valor de compra não pode ser negativo.");
-        if (valorVenda < 0) throw new ValidacaoException("Valor de venda não pode ser negativo.");
+    public static void adicionarProduto(String nome, int quantidade, double valorCompra, double valorVenda,
+            boolean perecivel, LocalDate validade) throws ValidacaoException {
+        if (nome == null || nome.isEmpty())
+            throw new ValidacaoException("Nome não pode ser vazio.");
+        if (quantidade < 0)
+            throw new ValidacaoException("Quantidade não pode ser negativa.");
+        if (valorCompra < 0)
+            throw new ValidacaoException("Valor de compra não pode ser negativo.");
+        if (valorVenda < 0)
+            throw new ValidacaoException("Valor de venda não pode ser negativo.");
 
         Produto novoProduto;
         if (perecivel) {
-            if (validade == null) throw new ValidacaoException("Data de validade obrigatória para produto perecível.");
+            if (validade == null)
+                throw new ValidacaoException("Data de validade obrigatória para produto perecível.");
             novoProduto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade);
         } else {
             novoProduto = new Produto(nome, quantidade, valorCompra, valorVenda);
@@ -65,5 +72,17 @@ public class Estoque {
 
     public static List<Produto> getProdutos() {
         return produtos;
+    }
+
+    // ⚓ NOVO MÉTODO: VERIFICADOR DE PRODUTO ZERADO ⚓
+    public static void verificarEExcluirZerados() {
+        Iterator<Produto> iterator = produtos.iterator();
+        while (iterator.hasNext()) {
+            Produto p = iterator.next();
+            if (p.getQuantidade() == 0) {
+                iterator.remove();
+                Produto.liberarCodigo(p.getCodigo());
+            }
+        }
     }
 }

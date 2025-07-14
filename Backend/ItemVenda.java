@@ -3,10 +3,12 @@ package Backend;
 public class ItemVenda {
     private Produto produto;
     private int quantidade;
+    private int quantidadeTotal;
 
     public ItemVenda(Produto produto, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
+        this.quantidadeTotal = quantidade;
     }
 
     public Produto getProduto() {

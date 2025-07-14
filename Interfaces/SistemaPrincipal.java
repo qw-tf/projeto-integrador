@@ -2,13 +2,15 @@
 package Interfaces;
 
 import javax.swing.*;
+
+import Backend.Estoque;
+import Backend.Produto;
+
 import java.awt.*;
-import Banco.BancoUtils;
 
 public class SistemaPrincipal extends javax.swing.JFrame {
 
     public SistemaPrincipal() {
-        BancoUtils.criarTabelaProduto();
         initComponents();
     }
 
@@ -138,6 +140,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         }
         UIManager.put("Button.select", new Color(20, 20, 20));
         SistemaPrincipal telas = new SistemaPrincipal();
+        Estoque.adicionarProduto("fdases?", 100, 10, 2.50, false, null);
         telas.setExtendedState(JFrame.MAXIMIZED_BOTH);
         telas.setVisible(true);
         telas.montarInterface();

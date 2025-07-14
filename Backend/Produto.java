@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Produto {
     private String nome;
-    private int quantidade, codigo;
+    private int quantidade, codigo, quantidadeTotal;
     private double valorCompra;
     private double valorVenda;
 
@@ -15,6 +15,7 @@ public class Produto {
     public Produto(String nome, int quantidade, double valorCompra, double valorVenda) {
         this.nome = nome;
         this.quantidade = quantidade;
+        this.quantidadeTotal = quantidade;
         this.valorCompra = valorCompra;
         this.valorVenda = valorVenda;
 
@@ -81,4 +82,9 @@ public class Produto {
     public String toString() {
         return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
     }
+
+    public int getQuantidadeTotal() {
+        return quantidadeTotal;
+    }
+
 }

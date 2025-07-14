@@ -40,8 +40,9 @@ public class Notificador {
         LocalDate limiteFiado = hoje.minusDays(DIAS_AVISO_FIADO);
         for (Fiado fiado : FiadoRepositorio.getFiados()) { // CORREÇÃO AQUI
             if (fiado.getDataCriacao().isBefore(limiteFiado) && !fiado.isQuitado()) {
-                avisos.add(String.format("  ♣  Fiado do cliente ID " + fiado.getDescricao() + "  está vencido há %d dia(s).",
-                        fiado.getDescricao(), ChronoUnit.DAYS.between(fiado.getDataCriacao(), hoje)));
+                avisos.add(String.format(
+                        "  ♣  Fiado do cliente ID " + fiado.getNomeCliente() + "  está vencido há %d dia(s).",
+                        fiado.getNomeCliente(), ChronoUnit.DAYS.between(fiado.getDataCriacao(), hoje)));
             }
         }
 

@@ -95,23 +95,21 @@ public class MenuBalanco extends JPanel {
         for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
             double lucro = entry.getValue()[0];
             double gasto = entry.getValue()[1];
-            double patrimonio = lucro - gasto;
             linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
             linhas[i][1] = String.format("R$ %.2f", lucro);
             linhas[i][2] = String.format("R$ %.2f", gasto);
-            linhas[i][3] = String.format("R$ %.2f", patrimonio);
             totalLucro += lucro;
             totalGasto += gasto;
             i++;
         }
 
-        String[] colunas = { "Data", "Lucro", "Gasto", "Patrimônio Líquido" };
+        String[] colunas = { "Data", "Lucro", "Gasto" };
         String resumo = String.format("""
                 Período: %s até %s
-                TOTAL PATRIMÔNIO MENSAL: R$ %.2f
+                TOTAL LUCRO: R$ %.2f
                 """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro - totalGasto));
+                (totalLucro));
 
         mostrarResultado("BALANÇO MENSAL", linhas, colunas, resumo);
     }
@@ -127,22 +125,20 @@ public class MenuBalanco extends JPanel {
             Double[] valores = dados.getOrDefault(mes, new Double[] { 0.0, 0.0 });
             double lucro = valores[0];
             double gasto = valores[1];
-            double patrimonio = lucro - gasto;
             linhas[mes - 1][0] = String.format("%02d", mes);
             linhas[mes - 1][1] = String.format("R$ %.2f", lucro);
             linhas[mes - 1][2] = String.format("R$ %.2f", gasto);
-            linhas[mes - 1][3] = String.format("R$ %.2f", patrimonio);
             totalLucro += lucro;
             totalGasto += gasto;
         }
 
-        String[] colunas = { "Mês", "Lucro", "Gasto", "Patrimônio Líquido" };
+        String[] colunas = { "Mês", "Lucro", "Gasto" };
         String resumo = String.format("""
                 Período: 01/01/%d até %s
-                TOTAL PATRIMÔNIO ANUAL: R$ %.2f
+                TOTAL LUCRO ANUAL: R$ %.2f
                 """, hoje.getYear(),
                 hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro - totalGasto));
+                (totalLucro));
 
         mostrarResultado("BALANÇO ANUAL", linhas, colunas, resumo);
     }
@@ -158,23 +154,21 @@ public class MenuBalanco extends JPanel {
         for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
             double lucro = entry.getValue()[0];
             double gasto = entry.getValue()[1];
-            double patrimonio = lucro - gasto;
             linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
             linhas[i][1] = String.format("R$ %.2f", lucro);
             linhas[i][2] = String.format("R$ %.2f", gasto);
-            linhas[i][3] = String.format("R$ %.2f", patrimonio);
             totalLucro += lucro;
             totalGasto += gasto;
             i++;
         }
 
-        String[] colunas = { "Data", "Lucro", "Gasto", "Patrimônio Líquido" };
+        String[] colunas = { "Data", "Lucro", "Gasto" };
         String resumo = String.format("""
                 Período: %s até %s
-                TOTAL PATRIMÔNIO DOS 7 DIAS: R$ %.2f
+                TOTAL LUCRO DOS 7 DIAS: R$ %.2f
                 """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro - totalGasto));
+                (totalLucro));
 
         mostrarResultado("BALANÇO DE VENDAS", linhas, colunas, resumo);
     }

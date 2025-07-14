@@ -1,7 +1,5 @@
 package Interfaces;
 
-
-import Banco.ProdutoDAO;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -106,225 +104,233 @@ public class MenuEstoq extends JPanel {
 
     // Dentro da classe MenuEstoq
 
-private void abrirAdicionarProduto() {
-    JPanel panelzao = new JPanel(new GridBagLayout());
-    panelzao.setBackground(new Color(156, 156, 156));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(5, 10, 5, 10);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.anchor = GridBagConstraints.WEST;
+    private void abrirAdicionarProduto() {
+        JPanel panelzao = new JPanel(new GridBagLayout());
+        panelzao.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-    // Campos
-    JLabel labelNome = new JLabel("Nome:");
-    JTextField campoNome = new JTextField(20);
-    JLabel labelValorCompra = new JLabel("Valor Compra:");
-    JTextField campoValorCompra = new JTextField(10);
-    JLabel labelValorVenda = new JLabel("Valor Venda:");
-    JTextField campoValorVenda = new JTextField(10);
-    JLabel labelQuantidade = new JLabel("Quantidade:");
-    JTextField campoQuantidade = new JTextField(10);
-    JCheckBox checkPerecivel = new JCheckBox("Produto Perecível");
-    JLabel labelValidade = new JLabel("Validade (se perecível):");
-    JTextField campoValidade = new JTextField(10);
+        // Campos
+        JLabel labelNome = new JLabel("Nome:");
+        JTextField campoNome = new JTextField(20);
+        JLabel labelValorCompra = new JLabel("Valor Compra:");
+        JTextField campoValorCompra = new JTextField(10);
+        JLabel labelValorVenda = new JLabel("Valor Venda:");
+        JTextField campoValorVenda = new JTextField(10);
+        JLabel labelQuantidade = new JLabel("Quantidade:");
+        JTextField campoQuantidade = new JTextField(10);
+        JCheckBox checkPerecivel = new JCheckBox("Produto Perecível");
+        JLabel labelValidade = new JLabel("Validade (se perecível):");
+        JTextField campoValidade = new JTextField(10);
 
-    // Inicialmente invisível validade
-    labelValidade.setVisible(false);
-    campoValidade.setVisible(false);
+        // Inicialmente invisível validade
+        labelValidade.setVisible(false);
+        campoValidade.setVisible(false);
 
-    // Adiciona componentes no painel
-    gbc.gridx = 0; gbc.gridy = 0;
-    panelzao.add(labelNome, gbc);
-    gbc.gridx = 1;
-    panelzao.add(campoNome, gbc);
+        // Adiciona componentes no painel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelzao.add(labelNome, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoNome, gbc);
 
-    gbc.gridx = 0; gbc.gridy = 1;
-    panelzao.add(labelValorCompra, gbc);
-    gbc.gridx = 1;
-    panelzao.add(campoValorCompra, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelzao.add(labelValorCompra, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoValorCompra, gbc);
 
-    gbc.gridx = 0; gbc.gridy = 2;
-    panelzao.add(labelValorVenda, gbc);
-    gbc.gridx = 1;
-    panelzao.add(campoValorVenda, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panelzao.add(labelValorVenda, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoValorVenda, gbc);
 
-    gbc.gridx = 0; gbc.gridy = 3;
-    panelzao.add(labelQuantidade, gbc);
-    gbc.gridx = 1;
-    panelzao.add(campoQuantidade, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panelzao.add(labelQuantidade, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoQuantidade, gbc);
 
-    gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
-    panelzao.add(checkPerecivel, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        panelzao.add(checkPerecivel, gbc);
 
-    gbc.gridy = 5; gbc.gridwidth = 1;
-    panelzao.add(labelValidade, gbc);
-    gbc.gridx = 1;
-    panelzao.add(campoValidade, gbc);
+        gbc.gridy = 5;
+        gbc.gridwidth = 1;
+        panelzao.add(labelValidade, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoValidade, gbc);
 
-    // Botões
-    JButton confirmar = new JButton("Confirmar");
-    JButton cancelar = new JButton("Cancelar");
-    SistemaPrincipal.estilizarBotaoMaior(confirmar);
-    SistemaPrincipal.estilizarBotaoMaior(cancelar);
+        // Botões
+        JButton confirmar = new JButton("Confirmar");
+        JButton cancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(confirmar);
+        SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-    gbc.gridy = 6; gbc.gridwidth = 1; gbc.weightx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = 6;
+        gbc.gridwidth = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    gbc.gridx = 0; gbc.anchor = GridBagConstraints.WEST;
-    panelzao.add(cancelar, gbc);
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelzao.add(cancelar, gbc);
 
-    gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
-    panelzao.add(confirmar, gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelzao.add(confirmar, gbc);
 
-    Dimension botaoTamanho = new Dimension(120, 30);
-    confirmar.setPreferredSize(botaoTamanho);
-    cancelar.setPreferredSize(botaoTamanho);
+        Dimension botaoTamanho = new Dimension(120, 30);
+        confirmar.setPreferredSize(botaoTamanho);
+        cancelar.setPreferredSize(botaoTamanho);
 
-    // Mostrar ou esconder validade
-    checkPerecivel.addActionListener(e -> {
-        boolean selecionado = checkPerecivel.isSelected();
-        labelValidade.setVisible(selecionado);
-        campoValidade.setVisible(selecionado);
-        panelzao.revalidate();
-        panelzao.repaint();
-    });
+        // Mostrar ou esconder validade
+        checkPerecivel.addActionListener(e -> {
+            boolean selecionado = checkPerecivel.isSelected();
+            labelValidade.setVisible(selecionado);
+            campoValidade.setVisible(selecionado);
+            panelzao.revalidate();
+            panelzao.repaint();
+        });
 
-    JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 300);
+        JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 300);
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    confirmar.addActionListener(e -> {
-    try {
-        String nome = campoNome.getText().trim();
-        Verificador.verificarNome(nome);
-        int qtd = Integer.parseInt(campoQuantidade.getText().trim());
-        Verificador.verificarQuantidade(qtd);
+        confirmar.addActionListener(e -> {
+            try {
+                String nome = campoNome.getText().trim();
+                Verificador.verificarNome(nome);
+                int qtd = Integer.parseInt(campoQuantidade.getText().trim());
+                Verificador.verificarQuantidade(qtd);
 
-        String valorCompraStr = campoValorCompra.getText().trim().replace(',', '.');
-        double valorCompra = Double.parseDouble(valorCompraStr);
-        Verificador.verificarPreco(valorCompra);
+                String valorCompraStr = campoValorCompra.getText().trim().replace(',', '.');
+                double valorCompra = Double.parseDouble(valorCompraStr);
+                Verificador.verificarPreco(valorCompra);
 
-        String valorVendaStr = campoValorVenda.getText().trim().replace(',', '.');
-        double valorVenda = Double.parseDouble(valorVendaStr);
-        Verificador.verificarPreco(valorVenda);
+                String valorVendaStr = campoValorVenda.getText().trim().replace(',', '.');
+                double valorVenda = Double.parseDouble(valorVendaStr);
+                Verificador.verificarPreco(valorVenda);
 
-        ProdutoDAO dao = new ProdutoDAO(); // INSTANCIA O DAO AQUI
+                if (checkPerecivel.isSelected()) {
+                    String validadeStr = campoValidade.getText().trim();
+                    LocalDate dataValidade = LocalDate.parse(validadeStr, formatter);
+                    Verificador.verificarDataValidade(dataValidade);
 
-        if (checkPerecivel.isSelected()) {
-            String validadeStr = campoValidade.getText().trim();
-            LocalDate dataValidade = LocalDate.parse(validadeStr, formatter);
-            Verificador.verificarDataValidade(dataValidade);
+                    ProdutoPerecivel novoProduto = new ProdutoPerecivel(nome, qtd, valorCompra, valorVenda,
+                            dataValidade);
+                    Estoque.getProdutos().add(novoProduto);
+                } else {
+                    Produto novoProduto = new Produto(nome, qtd, valorCompra, valorVenda);
+                    Estoque.getProdutos().add(novoProduto);
+                }
 
-            ProdutoPerecivel novoProduto = new ProdutoPerecivel(nome, qtd, valorCompra, valorVenda, dataValidade);
-            Estoque.getProdutos().add(novoProduto);
+                JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "SUCESSO",
+                        JOptionPane.INFORMATION_MESSAGE);
+                popUp.dispose();
 
-            dao.inserirProduto(novoProduto); // INSERE NO BANCO
+            } catch (ValidacaoException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Valores inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.", "ERRO",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro inesperado: " + ex.getMessage(), "ERRO GRAVE",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
+
+        cancelar.addActionListener(e -> popUp.dispose());
+        popUp.setVisible(true);
+    }
+
+    private Object[][] montarDadosTabela() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<Produto> produtos = Estoque.getProdutos();
+
+        Object[][] dados = new Object[produtos.size()][7];
+
+        for (int i = 0; i < produtos.size(); i++) {
+            Produto p = produtos.get(i);
+            dados[i][0] = p.getCodigo();
+            dados[i][1] = p.getNome();
+            dados[i][2] = String.format("R$ %.2f", p.getValorCompra());
+            dados[i][3] = String.format("R$ %.2f", p.getValorVenda());
+            dados[i][4] = p.getQuantidade();
+
+            if (p instanceof ProdutoPerecivel perecivel) {
+                dados[i][5] = "Sim";
+                dados[i][6] = perecivel.getDataDeValidade().format(formatter);
+            } else {
+                dados[i][5] = "Não";
+                dados[i][6] = "-";
+            }
+        }
+        return dados;
+    }
+
+    private void abrirListarProdutos() {
+        String[] colunas = { "ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
+        Object[][] dados = montarDadosTabela();
+
+        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tabelaProdutos = new JTable(modelo);
+        tabelaProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabelaProdutos.setRowHeight(22);
+        tabelaProdutos.setGridColor(new Color(120, 120, 120));
+        tabelaProdutos.setShowGrid(true);
+        tabelaProdutos.setAutoCreateRowSorter(true);
+
+        JTableHeader header = tabelaProdutos.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                JLabel label = new JLabel(value.toString(), JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.DARK_GRAY);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                return label;
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(tabelaProdutos);
+        scrollPane.getViewport().setBackground(new Color(156, 156, 156));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        JPanel painelPrincipal = new JPanel(new BorderLayout());
+        painelPrincipal.setBackground(new Color(156, 156, 156));
+        painelPrincipal.add(scrollPane, BorderLayout.CENTER);
+
+        if (popUpListar != null && popUpListar.isVisible()) {
+            popUpListar.toFront();
         } else {
-            Produto novoProduto = new Produto(nome, qtd, valorCompra, valorVenda);
-            Estoque.getProdutos().add(novoProduto);
-
-            dao.inserirProduto(novoProduto); // INSERE NO BANCO
-        }
-
-        JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "SUCESSO",
-                JOptionPane.INFORMATION_MESSAGE);
-        popUp.dispose();
-
-    } catch (ValidacaoException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Valores inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-    } catch (DateTimeParseException ex) {
-        JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.", "ERRO", JOptionPane.ERROR_MESSAGE);
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Erro inesperado: " + ex.getMessage(), "ERRO GRAVE", JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-    }
-});
-
-    cancelar.addActionListener(e -> popUp.dispose());
-    popUp.setVisible(true);
-}
-
-private Object[][] montarDadosTabela() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    List<Produto> produtos = Estoque.getProdutos();
-
-    Object[][] dados = new Object[produtos.size()][7];
-
-    for (int i = 0; i < produtos.size(); i++) {
-        Produto p = produtos.get(i);
-        dados[i][0] = p.getCodigo();
-        dados[i][1] = p.getNome();
-        dados[i][2] = String.format("R$ %.2f", p.getValorCompra());
-        dados[i][3] = String.format("R$ %.2f", p.getValorVenda());
-        dados[i][4] = p.getQuantidade();
-
-        if (p instanceof ProdutoPerecivel perecivel) {
-            dados[i][5] = "Sim";
-            dados[i][6] = perecivel.getDataDeValidade().format(formatter);
-        } else {
-            dados[i][5] = "Não";
-            dados[i][6] = "-";
+            popUpListar = framePai.criarPopUp("LISTA PRODUTOS", painelPrincipal, 900, 450);
+            popUpListar.setVisible(true);
         }
     }
-    return dados;
-}
-
-private void abrirListarProdutos() {
-    String[] colunas = {"ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
-    Object[][] dados = montarDadosTabela();
-
-    DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-
-    tabelaProdutos = new JTable(modelo);
-    tabelaProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-    tabelaProdutos.setRowHeight(22);
-    tabelaProdutos.setGridColor(new Color(120, 120, 120));
-    tabelaProdutos.setShowGrid(true);
-    tabelaProdutos.setAutoCreateRowSorter(true);
-
-    JTableHeader header = tabelaProdutos.getTableHeader();
-    header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
-    header.setDefaultRenderer(new DefaultTableCellRenderer() {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-
-            JLabel label = new JLabel(value.toString(), JLabel.CENTER);
-            label.setOpaque(true);
-            label.setBackground(Color.DARK_GRAY);
-            label.setForeground(Color.WHITE);
-            label.setFont(new Font("Segoe UI", Font.BOLD, 14));
-            return label;
-        }
-    });
-
-    JScrollPane scrollPane = new JScrollPane(tabelaProdutos);
-    scrollPane.getViewport().setBackground(new Color(156, 156, 156));
-    scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-    scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-    JPanel painelPrincipal = new JPanel(new BorderLayout());
-    painelPrincipal.setBackground(new Color(156, 156, 156));
-    painelPrincipal.add(scrollPane, BorderLayout.CENTER);
-
-    if (popUpListar != null && popUpListar.isVisible()) {
-        popUpListar.toFront();
-    } else {
-        popUpListar = framePai.criarPopUp("LISTA PRODUTOS", painelPrincipal, 900, 450);
-        popUpListar.setVisible(true);
-    }
-}
-
 
     private void atualizarListaProdutos() {
         if (tabelaProdutos != null) {
             Object[][] dadosAtualizados = montarDadosTabela();
-            String[] colunas = {"ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
+            String[] colunas = { "ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
 
             DefaultTableModel modelo = new DefaultTableModel(dadosAtualizados, colunas);
             tabelaProdutos.setModel(modelo);
@@ -333,117 +339,120 @@ private void abrirListarProdutos() {
     }
 
     private void abrirExcluirProduto() {
-    JPanel panelzao = new JPanel(new GridBagLayout());
-    panelzao.setBackground(new Color(156, 156, 156));
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(5, 10, 5, 10);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.anchor = GridBagConstraints.WEST;
+        JPanel panelzao = new JPanel(new GridBagLayout());
+        panelzao.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-    JLabel labelId = new JLabel("ID do Produto:");
-    JTextField campoId = new JTextField(15);
-    JLabel labelNomeProduto = new JLabel("Nome: ");
-    labelNomeProduto.setForeground(Color.black);
+        JLabel labelId = new JLabel("ID do Produto:");
+        JTextField campoId = new JTextField(15);
+        JLabel labelNomeProduto = new JLabel("Nome: ");
+        labelNomeProduto.setForeground(Color.black);
 
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    panelzao.add(labelId, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panelzao.add(labelId, gbc);
 
-    gbc.gridx = 1;
-    panelzao.add(campoId, gbc);
+        gbc.gridx = 1;
+        panelzao.add(campoId, gbc);
 
-    gbc.gridx = 0;
-    gbc.gridy = 1;
-    panelzao.add(labelNomeProduto, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panelzao.add(labelNomeProduto, gbc);
 
-    JButton confirmar = new JButton("Confirmar");
-    JButton cancelar = new JButton("Cancelar");
-    SistemaPrincipal.estilizarBotaoMaior(confirmar);
-    SistemaPrincipal.estilizarBotaoMaior(cancelar);
+        JButton confirmar = new JButton("Confirmar");
+        JButton cancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(confirmar);
+        SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-    gbc.gridy = 2;
-    gbc.gridwidth = 1;
-    gbc.weightx = 1;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    gbc.gridx = 0;
-    gbc.anchor = GridBagConstraints.WEST;
-    panelzao.add(cancelar, gbc);
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelzao.add(cancelar, gbc);
 
-    gbc.gridx = 1;
-    gbc.anchor = GridBagConstraints.EAST;
-    panelzao.add(confirmar, gbc);
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelzao.add(confirmar, gbc);
 
-    Dimension botaoTamanho = new Dimension(120, 30);
-    confirmar.setPreferredSize(botaoTamanho);
-    cancelar.setPreferredSize(botaoTamanho);
+        Dimension botaoTamanho = new Dimension(120, 30);
+        confirmar.setPreferredSize(botaoTamanho);
+        cancelar.setPreferredSize(botaoTamanho);
 
-    JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao, 450, 200);
+        JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao, 450, 200);
 
-    Runnable atualizarNomeProduto = () -> {
-        String idStr = campoId.getText().trim();
-        if (idStr.isEmpty()) {
-            labelNomeProduto.setText("Nome: ");
-            return;
-        }
-        try {
-            int id = Integer.parseInt(idStr);
-            Produto produto = Estoque.buscarProduto(id);
-            if (produto != null) {
-                labelNomeProduto.setText("Nome: " + produto.getNome());
-            } else {
-                labelNomeProduto.setText("Produto não encontrado");
-            }
-        } catch (NumberFormatException ex) {
-            labelNomeProduto.setText("ID inválido");
-        }
-    };
-
-    campoId.addFocusListener(new FocusAdapter() {
-        @Override
-        public void focusLost(FocusEvent e) {
-            atualizarNomeProduto.run();
-        }
-    });
-
-    campoId.addActionListener(e -> atualizarNomeProduto.run());
-
-    confirmar.addActionListener(e -> {
-        String idStr = campoId.getText().trim();
-        if (idStr.isEmpty()) {
-            JOptionPane.showMessageDialog(popUpExcluir, "Informe o ID do produto!", "ERRO", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        try {
-            int id = Integer.parseInt(idStr);
-            Produto produto = Estoque.buscarProduto(id);
-            if (produto == null) {
-                JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO", JOptionPane.ERROR_MESSAGE);
+        Runnable atualizarNomeProduto = () -> {
+            String idStr = campoId.getText().trim();
+            if (idStr.isEmpty()) {
+                labelNomeProduto.setText("Nome: ");
                 return;
             }
-
-            boolean excluiu = Estoque.excluirProduto(id);
-            if (excluiu) {
-                JOptionPane.showMessageDialog(popUpExcluir,
-                        "Produto removido com sucesso!\nNome: " + produto.getNome(),
-                        "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
-                popUpExcluir.dispose();
-                atualizarListaProdutos();
-            } else {
-                JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO", JOptionPane.ERROR_MESSAGE);
+            try {
+                int id = Integer.parseInt(idStr);
+                Produto produto = Estoque.buscarProduto(id);
+                if (produto != null) {
+                    labelNomeProduto.setText("Nome: " + produto.getNome());
+                } else {
+                    labelNomeProduto.setText("Produto não encontrado");
+                }
+            } catch (NumberFormatException ex) {
+                labelNomeProduto.setText("ID inválido");
             }
-        } catch (ValidacaoException ex) {
-            JOptionPane.showMessageDialog(popUpExcluir, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(popUpExcluir, "ID inválido!", "ERRO", JOptionPane.ERROR_MESSAGE);
-        }
-    });
+        };
 
-    cancelar.addActionListener(e -> popUpExcluir.dispose());
+        campoId.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                atualizarNomeProduto.run();
+            }
+        });
 
-    popUpExcluir.setVisible(true);
-}
+        campoId.addActionListener(e -> atualizarNomeProduto.run());
 
+        confirmar.addActionListener(e -> {
+            String idStr = campoId.getText().trim();
+            if (idStr.isEmpty()) {
+                JOptionPane.showMessageDialog(popUpExcluir, "Informe o ID do produto!", "ERRO",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try {
+                int id = Integer.parseInt(idStr);
+                Produto produto = Estoque.buscarProduto(id);
+                if (produto == null) {
+                    JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                boolean excluiu = Estoque.excluirProduto(id);
+                if (excluiu) {
+                    JOptionPane.showMessageDialog(popUpExcluir,
+                            "Produto removido com sucesso!\nNome: " + produto.getNome(),
+                            "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
+                    popUpExcluir.dispose();
+                    atualizarListaProdutos();
+                } else {
+                    JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (ValidacaoException ex) {
+                JOptionPane.showMessageDialog(popUpExcluir, ex.getMessage(), "Erro de Validação",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(popUpExcluir, "ID inválido!", "ERRO", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        cancelar.addActionListener(e -> popUpExcluir.dispose());
+
+        popUpExcluir.setVisible(true);
+    }
 
     private JButton jBVoltar;
     private JButton jBPopUpAdicionar;

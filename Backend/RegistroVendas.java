@@ -46,15 +46,6 @@ public class RegistroVendas {
         return vendas.remove(v);
     }
 
-    public static void converterVendaEmFiado(Venda v) {
-        if (removerVenda(v)) {
-            Fiado novoFiado = new Fiado("Fiado gerado da venda ID: " + v.getId(), v);
-            FiadoRepositorio.adicionarFiado(novoFiado);
-        } else {
-            throw new IllegalStateException("Venda não encontrada pra converter em fiado!");
-        }
-    }
-
     public static void quitarFiadoERegistrarVenda(Fiado f, List<ItemVenda> itens, String formaPagamento) {
         f.quitarTotalmente();
         FiadoRepositorio.removerFiado(f);

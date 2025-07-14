@@ -11,8 +11,6 @@ public class Venda {
     private LocalDate data;
     private String formaPagamento;
     private double valorVenda;
-    private int idCliente; // ⚓ ISSO AQUI TEM QUE EXISTIR!
-    // Na classe Venda
 
     public Venda(List<ItemVenda> itens, String formaPagamento) {
         this.id = proximoId++;
@@ -20,11 +18,6 @@ public class Venda {
         this.data = LocalDate.now();
         this.formaPagamento = formaPagamento;
         this.valorVenda = calcularTotal();
-        this.idCliente = -1; // ou 0, ou algum valor padrão indicando "sem cliente"
-    }
-
-    public int getIdCliente() { // ⚓ ISSO AQUI TEM QUE EXISTIR!
-        return idCliente;
     }
 
     private double calcularTotal() {
@@ -71,7 +64,8 @@ public class Venda {
     public double getLucroTotal() {
         double total = 0;
         for (ItemVenda item : itens) {
-            double lucroPorUnidade = item.getProduto().getValorVenda() - item.getProduto().getValorCompra();
+            double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
+            double lucroPorUnidade = item.getProduto().getValorVenda() - custoUnitario;
             total += lucroPorUnidade * item.getQuantidade();
         }
         return total;
@@ -80,7 +74,8 @@ public class Venda {
     public double getGastoTotal() {
         double total = 0;
         for (ItemVenda item : itens) {
-            total += item.getProduto().getValorCompra() * item.getQuantidade();
+            double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
+            total += custoUnitario * item.getQuantidade();
         }
         return total;
     }

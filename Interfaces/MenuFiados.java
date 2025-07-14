@@ -153,7 +153,6 @@ public class MenuFiados extends JPanel {
                             "Venda não encontrada! Não é possível criar fiado sem venda real!");
                 }
 
-                Backend.RegistroVendas.removerVenda(venda);
                 Backend.Fiado fiado = new Backend.Fiado(nomeCliente, venda);
                 Backend.FiadoRepositorio.adicionarFiado(fiado);
 
@@ -183,8 +182,8 @@ public class MenuFiados extends JPanel {
         for (int i = 0; i < fiados.size(); i++) {
             Fiado f = fiados.get(i);
             dados[i][0] = f.getIdFiado();
-            dados[i][1] = f.getDescricao();
-            dados[i][2] = f.getIdVenda();
+            dados[i][2] = f.getNomeCliente();
+            dados[i][1] = f.getIdVenda();
             dados[i][3] = f.getValorRestante();
             dados[i][4] = f.isQuitado() ? "Sim" : "Não";
         }
@@ -192,7 +191,7 @@ public class MenuFiados extends JPanel {
     }
 
     private void abrirListarFiados() {
-        String[] colunas = { "ID", "DESCRIÇÃO", "ID VENDA", "VALOR RESTANTE", "QUITADO" };
+        String[] colunas = { "ID", "ID VENDA", "NOME DO CLIENTE", "VALOR RESTANTE", "QUITADO" };
         Object[][] dados = montarDadosTabela();
 
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {

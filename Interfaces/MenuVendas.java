@@ -307,7 +307,7 @@ public class MenuVendas extends JPanel {
                 double valorCompra = item.getProduto().getValorCompra();
                 int qtd = item.getQuantidade();
 
-                ganhoBruto += (valorVenda - valorCompra) * qtd;
+                ganhoBruto += (valorVenda - (valorCompra / item.getProduto().getQuantidadeTotal())) * qtd;
             }
             dados[i][5] = String.format("R$ %.2f", ganhoBruto);
         }
