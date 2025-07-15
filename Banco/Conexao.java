@@ -6,9 +6,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexao {
-    private static final String URL = "jdbc:postgresql://localhost:5432/comercio_banco";
-    private static final String USUARIO = "user_default";
-    private static final String SENHA = "0000";
+    private static final String URL = "jdbc:postgresql://localhost:5432/comercio";
+    private static final String USUARIO = "admin";
+    private static final String SENHA = "0109";
 
     public static Connection conectar() {
         try {

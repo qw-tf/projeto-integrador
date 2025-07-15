@@ -1,0 +1,34 @@
+*vendas coisas a fazer:
+registrar venda atraves de id e nome
+excluir venda por id e nome
+
+
+
+*fiado coisas a fazer:
+adicionar a venda do fiado por nome e idd
+quitar fiado por id e nome
+quando for adicionar por uma caixa caso ele comece com um valor pago parcialmente
+corrigir o problema da parte de quitar que da pra por um valor maior que a conta que ele precisa pagar
+
+*geral tlg:
+na parte de listar(todos os listar FODASE) por um bagulho pra pesquisar por nome
+nao pode ter numero negativo em todos os bagulhos que pode qualquer numero
+nao pode numero nas partes de nome, todos os nomes
+quando um produto chegar a 0 no estoque ele tem que ser deletado fodase
+
+
+*balanço:
+por uma opcao para ver os anos, tipo, passou um ano e eu quero ver o proximo ou o anterior
+pra mes tambem
+semana
+dia sla
+
+Ta
+
+
+
+
+
+
+
+remover os comentarios mas fodase sendo sincero
