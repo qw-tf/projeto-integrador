@@ -1,20 +1,41 @@
 package Interfaces;
 
-import Backend.Venda;
-import Backend.Estoque;
-import Backend.ItemVenda;
-import Backend.Produto;
-import Backend.RegistroVendas;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+
+import Backend.Estoque;
+import Backend.ItemVenda;
+import Backend.Produto;
+import Backend.RegistroVendas;
+import Backend.Venda;
 
 public class MenuVendas extends JPanel {
 
@@ -116,8 +137,8 @@ public class MenuVendas extends JPanel {
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
-        JComboBox<String> comboPagamento = new JComboBox<>(new String[] {
-                "Dinheiro", "Cartão Débito", "Cartão Crédito", "Pix", "Boleto"
+        JComboBox<String> comboPagamento = new JComboBox<>(new String[]{
+            "Dinheiro", "Cartão Débito", "Cartão Crédito", "Pix", "Boleto"
         });
         comboPagamento.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
@@ -298,109 +319,210 @@ public class MenuVendas extends JPanel {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setBackground(new Color(156, 156, 156));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = new Insets(10, 15, 10, 15);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel labelId = new JLabel("ID da Venda:");
-        JTextField campoId = new JTextField(10);
+        labelId.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        JTextField campoId = new JTextField(15);
+        campoId.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        JLabel labelProduto = new JLabel("Nome ou ID Produto:");
-        JTextField campoProduto = new JTextField(10);
+        JButton btnConsultar = new JButton("Consultar Itens");
+        JButton btnExcluir = new JButton("Excluir");
+        JButton btnCancelar = new JButton("Cancelar");
 
+        framePai.estilizarBotaoMaior(btnConsultar);
+        framePai.estilizarBotaoMaior(btnExcluir);
+        framePai.estilizarBotaoMaior(btnCancelar);
+
+        JTextArea areaResumo = new JTextArea(8, 30);
+        areaResumo.setEditable(false);
+        areaResumo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        areaResumo.setLineWrap(true);
+        areaResumo.setWrapStyleWord(true);
+        JScrollPane scrollResumo = new JScrollPane(areaResumo);
+        scrollResumo.setBorder(BorderFactory.createTitledBorder("Resumo da Venda"));
+
+        // Layout
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.weightx = 0;
         painel.add(labelId, gbc);
+
         gbc.gridx = 1;
+        gbc.weightx = 1;
         painel.add(campoId, gbc);
 
-        gbc.gridy = 1;
-        gbc.gridx = 0;
-        painel.add(labelProduto, gbc);
-        gbc.gridx = 1;
-        painel.add(campoProduto, gbc);
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        painelBotoes.setBackground(new Color(156, 156, 156));
+        painelBotoes.add(btnConsultar);
+        painelBotoes.add(btnExcluir);
 
-        JButton confirmar = new JButton("Excluir");
-        JButton cancelar = new JButton("Cancelar");
-        framePai.estilizarBotaoMaior(confirmar);
-        framePai.estilizarBotaoMaior(cancelar);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1;
+        painel.add(painelBotoes, gbc);
 
         gbc.gridy = 2;
-        gbc.gridx = 0;
-        painel.add(cancelar, gbc);
-        gbc.gridx = 1;
-        gbc.insets = new Insets(5, 40, 5, 0);
-        painel.add(confirmar, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1;
+        painel.add(scrollResumo, gbc);
 
-        JDialog popUp = framePai.criarPopUp("EXCLUIR VENDA", painel, 400, 220);
+        JPanel painelCancelar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        painelCancelar.setBackground(new Color(156, 156, 156));
+        painelCancelar.add(btnCancelar);
 
-        confirmar.addActionListener(e -> {
-            String idVendaTexto = campoId.getText().trim();
-            String entradaProduto = campoProduto.getText().trim();
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+        painel.add(painelCancelar, gbc);
 
-            if (!idVendaTexto.isEmpty()) {
-                try {
-                    int id = Integer.parseInt(idVendaTexto);
-                    boolean ok = RegistroVendas.excluirVenda(id);
-                    if (ok) {
-                        JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "SUCESSO",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        popUp.dispose();
-                        return;
-                    } else {
-                        JOptionPane.showMessageDialog(popUp, "Venda não encontrada!", "Erro",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(popUp, "ID inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+        JDialog popUp = framePai.criarPopUp("EXCLUIR VENDA", painel, 500, 400);
+
+        final Venda[] vendaSelecionada = new Venda[1];
+
+        btnConsultar.addActionListener(e -> {
+            String textoId = campoId.getText().trim();
+            if (textoId.isEmpty()) {
+                JOptionPane.showMessageDialog(popUp, "Informe o ID da venda.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-
-            if (!entradaProduto.isEmpty()) {
-                List<Venda> todas = new ArrayList<>(RegistroVendas.getTodasVendas());
-                List<Venda> aExcluir = new ArrayList<>();
-                try {
-                    int idProduto = Integer.parseInt(entradaProduto);
-                    for (Venda v : todas) {
-                        for (ItemVenda item : v.getItens()) {
-                            if (item.getProduto().getCodigo() == idProduto) {
-                                aExcluir.add(v);
-                                break;
-                            }
-                        }
-                    }
-                } catch (NumberFormatException e1) {
-                    String nomeBuscado = entradaProduto.toLowerCase();
-                    for (Venda v : todas) {
-                        for (ItemVenda item : v.getItens()) {
-                            if (item.getProduto().getNome().toLowerCase().contains(nomeBuscado)) {
-                                aExcluir.add(v);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (aExcluir.isEmpty()) {
-                    JOptionPane.showMessageDialog(popUp, "Nenhuma venda encontrada com esse produto.", "Aviso",
-                            JOptionPane.WARNING_MESSAGE);
+            try {
+                int id = Integer.parseInt(textoId);
+                Venda v = RegistroVendas.getTodasVendas().stream()
+                        .filter(ve -> ve.getId() == id)
+                        .findFirst()
+                        .orElse(null);
+                if (v == null) {
+                    areaResumo.setText("");
+                    vendaSelecionada[0] = null;
+                    JOptionPane.showMessageDialog(popUp, "Venda não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    for (Venda v : aExcluir) {
-                        RegistroVendas.excluirVenda(v.getId());
+                    vendaSelecionada[0] = v;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Itens da Venda ID ").append(id).append(":\n\n");
+                    for (ItemVenda item : v.getItens()) {
+                        sb.append(String.format("- %s | Qtd: %d | Preço Unit.: R$ %.2f | Subtotal: R$ %.2f\n",
+                                item.getProduto().getNome(),
+                                item.getQuantidade(),
+                                item.getProduto().getValorVenda(),
+                                item.getSubtotal()));
                     }
-                    JOptionPane.showMessageDialog(popUp, aExcluir.size() + " venda(s) excluída(s).", "SUCESSO",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    sb.append(String.format("\nTotal da Venda: R$ %.2f", v.getTotal()));
+                    areaResumo.setText(sb.toString());
+                }
+            } catch (NumberFormatException ex) {
+                areaResumo.setText("");
+                vendaSelecionada[0] = null;
+                JOptionPane.showMessageDialog(popUp, "ID inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        btnExcluir.addActionListener(e -> {
+            if (vendaSelecionada[0] == null) {
+                JOptionPane.showMessageDialog(popUp, "Consulte uma venda válida antes de excluir.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int resposta = JOptionPane.showOptionDialog(popUp,
+                    "Tem certeza que deseja excluir esta venda?",
+                    "Confirmação",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Sim", "Não"},
+                    "Não");
+            if (resposta == JOptionPane.YES_OPTION) {
+                boolean removido = RegistroVendas.removerVenda(vendaSelecionada[0]);
+                if (removido) {
+                    JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                     popUp.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(popUp, "Falha ao excluir a venda.", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        cancelar.addActionListener(e -> popUp.dispose());
+        btnCancelar.addActionListener(e -> popUp.dispose());
+
         popUp.setVisible(true);
     }
 
     private void abrirListarVendas() {
-        // Mantido como está no seu código original
+        String[] colunas = {"ID", "Produtos", "Data", "Total", "Pagamento", "Ganho Bruto"};
+        List<Venda> vendas = RegistroVendas.getTodasVendas();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        Object[][] dados = new Object[vendas.size()][6]; // Agora 6 colunas
+
+        for (int i = 0; i < vendas.size(); i++) {
+            Venda v = vendas.get(i);
+            dados[i][0] = v.getId();
+            dados[i][1] = v.getResumoProdutos();
+            dados[i][2] = v.getData().format(formatter);
+            dados[i][3] = String.format("R$ %.2f", v.getTotal());
+            dados[i][4] = v.getFormaPagamento();
+
+            // Calcular ganho bruto da venda
+            double ganhoBruto = 0.0;
+            for (ItemVenda item : v.getItens()) {
+                double valorVenda = item.getProduto().getValorVenda();
+                double valorCompra = item.getProduto().getValorCompra();
+                int qtd = item.getQuantidade();
+
+                ganhoBruto += (valorVenda - (valorCompra / item.getProduto().getQuantidadeTotal())) * qtd;
+            }
+            dados[i][5] = String.format("R$ %.2f", ganhoBruto);
+        }
+
+        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable tabelaVendas = new JTable(modelo);
+        tabelaVendas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabelaVendas.setRowHeight(22);
+        tabelaVendas.setGridColor(Color.BLACK);
+        tabelaVendas.setShowGrid(true);
+        tabelaVendas.setAutoCreateRowSorter(true);
+        tabelaVendas.getColumnModel().getColumn(1).setPreferredWidth(300); // Produtos
+        tabelaVendas.getColumnModel().getColumn(4).setPreferredWidth(100); // Pagamento
+        tabelaVendas.getColumnModel().getColumn(5).setPreferredWidth(100); // Ganho Bruto
+
+        JTableHeader header = tabelaVendas.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        header.setOpaque(true);
+        header.setDefaultRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = new JLabel(value.toString(), JLabel.CENTER);
+                label.setOpaque(true);
+                label.setBackground(Color.BLACK);
+                label.setForeground(Color.WHITE);
+                label.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                return label;
+            }
+        });
+
+        JScrollPane scroll = new JScrollPane(tabelaVendas);
+        scroll.getViewport().setBackground(new Color(156, 156, 156));
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+
+        JPanel painel = new JPanel(new BorderLayout());
+        painel.setBackground(new Color(156, 156, 156));
+        painel.add(scroll, BorderLayout.CENTER);
+
+        if (popUpListar != null) {
+            popUpListar.dispose();
+            popUpListar = null;
+        }
+
+        popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 900, 450);
+        popUpListar.setVisible(true);
     }
 
     public static void estilizarBotaoPequeno(javax.swing.JButton botao) {

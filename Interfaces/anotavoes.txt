@@ -1,7 +1,7 @@
 *vendas coisas a fazer:
 registrar venda atraves de id e nome
-excluir venda por id e nome
-
+excluir venda por id e nome fiz melhor hahaha
+adiocanr nbotao pra fiado na venda tlg
 
 
 *fiado coisas a fazer:
@@ -32,3 +32,5 @@ Ta
 
 
 remover os comentarios mas fodase sendo sincero
+
+
