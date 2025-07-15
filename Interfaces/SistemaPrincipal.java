@@ -140,7 +140,6 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         }
         UIManager.put("Button.select", new Color(20, 20, 20));
         SistemaPrincipal telas = new SistemaPrincipal();
-        Estoque.adicionarProduto("fdases?", 100, 10, 2.50, false, null);
         telas.setExtendedState(JFrame.MAXIMIZED_BOTH);
         telas.setVisible(true);
         telas.montarInterface();

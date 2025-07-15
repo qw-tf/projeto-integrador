@@ -1,8 +1,7 @@
 package Interfaces;
 
+import java.sql.SQLException;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -19,6 +18,7 @@ import Backend.Produto;
 import Backend.ProdutoPerecivel;
 import Backend.ValidacaoException;
 import Backend.Verificador;
+import Banco.ProdutoDAO;
 
 public class MenuEstoq extends JPanel {
 
@@ -103,7 +103,6 @@ public class MenuEstoq extends JPanel {
     }
 
     // Dentro da classe MenuEstoq
-
     private void abrirAdicionarProduto() {
         JPanel panelzao = new JPanel(new GridBagLayout());
         panelzao.setBackground(new Color(156, 156, 156));
@@ -223,9 +222,11 @@ public class MenuEstoq extends JPanel {
 
                     ProdutoPerecivel novoProduto = new ProdutoPerecivel(nome, qtd, valorCompra, valorVenda,
                             dataValidade);
+                    ProdutoDAO.inserirProduto(novoProduto);
                     Estoque.getProdutos().add(novoProduto);
                 } else {
                     Produto novoProduto = new Produto(nome, qtd, valorCompra, valorVenda);
+                    ProdutoDAO.inserirProduto(novoProduto);
                     Estoque.getProdutos().add(novoProduto);
                 }
 
@@ -237,7 +238,9 @@ public class MenuEstoq extends JPanel {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Valores inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (DateTimeParseException ex) {
+            } catch(SQLException ex){
+                JOptionPane.showMessageDialog(this, "Erro no Banco de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }catch (DateTimeParseException ex) {
                 JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.", "ERRO",
                         JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
@@ -277,7 +280,9 @@ public class MenuEstoq extends JPanel {
     }
 
     private void abrirListarProdutos() {
-        String[] colunas = { "ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
+        Estoque.verificarEExcluirZeradosOuVencidos(); // Limpa produtos zerados ou vencidos antes de listar
+
+        String[] colunas = {"ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
         Object[][] dados = montarDadosTabela();
 
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
@@ -288,6 +293,8 @@ public class MenuEstoq extends JPanel {
         };
 
         tabelaProdutos = new JTable(modelo);
+        // restante do método permanece igual...
+
         tabelaProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabelaProdutos.setRowHeight(22);
         tabelaProdutos.setGridColor(new Color(120, 120, 120));
@@ -330,7 +337,7 @@ public class MenuEstoq extends JPanel {
     private void atualizarListaProdutos() {
         if (tabelaProdutos != null) {
             Object[][] dadosAtualizados = montarDadosTabela();
-            String[] colunas = { "ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
+            String[] colunas = {"ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
 
             DefaultTableModel modelo = new DefaultTableModel(dadosAtualizados, colunas);
             tabelaProdutos.setModel(modelo);
@@ -346,17 +353,17 @@ public class MenuEstoq extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel labelId = new JLabel("ID do Produto:");
-        JTextField campoId = new JTextField(15);
+        JLabel labelBusca = new JLabel("Nome ou ID do Produto:");
+        JTextField campoBusca = new JTextField(15);
         JLabel labelNomeProduto = new JLabel("Nome: ");
         labelNomeProduto.setForeground(Color.black);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panelzao.add(labelId, gbc);
+        panelzao.add(labelBusca, gbc);
 
         gbc.gridx = 1;
-        panelzao.add(campoId, gbc);
+        panelzao.add(campoBusca, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -368,10 +375,6 @@ public class MenuEstoq extends JPanel {
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
 
         gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
         panelzao.add(cancelar, gbc);
@@ -384,53 +387,79 @@ public class MenuEstoq extends JPanel {
         confirmar.setPreferredSize(botaoTamanho);
         cancelar.setPreferredSize(botaoTamanho);
 
-        JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao, 450, 200);
+        JDialog popUpExcluir = framePai.criarPopUp("EXCLUIR PRODUTO", panelzao, 500, 220);
 
-        Runnable atualizarNomeProduto = () -> {
-            String idStr = campoId.getText().trim();
-            if (idStr.isEmpty()) {
-                labelNomeProduto.setText("Nome: ");
+        final Produto[] produtoSelecionado = new Produto[1];
+
+        // Reutilizável: lógica de buscar e selecionar produto
+        Runnable buscarProduto = () -> {
+            String entrada = campoBusca.getText().trim().toLowerCase();
+            if (entrada.isEmpty()) {
                 return;
             }
+
             try {
-                int id = Integer.parseInt(idStr);
-                Produto produto = Estoque.buscarProduto(id);
-                if (produto != null) {
-                    labelNomeProduto.setText("Nome: " + produto.getNome());
+                int id = Integer.parseInt(entrada);
+                Produto p = Estoque.buscarProduto(id);
+                if (p != null) {
+                    produtoSelecionado[0] = p;
+                    labelNomeProduto.setText("Nome: " + p.getNome() + " (ID: " + p.getCodigo() + ")");
                 } else {
-                    labelNomeProduto.setText("Produto não encontrado");
+                    JOptionPane.showMessageDialog(popUpExcluir, "Produto com ID não encontrado.", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (NumberFormatException ex) {
-                labelNomeProduto.setText("ID inválido");
+            } catch (NumberFormatException ignored) {
+                List<Produto> correspondentes = Estoque.getProdutos().stream()
+                        .filter(p -> p.getNome().toLowerCase().contains(entrada))
+                        .toList();
+
+                if (correspondentes.isEmpty()) {
+                    JOptionPane.showMessageDialog(popUpExcluir, "Nenhum produto encontrado com esse nome.", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                } else if (correspondentes.size() == 1) {
+                    Produto p = correspondentes.get(0);
+                    produtoSelecionado[0] = p;
+                    labelNomeProduto.setText("Nome: " + p.getNome() + " (ID: " + p.getCodigo() + ")");
+                } else {
+                    String[] opcoes = correspondentes.stream()
+                            .map(p -> p.getNome() + " (ID: " + p.getCodigo() + ")")
+                            .toArray(String[]::new);
+
+                    String escolha = (String) JOptionPane.showInputDialog(popUpExcluir,
+                            "Vários produtos encontrados, escolha um:", "Selecionar Produto",
+                            JOptionPane.PLAIN_MESSAGE, null, opcoes, opcoes[0]);
+
+                    if (escolha != null) {
+                        int idEscolhido = Integer.parseInt(escolha.replaceAll(".*ID: (\\d+).*", "$1"));
+                        Produto escolhido = Estoque.buscarProduto(idEscolhido);
+                        if (escolhido != null) {
+                            produtoSelecionado[0] = escolhido;
+                            labelNomeProduto
+                                    .setText("Nome: " + escolhido.getNome() + " (ID: " + escolhido.getCodigo() + ")");
+                        }
+                    }
+                }
             }
         };
 
-        campoId.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                atualizarNomeProduto.run();
-            }
-        });
-
-        campoId.addActionListener(e -> atualizarNomeProduto.run());
+        campoBusca.addActionListener(e -> buscarProduto.run());
 
         confirmar.addActionListener(e -> {
-            String idStr = campoId.getText().trim();
-            if (idStr.isEmpty()) {
-                JOptionPane.showMessageDialog(popUpExcluir, "Informe o ID do produto!", "ERRO",
+            buscarProduto.run(); // Busca primeiro
+            Produto produto = produtoSelecionado[0];
+            if (produto == null) {
+                JOptionPane.showMessageDialog(popUpExcluir, "Nenhum produto selecionado.", "Erro",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            try {
-                int id = Integer.parseInt(idStr);
-                Produto produto = Estoque.buscarProduto(id);
-                if (produto == null) {
-                    JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
 
-                boolean excluiu = Estoque.excluirProduto(id);
+            int confirm = JOptionPane.showConfirmDialog(popUpExcluir,
+                    "Deseja realmente excluir o produto:\n"
+                    + produto.getNome() + " (ID: " + produto.getCodigo() + ")?",
+                    "Confirmação", JOptionPane.YES_NO_OPTION);
+            try{
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean excluiu = Estoque.excluirProduto(produto.getCodigo());
                 if (excluiu) {
                     JOptionPane.showMessageDialog(popUpExcluir,
                             "Produto removido com sucesso!\nNome: " + produto.getNome(),
@@ -438,19 +467,16 @@ public class MenuEstoq extends JPanel {
                     popUpExcluir.dispose();
                     atualizarListaProdutos();
                 } else {
-                    JOptionPane.showMessageDialog(popUpExcluir, "Produto não encontrado.", "ERRO",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(popUpExcluir,
+                            "Erro ao excluir o produto.", "ERRO", JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (ValidacaoException ex) {
-                JOptionPane.showMessageDialog(popUpExcluir, ex.getMessage(), "Erro de Validação",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(popUpExcluir, "ID inválido!", "ERRO", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
+        } 
         });
 
         cancelar.addActionListener(e -> popUpExcluir.dispose());
-
         popUpExcluir.setVisible(true);
     }
 

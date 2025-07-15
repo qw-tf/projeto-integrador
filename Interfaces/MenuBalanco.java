@@ -165,7 +165,7 @@ public class MenuBalanco extends JPanel {
         String[] colunas = { "Data", "Lucro", "Gasto" };
         String resumo = String.format("""
                 Período: %s até %s
-                TOTAL LUCRO DOS 7 DIAS: R$ %.2f
+                TOTAL LUCRO DOS ÚLTIMOS 7 DIAS: R$ %.2f
                 """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 (totalLucro));

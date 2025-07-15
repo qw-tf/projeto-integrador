@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:15
+    container_name: meu_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 0109
+      POSTGRES_DB: comercio
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./BancoSQL/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: ["postgres", "-c", "listen_addresses=*", "-c", "password_encryption=md5"]
