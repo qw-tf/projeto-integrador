@@ -13,6 +13,11 @@ public class Produto {
     private static List<Integer> codigosDisponiveis = new LinkedList<>();
 
     public Produto(String nome, int quantidade, double valorCompra, double valorVenda) {
+        Verificador.verificarNome(nome);
+        Verificador.verificarQuantidade(quantidade);
+        Verificador.verificarPreco(valorCompra);
+        Verificador.verificarPreco(valorVenda);
+
         this.nome = nome;
         this.quantidade = quantidade;
         this.quantidadeTotal = quantidade;
@@ -47,44 +52,48 @@ public class Produto {
     }
 
     public void setCodigo(int codigo) {
+        Verificador.verificarCodigo(codigo);
         this.codigo = codigo;
     }
 
     public void setNome(String nome) {
+        Verificador.verificarNome(nome);
         this.nome = nome;
     }
 
     public void setQuantidade(int quantidade) {
+        Verificador.verificarQuantidade(quantidade);
         this.quantidade = quantidade;
     }
 
     public void setValorCompra(double valorCompra) {
+        Verificador.verificarPreco(valorCompra);
         this.valorCompra = valorCompra;
     }
 
     public void setValorVenda(double valorVenda) {
+        Verificador.verificarPreco(valorVenda);
         this.valorVenda = valorVenda;
-    }
-
-    public static int getProximoCodigo() {
-        return proximoCodigo;
-    }
-
-    public static void setProximoCodigo(int codigo) {
-        proximoCodigo = codigo;
     }
 
     public static void liberarCodigo(int codigo) {
         codigosDisponiveis.add(codigo);
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
+    public static void setProximoCodigo(int codigo) {
+        proximoCodigo = codigo;
+    }
+
+    public static int getProximoCodigo() {
+        return proximoCodigo;
     }
 
     public int getQuantidadeTotal() {
         return quantidadeTotal;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
+    }
 }

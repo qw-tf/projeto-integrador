@@ -8,6 +8,7 @@ public class ProdutoPerecivel extends Produto {
     public ProdutoPerecivel(String nome, int quantidade, double valorCompra, double valorVenda,
             LocalDate dataDeValidade) {
         super(nome, quantidade, valorCompra, valorVenda);
+        Verificador.verificarDataValidade(dataDeValidade);
         this.dataDeValidade = dataDeValidade;
     }
 
@@ -16,6 +17,7 @@ public class ProdutoPerecivel extends Produto {
     }
 
     public void setDataDeValidade(LocalDate dataDeValidade) {
+        Verificador.verificarDataValidade(dataDeValidade);
         this.dataDeValidade = dataDeValidade;
     }
 
@@ -25,5 +27,4 @@ public class ProdutoPerecivel extends Produto {
                 getNome(), getCodigo(), getQuantidade(), getValorVenda(),
                 dataDeValidade != null ? dataDeValidade.toString() : "sem validade");
     }
-
 }

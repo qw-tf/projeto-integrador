@@ -14,40 +14,35 @@ public class Estoque {
 
     public static void adicionarProduto(String nome, int quantidade, double valorCompra, double valorVenda,
             boolean perecivel, LocalDate validade) throws ValidacaoException {
-        if (nome == null || nome.isEmpty()) {
-            throw new ValidacaoException("Nome não pode ser vazio.");
-        }
-        if (quantidade < 0) {
-            throw new ValidacaoException("Quantidade não pode ser negativa.");
-        }
-        if (valorCompra < 0) {
-            throw new ValidacaoException("Valor de compra não pode ser negativo.");
-        }
-        if (valorVenda < 0) {
-            throw new ValidacaoException("Valor de venda não pode ser negativo.");
-        }
+
+        Verificador.verificarNome(nome);
+        Verificador.verificarQuantidade(quantidade);
+        Verificador.verificarPreco(valorCompra);
+        Verificador.verificarPreco(valorVenda);
 
         Produto novoProduto;
         if (perecivel) {
             if (validade == null) {
                 throw new ValidacaoException("Data de validade obrigatória para produto perecível.");
             }
+            Verificador.verificarDataValidade(validade);
             novoProduto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade);
         } else {
             novoProduto = new Produto(nome, quantidade, valorCompra, valorVenda);
         }
+
         produtos.add(novoProduto);
     }
 
     public static boolean removerProdutoPorId(int codigo, int quantidade) throws ValidacaoException {
         Produto produto = buscarProduto(codigo);
         if (produto != null) {
-            if (quantidade <= 0) {
-                throw new ValidacaoException("Quantidade de remoção deve ser maior que zero.");
-            }
+            Verificador.verificarQuantidade(quantidade);
+
             if (produto.getQuantidade() < quantidade) {
                 throw new ValidacaoException("Quantidade em estoque insuficiente!");
             }
+
             produto.setQuantidade(produto.getQuantidade() - quantidade);
 
             if (produto.getQuantidade() == 0) {
@@ -60,7 +55,7 @@ public class Estoque {
         return false;
     }
 
-    public static boolean excluirProduto(int codigo) throws SQLException{
+    public static boolean excluirProduto(int codigo) throws SQLException {
         Produto produto = buscarProduto(codigo);
         if (produto != null) {
             produtos.remove(produto);
@@ -84,7 +79,6 @@ public class Estoque {
         return produtos;
     }
 
-    // ⚓ NOVO MÉTODO: VERIFICADOR DE PRODUTO ZERADO ⚓
     public static void verificarEExcluirZerados() {
         Iterator<Produto> iterator = produtos.iterator();
         while (iterator.hasNext()) {
@@ -112,5 +106,4 @@ public class Estoque {
             }
         }
     }
-
 }
