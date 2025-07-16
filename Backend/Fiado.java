@@ -82,10 +82,10 @@ public class Fiado {
     // Métodos de lógica de pagamento
     public void registrarPagamento(double valorPago) {
         if (valorPago <= 0) {
-            throw new IllegalArgumentException("NÃO ME VEM COM TROCO DE PIRATA, VALOR TEM QUE SER POSITIVO!");
+            throw new IllegalArgumentException("Valor tem que ser positivo!");
         }
         if (quitado) {
-            throw new IllegalStateException("JÁ TÁ QUITADO, MARUJO. PÁRA DE MEXER NESSE OURO!");
+            throw new IllegalStateException("Venda já quitada!");
         }
 
         valorRestante -= valorPago;

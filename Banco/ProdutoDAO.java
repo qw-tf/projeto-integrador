@@ -33,40 +33,37 @@ public class ProdutoDAO {
         }
     }
 
-    public static void atualizar(Produto produto) throws SQLException {
-        String sql = "UPDATE produtos SET nome = ?, quantidade = ?, valorCompra = ?, valorVenda = ? WHERE codigo = ?";
+    public static void atualizar(int codigo, int novaQuantidade) throws SQLException {
+        String sql = "UPDATE produtos SET quantidade = ? WHERE codigo = ?";
+
         try (Connection conn = ConexaoPostgres.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, produto.getNome());
-            stmt.setInt(2, produto.getQuantidade());
-            stmt.setDouble(3, produto.getValorCompra());
-            stmt.setDouble(4, produto.getValorVenda());
-            stmt.setInt(5, produto.getCodigo());
+            stmt.setInt(1, novaQuantidade); // nova quantidade kawaii desu
+            stmt.setInt(2, codigo); // código do produto-chan
 
-            stmt.executeUpdate();
+            int linhasAfetadas = stmt.executeUpdate(); // POW! Atualização no bancooo! 💥
+
+            if (linhasAfetadas == 0) {
+                System.out.println("Nyaa~ Nenhum produto com esse código foi encontrado, gomenasai~ (T_T)");
+            } else {
+                System.out.println("Yattaaa! Produto atualizado com sucesso, senpai! ✨ヽ(＾Д＾)ﾉ");
+            }
         }
     }
 
     public static void deletar(int codigo) throws SQLException {
-        String selectSql = "SELECT nome FROM produtos WHERE codigo = ?";
         String deleteSql = "DELETE FROM produtos WHERE codigo = ?";
 
         try (Connection conn = ConexaoPostgres.getConnection();
-                PreparedStatement selectStmt = conn.prepareStatement(selectSql);
                 PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
 
-            selectStmt.setInt(1, codigo);
-            ResultSet rs = selectStmt.executeQuery();
+            deleteStmt.setInt(1, codigo);
+            int linhasAfetadas = deleteStmt.executeUpdate();
 
-            if (rs.next()) {
-                String nome = rs.getString("nome");
-                System.out.println("Deletando produto: " + nome);
-
-                deleteStmt.setInt(1, codigo);
-                deleteStmt.executeUpdate();
-
-                System.out.println("Produto deletado com sucesso.");
+            if (linhasAfetadas > 0) {
+                Produto.liberarCodigo(codigo); // <<< ESSENCIAL!!!
+                System.out.println("Produto com código " + codigo + " deletado com sucesso.");
             } else {
                 System.out.println("Produto com código " + codigo + " não encontrado.");
             }
@@ -92,4 +89,38 @@ public class ProdutoDAO {
         }
         return produtos;
     }
+
+    public static Produto buscarPorCodigo(int codigo) throws SQLException {
+        String sql = "SELECT * FROM produtos WHERE codigo = ?";
+
+        try (Connection conn = ConexaoPostgres.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, codigo);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String nome = rs.getString("nome");
+                int quantidade = rs.getInt("quantidade");
+                double valorCompra = rs.getDouble("valorCompra");
+                double valorVenda = rs.getDouble("valorVenda");
+
+                Produto produto;
+                Date dataValidade = rs.getDate("dataDeValidade");
+
+                if (dataValidade != null) {
+                    produto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda,
+                            dataValidade.toLocalDate());
+                } else {
+                    produto = new Produto(nome, quantidade, valorCompra, valorVenda);
+                }
+
+                produto.setCodigo(codigo);
+                return produto;
+            }
+
+            return null;
+        }
+    }
+
 }

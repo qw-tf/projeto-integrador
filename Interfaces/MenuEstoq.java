@@ -464,6 +464,7 @@ public class MenuEstoq extends JPanel {
                     JOptionPane.showMessageDialog(popUpExcluir,
                             "Produto removido com sucesso!\nNome: " + produto.getNome(),
                             "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
+                    ProdutoDAO.deletar(produto.getCodigo());
                     popUpExcluir.dispose();
                     atualizarListaProdutos();
                 } else {

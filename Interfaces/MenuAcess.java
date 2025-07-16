@@ -1,11 +1,12 @@
 package Interfaces;
 
-import javax.swing.*;
+import Backend.GerenciadorSenha;
+import Backend.Notificador;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import Backend.Notificador;
+import javax.swing.*;
 
 public class MenuAcess extends JPanel {
 
@@ -13,6 +14,7 @@ public class MenuAcess extends JPanel {
     private JDialog popUpNotificacoes = null;
     private JPanel painelNotificacoes;
     private JScrollPane scrollNotificacoes;
+    private JButton jBEngrenagem;
 
     public MenuAcess(SistemaPrincipal frame) {
         this.framePai = frame;
@@ -30,6 +32,7 @@ public class MenuAcess extends JPanel {
         SistemaPrincipal.estilizarBotaoMenor(jBGeral);
         SistemaPrincipal.estilizarBotaoMaior(jBVoltar);
         SistemaPrincipal.estilizarBotaoMaior(jBNotif);
+        SistemaPrincipal.estilizarBotaoMaior(jBEngrenagem);
 
         iniciarAtualizacaoAutomatica();
     }
@@ -49,6 +52,27 @@ public class MenuAcess extends JPanel {
         jBGeral = new JButton();
         jBVoltar = new JButton("VOLTAR");
         jBNotif = new JButton("NOTIFICAÇÕES");
+        jBEngrenagem = new JButton("Opções"); // ⚙ = engrenagem unicode
+        jBEngrenagem.setPreferredSize(new Dimension(100, 60));
+        jBEngrenagem.setFont(new Font("Segoe UI", Font.BOLD, 20));
+
+        jBEngrenagem.addActionListener(e -> {
+            JPopupMenu menu = new JPopupMenu();
+
+            JMenuItem opcaoSenha = new JMenuItem("Mudar senha");
+            JMenuItem opcaoDica = new JMenuItem("Definir dica");
+            JMenuItem opcaoToken = new JMenuItem("Definir token");
+
+            opcaoSenha.addActionListener(ev -> abrirDialogMudarSenha());
+            opcaoDica.addActionListener(ev -> abrirDialogDica());
+            opcaoToken.addActionListener(ev -> abrirDialogToken());
+
+            menu.add(opcaoSenha);
+            menu.add(opcaoDica);
+            menu.add(opcaoToken);
+
+            menu.show(jBEngrenagem, 0, jBEngrenagem.getHeight());
+        });
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(20, 40, 20, 40);
@@ -113,10 +137,73 @@ public class MenuAcess extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.SOUTHEAST;
-        gbc.insets = new Insets(50, 20, 10, 40);
+        gbc.insets = new Insets(50, 20, 10, 80);
         add(jBNotif, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.anchor = GridBagConstraints.SOUTHEAST;
+        gbc.insets = new Insets(50, 20, 10, 10);
+        add(jBEngrenagem, gbc);
+
         jBNotif.addActionListener(e -> abrirPopUpNotificacoes());
+    }
+
+    private void abrirDialogMudarSenha() {
+        JPanel painel = new JPanel(new GridLayout(3, 2, 10, 10));
+        painel.setBackground(new Color(156, 156, 156));
+        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPasswordField atual = new JPasswordField();
+        JPasswordField nova = new JPasswordField();
+        JPasswordField confirmar = new JPasswordField();
+
+        painel.add(new JLabel("Senha atual:"));
+        painel.add(atual);
+        painel.add(new JLabel("Nova senha:"));
+        painel.add(nova);
+        painel.add(new JLabel("Confirmar nova:"));
+        painel.add(confirmar);
+
+        int res = JOptionPane.showConfirmDialog(framePai, painel, "Alterar Senha", JOptionPane.OK_CANCEL_OPTION);
+
+        if (res == JOptionPane.OK_OPTION) {
+            String senhaAtual = new String(atual.getPassword());
+            String novaSenha = new String(nova.getPassword());
+            String confirmarSenha = new String(confirmar.getPassword());
+
+            String senhaSalva = GerenciadorSenha.carregarSenha();
+            if (!senhaAtual.equals(senhaSalva)) {
+                JOptionPane.showMessageDialog(framePai, "Senha atual incorreta.");
+                return;
+            }
+
+            if (!novaSenha.equals(confirmarSenha)) {
+                JOptionPane.showMessageDialog(framePai, "Nova senha não coincide.");
+                return;
+            }
+
+            GerenciadorSenha.salvarSenha(novaSenha);
+            JOptionPane.showMessageDialog(framePai, "Senha atualizada!");
+        }
+    }
+
+    private void abrirDialogDica() {
+        String dicaAtual = GerenciadorSenha.carregarDica();
+        String novaDica = JOptionPane.showInputDialog(framePai, "Digite uma dica de recuperação:", dicaAtual);
+        if (novaDica != null && !novaDica.trim().isEmpty()) {
+            GerenciadorSenha.salvarDica(novaDica.trim());
+            JOptionPane.showMessageDialog(framePai, "Dica salva com sucesso.");
+        }
+    }
+
+    private void abrirDialogToken() {
+        String tokenAtual = GerenciadorSenha.carregarToken();
+        String novoToken = JOptionPane.showInputDialog(framePai, "Digite um token de segurança:", tokenAtual);
+        if (novoToken != null && !novoToken.trim().isEmpty()) {
+            GerenciadorSenha.salvarToken(novoToken.trim());
+            JOptionPane.showMessageDialog(framePai, "Token salvo com sucesso.");
+        }
     }
 
     private void abrirPopUpNotificacoes() {
@@ -162,7 +249,7 @@ public class MenuAcess extends JPanel {
         List<String> avisos = Notificador.gerarNotificacoes();
 
         if (avisos.isEmpty()) {
-            JLabel label = new JLabel("Sem notificações no momento.");
+            JLabel label = new JLabel("Sem notificacoes no momento.");
             label.setFont(new Font("Segoe UI", Font.ITALIC, 16));
             label.setForeground(Color.WHITE);
             label.setBackground(Color.BLACK);

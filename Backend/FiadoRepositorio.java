@@ -8,6 +8,18 @@ public class FiadoRepositorio {
 
     private static final List<Fiado> fiados = new ArrayList<>();
 
+    public static void carregarFiadosDoBanco() {
+        try {
+            List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados();
+            fiados.clear();
+            fiados.addAll(fiadosDoBanco);
+            System.out.println("Fiados carregados com sucesso do banco!");
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar fiados do banco: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }    
+
     public static void adicionarFiado(Fiado fiado) {
         fiados.add(fiado);
     }

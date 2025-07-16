@@ -1,11 +1,20 @@
 package Backend;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import Banco.ConexaoPostgres;
 import Banco.ProdutoDAO;
 
 public class Estoque {
@@ -34,16 +43,16 @@ public class Estoque {
         produtos.add(novoProduto);
     }
 
-    public static boolean removerProdutoPorId(int codigo, int quantidade) throws ValidacaoException {
+    public static boolean removerProdutoPorId(int codigo, int quantidade) throws ValidacaoException, SQLException {
         Produto produto = buscarProduto(codigo);
         if (produto != null) {
             Verificador.verificarQuantidade(quantidade);
-
             if (produto.getQuantidade() < quantidade) {
                 throw new ValidacaoException("Quantidade em estoque insuficiente!");
             }
 
             produto.setQuantidade(produto.getQuantidade() - quantidade);
+            ProdutoDAO.atualizar(codigo, produto.getQuantidade());
 
             if (produto.getQuantidade() == 0) {
                 produtos.remove(produto);
@@ -75,10 +84,6 @@ public class Estoque {
         return null;
     }
 
-    public static List<Produto> getProdutos() {
-        return produtos;
-    }
-
     public static void verificarEExcluirZerados() {
         Iterator<Produto> iterator = produtos.iterator();
         while (iterator.hasNext()) {
@@ -106,4 +111,72 @@ public class Estoque {
             }
         }
     }
+
+    public static List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public static void setProdutos(List<Produto> lista) {
+        produtos = lista;
+    }
+
+    public static void carregarDoBanco() throws SQLException {
+        List<Produto> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM produtos";
+        try (Connection conn = ConexaoPostgres.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                int quantidade = rs.getInt("quantidade");
+                double valorCompra = rs.getDouble("valorCompra");
+                double valorVenda = rs.getDouble("valorVenda");
+
+                Produto p;
+
+                java.sql.Date validadeSQL = rs.getDate("dataDeValidade");
+
+                if (validadeSQL != null) {
+                    LocalDate validade = validadeSQL.toLocalDate();
+                    p = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade);
+                } else {
+                    p = new Produto(nome, quantidade, valorCompra, valorVenda);
+                }
+
+                int codigo = rs.getInt("codigo");
+                p.setCodigo(codigo);
+
+                lista.add(p);
+            }
+        }
+
+        lista.sort(Comparator.comparingInt(Produto::getCodigo));
+        produtos = lista;
+
+        // Acha todos os códigos usados
+        Set<Integer> codigosUsados = lista.stream()
+                .map(Produto::getCodigo)
+                .collect(Collectors.toSet());
+
+        // Acha maior código
+        int maiorCodigo = codigosUsados.stream()
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
+
+        // Acha buracos
+        List<Integer> codigosDisponiveis = new LinkedList<>();
+        for (int i = 1; i < maiorCodigo; i++) {
+            if (!codigosUsados.contains(i)) {
+                codigosDisponiveis.add(i);
+            }
+        }
+
+        // Atualiza
+        Produto.setProximoCodigo(maiorCodigo + 1);
+        Produto.setCodigosDisponiveis(codigosDisponiveis);
+    }
+
 }

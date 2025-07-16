@@ -20,6 +20,27 @@ public class Venda {
         this.valorVenda = calcularTotal();
     }
 
+    // Construtor dummy só pro FiadoDAO poder reconstruir um Fiado já existente
+    public Venda(int id) {
+        this.id = id;
+        this.itens = null;
+        this.data = null;
+        this.formaPagamento = null;
+        this.valorVenda = 0.0;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTotal(double total) {
+        this.valorVenda = total;
+    }
+
     private double calcularTotal() {
         return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
     }

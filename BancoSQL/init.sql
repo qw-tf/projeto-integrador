@@ -24,18 +24,18 @@ CREATE TABLE gastos (
 );
 
 CREATE TABLE vendas (
-    id INTEGER PRIMARY KEY,
+    id INT PRIMARY KEY,
     data DATE NOT NULL DEFAULT CURRENT_DATE,
     descricao TEXT NOT NULL,
     quantidade INTEGER NOT NULL,
-    forma_pagamento VARCHAR(50) NOT NULL,
-    valor_total NUMERIC(10, 2) NOT NULL
+    formaPagamento VARCHAR(50) NOT NULL,
+    valorTotal NUMERIC(10, 2) NOT NULL
 );
 
 CREATE TABLE fiados (
-    id INTEGER PRIMARY KEY,
-    id_venda INTEGER NOT NULL REFERENCES vendas(id) ON DELETE CASCADE,
-    nome_cliente VARCHAR(100) NOT NULL,
-    valor_restante NUMERIC(10, 2) NOT NULL,
-    data_criacao DATE NOT NULL
+    id INT PRIMARY KEY,
+    idVenda INT NOT NULL REFERENCES vendas(id) ON DELETE CASCADE,
+    nomeCliente VARCHAR(100) NOT NULL,
+    valorRestante NUMERIC(10, 2) NOT NULL,
+    dataCriacao DATE NOT NULL
 );

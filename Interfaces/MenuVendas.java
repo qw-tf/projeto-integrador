@@ -244,45 +244,57 @@ public class MenuVendas extends JPanel {
         confirmar.addActionListener(e -> {
             try {
                 List<ItemVenda> itensVenda = new ArrayList<>();
-
+        
                 for (JPanel linha : linhasProdutos) {
                     JTextField campoQtd = (JTextField) linha.getClientProperty("campoQtd");
                     Produto produto = (Produto) linha.getClientProperty("produtoSelecionado");
-
+        
                     if (produto == null) {
                         JOptionPane.showMessageDialog(null, "Você deve selecionar um produto!", "Erro",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
-                    int qtdVenda = Integer.parseInt(campoQtd.getText().trim());
-
-                    if (produto.getQuantidade() < qtdVenda) {
-                        JOptionPane.showMessageDialog(null,
-                                "Estoque insuficiente para: " + produto.getNome(), "Erro", JOptionPane.ERROR_MESSAGE);
+        
+                    int qtdVenda;
+                    try {
+                        qtdVenda = Integer.parseInt(campoQtd.getText().trim());
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Quantidade inválida para: " + produto.getNome(),
+                                "Erro", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
+        
+                    if (qtdVenda <= 0) {
+                        JOptionPane.showMessageDialog(null,
+                                "Quantidade deve ser maior que zero para: " + produto.getNome(),
+                                "Erro", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+        
+                    if (produto.getQuantidade() < qtdVenda) {
+                        JOptionPane.showMessageDialog(null,
+                                "Estoque insuficiente para: " + produto.getNome(),
+                                "Erro", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+        
                     itensVenda.add(new ItemVenda(produto, qtdVenda));
                 }
-
+        
                 String formaPagamento = (String) comboPagamento.getSelectedItem();
-
+        
                 RegistroVendas.adicionarVenda(itensVenda, formaPagamento);
-
+        
                 JOptionPane.showMessageDialog(null, "Venda registrada com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
                 SwingUtilities.getWindowAncestor(panelzao).dispose();
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Erro na quantidade", "ERRO", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+        
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         });
-
+        
         cancelar.addActionListener(e -> SwingUtilities.getWindowAncestor(panelzao).dispose());
 
         adicionarLinha.run();

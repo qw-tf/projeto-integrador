@@ -1,33 +1,31 @@
 package Backend;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import Banco.ConexaoPostgres;
+import Banco.VendaDAO;
+
 public class RegistroVendas {
     private static List<Venda> vendas = new ArrayList<>();
 
     // Método modificado: remove o parâmetro idCliente
-    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento) {
-        // Valida estoque
-        for (ItemVenda item : itens) {
-            Produto p = item.getProduto();
-            if (p.getQuantidade() < item.getQuantidade()) {
-                throw new IllegalArgumentException("Estoque insuficiente para o produto: " + p.getNome());
-            }
-        }
+    public static void adicionarVenda(List<ItemVenda> itens, String formaPagamento) throws Exception {
+        Venda venda = new Venda(itens, formaPagamento);
+        vendas.add(venda); // Mantém na memória se quiser
+        VendaDAO.inserirVenda(venda); // Salva no banco AGORA mesmoooo, nyah ✨
 
-        // Desconta do estoque
+        // Atualiza estoque após venda
         for (ItemVenda item : itens) {
-            Produto p = item.getProduto();
-            p.setQuantidade(p.getQuantidade() - item.getQuantidade());
+            item.getProduto().removerQuantidade(item.getQuantidade());
         }
-
-        // Cria e salva a venda SEM ID DO CLIENTE
-        Venda novaVenda = new Venda(itens, formaPagamento);
-        vendas.add(novaVenda);
     }
 
     public static void adicionarVendaDireto(Venda v) {
@@ -93,4 +91,51 @@ public class RegistroVendas {
 
         return resultado;
     }
+
+    public static void adicionarVenda(Venda venda) {
+        vendas.add(venda);
+    }
+
+    public static void carregarVendasDoBanco() {
+        try {
+            List<Venda> vendasDoBanco = new ArrayList<>();
+
+            String sql = "SELECT * FROM vendas";
+            try (Connection conn = ConexaoPostgres.getConnection();
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    ResultSet rs = stmt.executeQuery()) {
+
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    LocalDate data = rs.getDate("data").toLocalDate();
+                    String descricao = rs.getString("descricao");
+                    int quantidade = rs.getInt("quantidade");
+                    String formaPagamento = rs.getString("formapagamento");
+                    double total = rs.getDouble("valortotal");
+
+                    // Como você não tem itens reais, passa uma lista vazia
+                    Venda venda = new Venda(new ArrayList<>(), formaPagamento) {
+                        {
+                            setId(id);
+                            setData(data);
+                            setTotal(total);
+                            // Se quiser, sobrescreve getResumoProdutos() para usar a descrição
+                        }
+                    };
+
+                    vendasDoBanco.add(venda);
+                }
+            }
+
+            vendas.clear();
+            vendas.addAll(vendasDoBanco);
+
+            System.out.println("Vendas carregadas SEM itemzinhos, tudo com descrição pronta ✨🔥");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Erro ao carregar vendas do banco, gomen gomen gomen 😭");
+        }
+    }
+
 }

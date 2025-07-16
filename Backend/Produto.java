@@ -31,6 +31,16 @@ public class Produto {
         }
     }
 
+    public void removerQuantidade(int qt) {
+        if (qt <= 0) {
+            throw new IllegalArgumentException("Quantidade a remover deve ser positiva! >_<");
+        }
+        if (this.quantidade < qt) {
+            throw new IllegalArgumentException("Quantidade insuficiente no estoque! 😭");
+        }
+        this.quantidade -= qt;
+    }
+
     public int getQuantidade() {
         return quantidade;
     }
@@ -62,7 +72,6 @@ public class Produto {
     }
 
     public void setQuantidade(int quantidade) {
-        Verificador.verificarQuantidade(quantidade);
         this.quantidade = quantidade;
     }
 
@@ -96,4 +105,9 @@ public class Produto {
     public String toString() {
         return String.format("%s (ID: %d | Qtd: %d | R$ %.2f)", nome, codigo, quantidade, valorVenda);
     }
+
+    public static void setCodigosDisponiveis(List<Integer> codigos) {
+        codigosDisponiveis = codigos;
+    }
+
 }
