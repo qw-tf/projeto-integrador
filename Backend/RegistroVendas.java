@@ -130,11 +130,11 @@ public class RegistroVendas {
             vendas.clear();
             vendas.addAll(vendasDoBanco);
 
-            System.out.println("Vendas carregadas SEM itemzinhos, tudo com descrição pronta ✨🔥");
+            System.out.println("Vendas carregadas!");
 
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Erro ao carregar vendas do banco, gomen gomen gomen 😭");
+            System.err.println("Erro ao carregar vendas do banco!");
         }
     }
 

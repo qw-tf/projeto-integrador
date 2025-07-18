@@ -1,6 +1,14 @@
 @echo off
 chcp 65001 > nul
 
+echo ================================
+echo INICIANDO O POSTGRES NO DOCKER~
+echo ================================
+docker-compose up --build
+
+echo Aguardando o banco iniciar... senpai espera um pouquinho~ zzz...
+timeout /t 5 >nul
+
 echo ======================================
 echo COMPILANDO TODOS OS ARQUIVOS .JAVA...
 echo ======================================
@@ -16,7 +24,7 @@ for /R %%f in (*.java) do (
 
 if errorlevel 1 (
     echo.
-    echo ERRO NA COMPILACAO. Corrija os erros acima.
+    echo ERRO NA COMPILACAO. Corrija os erros acima, onegai~ 😭
     pause
     exit /b
 )
@@ -26,4 +34,5 @@ echo =======================
 echo EXECUTANDO O PROGRAMA...
 echo =======================
 java -cp "Bin;lib\postgresql-42.7.6.jar" Interfaces.SistemaPrincipal
+
 pause

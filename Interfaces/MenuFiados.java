@@ -375,7 +375,7 @@ public class MenuFiados extends JPanel {
                 sb.append(String.format("%d - ID: %d | Cliente: %s | Valor Restante: R$ %.2f\n",
                         i + 1, f.getIdFiado(), f.getNomeCliente(), f.getValorRestante()));
             }
-            sb.append("\nDigite o número do fiado para visualizar detalhes na caixa de texto e habilitar a quitação.");
+            sb.append("\nColoque o ID do fiado para visualizar detalhes na caixa de texto e habilitar a quitação.");
 
             areaResumo.setText(sb.toString());
 

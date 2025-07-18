@@ -52,8 +52,8 @@ public class MenuAcess extends JPanel {
         jBGeral = new JButton();
         jBVoltar = new JButton("VOLTAR");
         jBNotif = new JButton("NOTIFICAÇÕES");
-        jBEngrenagem = new JButton("Opções"); // ⚙ = engrenagem unicode
-        jBEngrenagem.setPreferredSize(new Dimension(100, 60));
+        jBEngrenagem = new JButton("OPÇÕES"); // ⚙ = engrenagem unicode
+        jBEngrenagem.setPreferredSize(new Dimension(99, 38));
         jBEngrenagem.setFont(new Font("Segoe UI", Font.BOLD, 20));
 
         jBEngrenagem.addActionListener(e -> {
@@ -126,25 +126,21 @@ public class MenuAcess extends JPanel {
         add(jBGeral, gbc);
         jBGeral.addActionListener(e -> framePai.trocarTela(new MenuBalanco(framePai)));
 
+        JPanel painelRodape = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
+        painelRodape.setBackground(new Color(156, 156, 156));
+        painelRodape.add(jBVoltar);
+        painelRodape.add(jBNotif);
+        painelRodape.add(jBEngrenagem);
+
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.SOUTHWEST;
-        gbc.insets = new Insets(50, 40, 10, 10);
-        add(jBVoltar, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(50, 5, 10, 10);
+        add(painelRodape, gbc);
+
         jBVoltar.addActionListener(e -> framePai.montarInterface());
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.SOUTHEAST;
-        gbc.insets = new Insets(50, 20, 10, 80);
-        add(jBNotif, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.SOUTHEAST;
-        gbc.insets = new Insets(50, 20, 10, 10);
-        add(jBEngrenagem, gbc);
+        jBNotif.addActionListener(e -> abrirPopUpNotificacoes());
 
         jBNotif.addActionListener(e -> abrirPopUpNotificacoes());
     }

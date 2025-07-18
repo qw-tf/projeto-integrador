@@ -181,32 +181,53 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     }
 
     private void abrirRecuperacaoSenha() {
-        JPanel painel = new JPanel(new GridLayout(4, 1, 10, 10));
+        // Painel com 2 linhas: dica e token
+        JPanel painel = new JPanel(new GridLayout(2, 1, 10, 10));
         painel.setBackground(new Color(156, 156, 156));
 
-        JTextField campoDica = new JTextField();
+        // 1) JLabel com a dica
+        JLabel campoDica = new JLabel("Dica: " + GerenciadorSenha.carregarDica());
         campoDica.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        campoDica.setBorder(BorderFactory.createTitledBorder("Digite a dica de recuperação"));
+        painel.add(campoDica);
 
+        // 2) JTextField para digitar o token
         JTextField campoToken = new JTextField();
         campoToken.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         campoToken.setBorder(BorderFactory.createTitledBorder("Digite o token"));
-
-        painel.add(campoDica);
         painel.add(campoToken);
 
-        int resultado = JOptionPane.showConfirmDialog(this, painel, "Recuperar Senha", JOptionPane.OK_CANCEL_OPTION);
+        // exibe o confirm dialog usando o panel que já contém o label e o text field
+        int resultado = JOptionPane.showConfirmDialog(
+                this,
+                painel,
+                "Recuperar Senha",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
 
         if (resultado == JOptionPane.OK_OPTION) {
-            String dica = campoDica.getText().trim();
             String token = campoToken.getText().trim();
+            String dica = GerenciadorSenha.carregarDica();
 
-            if (GerenciadorSenha.validarRecuperacao(dica, token)) {
+            // valida corretamente: dica + token
+            if (!token.isEmpty() &&
+                    GerenciadorSenha.validarRecuperacao(dica, token)) {
+
                 String senhaAtual = GerenciadorSenha.carregarSenha();
-                JOptionPane.showMessageDialog(this, "Sua senha atual é: " + senhaAtual, "Recuperação bem-sucedida",
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Sua senha atual é: " + senhaAtual,
+                        "Recuperação bem-sucedida",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, "Dica ou token incorretos!", "Erro", JOptionPane.ERROR_MESSAGE);
+                // não mostra nada se vazio OU incorreto?
+                // Mas aqui mostra erro apenas se não vazio
+                if (!token.isEmpty()) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Token incorreto!",
+                            "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
@@ -220,7 +241,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
                 }
             }
             FiadoRepositorio.carregarFiadosDoBanco();
-            // RegistroVendas.carregarVendasDoBanco();
+            RegistroVendas.carregarVendasDoBanco();
             Estoque.carregarDoBanco();
         } catch (SQLException ex) {
             System.out.println("Erro ao carregar do banco.");

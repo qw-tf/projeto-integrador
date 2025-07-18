@@ -238,9 +238,9 @@ public class MenuEstoq extends JPanel {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Valores inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch(SQLException ex){
+            } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Erro no Banco de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
-            }catch (DateTimeParseException ex) {
+            } catch (DateTimeParseException ex) {
                 JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.", "ERRO",
                         JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
@@ -282,7 +282,7 @@ public class MenuEstoq extends JPanel {
     private void abrirListarProdutos() {
         Estoque.verificarEExcluirZeradosOuVencidos(); // Limpa produtos zerados ou vencidos antes de listar
 
-        String[] colunas = {"ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
+        String[] colunas = { "ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
         Object[][] dados = montarDadosTabela();
 
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
@@ -337,7 +337,7 @@ public class MenuEstoq extends JPanel {
     private void atualizarListaProdutos() {
         if (tabelaProdutos != null) {
             Object[][] dadosAtualizados = montarDadosTabela();
-            String[] colunas = {"ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE"};
+            String[] colunas = { "ID", "NOME", "PREÇO", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
 
             DefaultTableModel modelo = new DefaultTableModel(dadosAtualizados, colunas);
             tabelaProdutos.setModel(modelo);
@@ -455,26 +455,27 @@ public class MenuEstoq extends JPanel {
 
             int confirm = JOptionPane.showConfirmDialog(popUpExcluir,
                     "Deseja realmente excluir o produto:\n"
-                    + produto.getNome() + " (ID: " + produto.getCodigo() + ")?",
+                            + produto.getNome() + " (ID: " + produto.getCodigo() + ")?",
                     "Confirmação", JOptionPane.YES_NO_OPTION);
-            try{
-            if (confirm == JOptionPane.YES_OPTION) {
-                boolean excluiu = Estoque.excluirProduto(produto.getCodigo());
-                if (excluiu) {
-                    JOptionPane.showMessageDialog(popUpExcluir,
-                            "Produto removido com sucesso!\nNome: " + produto.getNome(),
-                            "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
-                    ProdutoDAO.deletar(produto.getCodigo());
-                    popUpExcluir.dispose();
-                    atualizarListaProdutos();
-                } else {
-                    JOptionPane.showMessageDialog(popUpExcluir,
-                            "Erro ao excluir o produto.", "ERRO", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (confirm == JOptionPane.YES_OPTION) {
+                    boolean excluiu = Estoque.excluirProduto(produto.getCodigo());
+                    if (excluiu) {
+                        JOptionPane.showMessageDialog(popUpExcluir,
+                                "Produto removido com sucesso!\nNome: " + produto.getNome(),
+                                "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
+                        ProdutoDAO.deletar(produto.getCodigo());
+                        popUpExcluir.dispose();
+                        atualizarListaProdutos();
+                    } else {
+                        JOptionPane.showMessageDialog(popUpExcluir,
+                                "Erro ao excluir o produto.", "ERRO", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro no Banco de Dados: " + ex.getMessage(),
+                        JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro no Banco de Dados", JOptionPane.ERROR_MESSAGE);
-        } 
         });
 
         cancelar.addActionListener(e -> popUpExcluir.dispose());

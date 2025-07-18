@@ -34,6 +34,7 @@ public class ProdutoDAO {
     }
 
     public static void atualizar(int codigo, int novaQuantidade) throws SQLException {
+        System.out.println("Código recebido: " + codigo + " | Nova quantidade: " + novaQuantidade);
         String sql = "UPDATE produtos SET quantidade = ? WHERE codigo = ?";
 
         try (Connection conn = ConexaoPostgres.getConnection();
@@ -42,17 +43,18 @@ public class ProdutoDAO {
             stmt.setInt(1, novaQuantidade); // nova quantidade kawaii desu
             stmt.setInt(2, codigo); // código do produto-chan
 
-            int linhasAfetadas = stmt.executeUpdate(); // POW! Atualização no bancooo! 💥
+            int linhasAfetadas = stmt.executeUpdate();
 
             if (linhasAfetadas == 0) {
-                System.out.println("Nyaa~ Nenhum produto com esse código foi encontrado, gomenasai~ (T_T)");
+                System.out.println("Nenhum produto com esse código foi encontrado!");
             } else {
-                System.out.println("Yattaaa! Produto atualizado com sucesso, senpai! ✨ヽ(＾Д＾)ﾉ");
+                System.out.println("Produto atualizado com sucesso!");
             }
         }
     }
 
     public static void deletar(int codigo) throws SQLException {
+        System.out.println("Código recebido: " + codigo);
         String deleteSql = "DELETE FROM produtos WHERE codigo = ?";
 
         try (Connection conn = ConexaoPostgres.getConnection();
