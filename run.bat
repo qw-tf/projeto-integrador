@@ -4,7 +4,7 @@ chcp 65001 > nul
 echo ================================
 echo INICIANDO O POSTGRES NO DOCKER~
 echo ================================
-docker-compose up --build
+docker-compose up -d
 
 echo Aguardando o banco iniciar... senpai espera um pouquinho~ zzz...
 timeout /t 5 >nul
