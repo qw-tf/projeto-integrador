@@ -7,10 +7,9 @@ import java.util.List;
 public class RepositorioFiados {
 
     private static final List<Fiado> fiados = new ArrayList<>();
-
     public static void carregarFiadosDoBanco() {
         try {
-            List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados();
+            List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados(); // já retorna com dataCriacao e dataQuitado
             fiados.clear();
             fiados.addAll(fiadosDoBanco);
             System.out.println("Fiados carregados com sucesso do banco!");
@@ -18,8 +17,8 @@ public class RepositorioFiados {
             System.err.println("Erro ao carregar fiados do banco: " + e.getMessage());
             e.printStackTrace();
         }
-    }    
-
+    }
+    
     public static void adicionarFiado(Fiado fiado) {
         fiados.add(fiado);
     }

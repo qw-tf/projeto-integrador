@@ -15,6 +15,7 @@ import javax.swing.table.TableCellRenderer;
 
 import Backend.Gasto;
 import Backend.RepositorioGastos;
+import Banco.GastosDAO;
 
 public class MenuGastos extends JPanel {
 
@@ -94,7 +95,7 @@ public class MenuGastos extends JPanel {
         gbc.insets = new Insets(40, 30, 10, 10);
         add(jBVoltar, gbc);
     }
-
+    
     private void abrirAdicionarGasto() {
         JPanel panelzao = new JPanel(new GridBagLayout());
         panelzao.setBackground(new Color(156, 156, 156));
@@ -102,47 +103,24 @@ public class MenuGastos extends JPanel {
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-
+    
         JLabel labelDescricao = new JLabel("Descrição:");
-
-        // Descrição com área expansível
-        JTextArea campoDescricao = new JTextArea(3, 20);
+    
+        // JTextArea normal
+        JTextArea campoDescricao = new JTextArea();
         campoDescricao.setLineWrap(true);
         campoDescricao.setWrapStyleWord(true);
         campoDescricao.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        JScrollPane scrollDescricao = new JScrollPane(campoDescricao);
-        scrollDescricao.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollDescricao.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        int alturaMinima = 60;
-        int alturaMaxima = 6 * campoDescricao.getFontMetrics(campoDescricao.getFont()).getHeight() + 10;
-
-        campoDescricao.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            private void ajustarAltura() {
-                int linhas = campoDescricao.getLineCount();
-                int alturaLinha = campoDescricao.getFontMetrics(campoDescricao.getFont()).getHeight();
-                int alturaDesejada = Math.min(alturaMaxima, Math.max(alturaMinima, linhas * alturaLinha + 10));
-                scrollDescricao.setPreferredSize(new Dimension(250, alturaDesejada));
-                scrollDescricao.revalidate();
-                scrollDescricao.repaint();
-            }
-
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
-                ajustarAltura();
-            }
-
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
-                ajustarAltura();
-            }
-
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
-            }
-        });
-
+    
+        // JScrollPane fixo em 300x100, scrollbar só quando necessário
+        JScrollPane scrollDescricao = new JScrollPane(campoDescricao,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollDescricao.setPreferredSize(new Dimension(300, 100));
+    
         JLabel labelValor = new JLabel("Valor:");
         JTextField campoValor = new JTextField(10);
-
+    
         JLabel labelData = new JLabel("Data (dd/MM/yyyy):");
         JTextField campoData = new JTextField(10);
         JCheckBox checkHoje = new JCheckBox("Usar data de hoje");
@@ -156,65 +134,48 @@ public class MenuGastos extends JPanel {
                 campoData.setText("");
             }
         });
-
+    
         JLabel labelTipo = new JLabel("Tipo de Gasto:");
-        String[] opcoes = { "Pessoal", "Empresarial" };
-        JComboBox<String> comboTipo = new JComboBox<>(opcoes);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panelzao.add(labelDescricao, gbc);
-        gbc.gridx = 1;
-        panelzao.add(scrollDescricao, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panelzao.add(labelValor, gbc);
-        gbc.gridx = 1;
-        panelzao.add(campoValor, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panelzao.add(labelData, gbc);
-        gbc.gridx = 1;
-        panelzao.add(campoData, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        panelzao.add(checkHoje, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panelzao.add(labelTipo, gbc);
-        gbc.gridx = 1;
-        panelzao.add(comboTipo, gbc);
-
+        JComboBox<String> comboTipo = new JComboBox<>(new String[] { "Pessoal", "Empresarial" });
+    
+        // Layout
+        gbc.gridx = 0; gbc.gridy = 0; panelzao.add(labelDescricao, gbc);
+        gbc.gridx = 1; panelzao.add(scrollDescricao, gbc);
+    
+        gbc.gridy = 1; gbc.gridx = 0; panelzao.add(labelValor, gbc);
+        gbc.gridx = 1; panelzao.add(campoValor, gbc);
+    
+        gbc.gridy = 2; gbc.gridx = 0; panelzao.add(labelData, gbc);
+        gbc.gridx = 1; panelzao.add(campoData, gbc);
+    
+        gbc.gridy = 3; gbc.gridx = 1; panelzao.add(checkHoje, gbc);
+    
+        gbc.gridy = 4; gbc.gridx = 0; panelzao.add(labelTipo, gbc);
+        gbc.gridx = 1; panelzao.add(comboTipo, gbc);
+    
         JButton confirmar = new JButton("Confirmar");
-        JButton cancelar = new JButton("Cancelar");
+        JButton cancelar  = new JButton("Cancelar");
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
-
-        gbc.gridy = 5;
-        gbc.gridwidth = 1;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
+    
+        gbc.gridy = 5; gbc.gridx = 0; gbc.anchor = GridBagConstraints.WEST;
         panelzao.add(cancelar, gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 1; gbc.anchor = GridBagConstraints.EAST;
         panelzao.add(confirmar, gbc);
-
+    
         Dimension botaoTamanho = new Dimension(120, 30);
         confirmar.setPreferredSize(botaoTamanho);
-        cancelar.setPreferredSize(botaoTamanho);
-
-        JDialog popUp = framePai.criarPopUp("ADICIONAR GASTO", panelzao, 480, 320);
-
+        cancelar .setPreferredSize(botaoTamanho);
+    
+        // Cria e fixa o diálogo
+        JDialog popUp = framePai.criarPopUp("ADICIONAR GASTO", panelzao, 480, 350);
+        popUp.setSize(480, 350);
+        popUp.setMinimumSize(new Dimension(480, 350));
+        popUp.setResizable(true);
+        popUp.setLocationRelativeTo(framePai);
+    
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+    
         confirmar.addActionListener(e -> {
             try {
                 String descricao = campoDescricao.getText().trim();
@@ -222,44 +183,37 @@ public class MenuGastos extends JPanel {
                     JOptionPane.showMessageDialog(popUp, "Descrição é obrigatória!", "ERRO", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                String valorStr = campoValor.getText().trim().replace(',', '.');
-                double valor = Double.parseDouble(valorStr);
+    
+                double valor = Double.parseDouble(campoValor.getText().trim().replace(',', '.'));
                 if (valor <= 0) {
-                    JOptionPane.showMessageDialog(popUp, "Valor deve ser maior que zero!", "ERRO",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(popUp, "Valor deve ser maior que zero!", "ERRO", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                String dataStr = campoData.getText().trim();
-                LocalDate data = LocalDate.parse(dataStr, formatter);
-
-                String tipo = (String) comboTipo.getSelectedItem();
-                Gasto novoGasto = new Gasto(descricao, valor, data, tipo.equals("Pessoal"));
-
+    
+                LocalDate data = LocalDate.parse(campoData.getText().trim(), formatter);
+                boolean pessoal = "Pessoal".equals(comboTipo.getSelectedItem());
+                Gasto novoGasto = new Gasto(descricao, valor, data, pessoal);
+    
+                GastosDAO.salvarGasto(novoGasto);
                 RepositorioGastos.adicionarGasto(novoGasto);
-
-                JOptionPane.showMessageDialog(popUp, "Gasto adicionado com sucesso!", "SUCESSO",
-                        JOptionPane.INFORMATION_MESSAGE);
+    
+                JOptionPane.showMessageDialog(popUp, "Gasto adicionado com sucesso!", "SUCESSO", JOptionPane.INFORMATION_MESSAGE);
                 popUp.dispose();
-
+    
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(popUp, "Valor inválido!", "ERRO", JOptionPane.ERROR_MESSAGE);
             } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(popUp, "Data inválida! Use dd/MM/yyyy.", "ERRO",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(popUp, "Data inválida! Use dd/MM/yyyy.", "ERRO", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(popUp, "Erro inesperado: " + ex.getMessage(), "ERRO",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(popUp, "Erro inesperado: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
                 ex.printStackTrace();
             }
         });
-
+    
         cancelar.addActionListener(e -> popUp.dispose());
-
         popUp.setVisible(true);
     }
-
+    
     private void abrirListarGastos(boolean pessoal) {
         List<Gasto> lista = pessoal ? RepositorioGastos.listarPessoais() : RepositorioGastos.listarEmpresariais();
 

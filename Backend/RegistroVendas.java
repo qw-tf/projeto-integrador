@@ -65,7 +65,7 @@ public class RegistroVendas {
             LocalDate data = venda.getData();
             if (!data.isBefore(inicio) && !data.isAfter(fim)) {
                 double lucro = venda.getLucroTotal();
-                double gasto = venda.getGastoTotal();
+                double gasto = venda.getGasto();
 
                 resultado.putIfAbsent(data, new Double[] { 0.0, 0.0 });
                 Double[] valores = resultado.get(data);
@@ -117,7 +117,9 @@ public class RegistroVendas {
                     int quantidade = rs.getInt("quantidade");
                     String formaPagamento = rs.getString("formapagamento");
                     double total = rs.getDouble("valortotal");
-                    double ganhoBruto = rs.getDouble("ganhoBruto"); // 💸 PEGANDO O GANHO BRUTO do banco!
+                    double ganhoBruto = rs.getDouble("ganhoBruto"); //
+                    double gasto = rs.getDouble("gasto"); // pega gasto direto do banco
+                    
     
                     // Criando a venda com itens vazios, mas com tudo setado corretamente
                     Venda venda = new Venda(new ArrayList<>(), formaPagamento) {{
@@ -126,6 +128,8 @@ public class RegistroVendas {
                         setTotal(total);
                         setDescricao(descricao);
                         setLucroTotal(ganhoBruto); // 🧠 Salva o lucro bruto direitinho!
+                        setGasto(gasto); // você precisa ter essa propriedade e getter/setter em Venda
+
                     }};
     
                     vendasDoBanco.add(venda);
@@ -135,11 +139,11 @@ public class RegistroVendas {
             vendas.clear();
             vendas.addAll(vendasDoBanco);
     
-            System.out.println("Vendas carregadas! Yattaaaaa~ 🍡🎉");
+            System.out.println("Vendas carregadas!");
     
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Erro ao carregar vendas do banco! 😭💔");
+            System.err.println("Erro ao carregar vendas do banco!");
         }
     }
     

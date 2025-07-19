@@ -11,6 +11,11 @@ public class ItemVenda {
         this.quantidadeTotal = quantidade;
     }
 
+    public void setProduto(Produto produto) {
+        this.produto = produto;
+    }
+    
+
     public Produto getProduto() {
         return produto;
     }
@@ -22,4 +27,5 @@ public class ItemVenda {
     public double getSubtotal() {
         return produto.getValorVenda() * quantidade;
     }
+
 }

@@ -14,13 +14,11 @@ CREATE TABLE produtos (
 
 
 CREATE TABLE gastos (
-    id INTEGER PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     descricao VARCHAR(255) NOT NULL,
     valor NUMERIC(10, 2) NOT NULL,
     data DATE NOT NULL,
-    pessoal BOOLEAN NOT NULL,
-    conta BOOLEAN NOT NULL,
-    pago BOOLEAN NOT NULL DEFAULT FALSE
+    pessoal BOOLEAN NOT NULL
 );
 
 CREATE TABLE vendas (
@@ -30,7 +28,8 @@ CREATE TABLE vendas (
     quantidade INTEGER NOT NULL,
     ganhoBruto NUMERIC(10,2), 
     formaPagamento VARCHAR(50) NOT NULL,
-    valorTotal NUMERIC(10, 2) NOT NULL
+    valorTotal NUMERIC(10, 2) NOT NULL,
+    gasto NUMERIC(10,2) DEFAULT 0.00
 );
 
 CREATE TABLE fiados (

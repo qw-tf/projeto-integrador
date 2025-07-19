@@ -8,24 +8,23 @@ import java.util.List;
 
 public class VendaDAO {
     public static void inserirVenda(Venda venda) throws SQLException {
-        String sql = "INSERT INTO vendas (id, data, descricao, quantidade, formapagamento, valorTotal, ganhoBruto) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO vendas (id, data, descricao, quantidade, formapagamento, valorTotal, ganhoBruto, gasto) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
     
         try (Connection conn = ConexaoPostgres.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
     
-            String resumo = venda.gerarResumoDosItens();
-            double lucro = venda.getLucroTotal();
-    
             stmt.setInt(1, venda.getId());
             stmt.setDate(2, Date.valueOf(venda.getData()));
-            stmt.setString(3, resumo); // descrição tipo "Arroz (x1), Feijão (x2)"
+            stmt.setString(3, venda.gerarResumoDosItens()); // descrição tipo "Arroz (x1), Feijão (x2)"
             stmt.setInt(4, venda.getQuantidadeTotal());
             stmt.setString(5, venda.getFormaPagamento());
             stmt.setDouble(6, venda.getTotal());
-            stmt.setDouble(7, lucro); // o novo campo lindo e lucrativo 💸💸💸
+            stmt.setDouble(7, venda.getLucroTotal()); // o novo campo lindo e lucrativo 💸💸💸
+            stmt.setDouble(8, venda.getGastoTotal()); // o gasto que você quer salvar
     
-            venda.setDescricao(resumo);
-            venda.setLucroTotal(lucro); // só pra garantir que o objeto tá sincronizadinho ✨
+            venda.setDescricao(venda.gerarResumoDosItens());
+            venda.setLucroTotal(venda.getLucroTotal()); // só pra garantir que o objeto tá sincronizadinho ✨
     
             stmt.executeUpdate();
         }
@@ -52,38 +51,40 @@ public class VendaDAO {
         }
     }
     
-
     public static List<Venda> listarVendas() throws SQLException {
         List<Venda> vendas = new ArrayList<>();
-
+    
         String sql = "SELECT * FROM vendas";
         try (Connection conn = ConexaoPostgres.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
-
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+    
             while (rs.next()) {
                 int id = rs.getInt("id");
                 LocalDate data = rs.getDate("data").toLocalDate();
-                String descricao = rs.getString("descricao"); // Ex: "Arroz(x2), Feijão(x1)"
+                String descricao = rs.getString("descricao");
                 int qtd = rs.getInt("quantidade");
                 String formaPagamento = rs.getString("formapagamento");
                 double total = rs.getDouble("valorTotal");
-
-                // Cria venda fake com os dados. Como os produtos reais não são salvos, cria uma
-                // venda com descrição textual.
+                double lucro = rs.getDouble("ganhoBruto"); 
+                double gasto = rs.getDouble("gasto");      
+    
                 Venda venda = new Venda(new ArrayList<>(), formaPagamento) {
                     {
                         super.setId(id);
                         super.setData(data);
                         super.setTotal(total);
-                        super.setDescricao(descricao); // ← ESSENCIAL, SENPAIIII~!!
+                        super.setDescricao(descricao);
+                        super.setLucroTotal(lucro); 
+                        super.setGasto(gasto);      
                     }
                 };
-
+    
                 vendas.add(venda);
             }
         }
-
+    
         return vendas;
     }
+    
 }

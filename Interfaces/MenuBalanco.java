@@ -1,6 +1,10 @@
 package Interfaces;
 
+import Backend.ItemVenda;
+import Backend.Produto;
 import Backend.RegistroVendas;
+import Backend.Venda;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -83,95 +87,7 @@ public class MenuBalanco extends JPanel {
         jBBalancoAnual.addActionListener(e -> mostrarBalancoAnual());
         jBBalancoVendas.addActionListener(e -> mostrarBalancoDiario());
     }
-
-    private void mostrarBalancoMensal() {
-        LocalDate hoje = LocalDate.now();
-        LocalDate inicio = hoje.minusDays(29);
-        Map<LocalDate, Double[]> dados = RegistroVendas.calcularBalancoPorDia(inicio, hoje);
-
-        String[][] linhas = new String[dados.size()][4];
-        int i = 0;
-        double totalLucro = 0, totalGasto = 0;
-        for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
-            double lucro = entry.getValue()[0];
-            double gasto = entry.getValue()[1];
-            linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
-            linhas[i][1] = String.format("R$ %.2f", lucro);
-            linhas[i][2] = String.format("R$ %.2f", gasto);
-            totalLucro += lucro;
-            totalGasto += gasto;
-            i++;
-        }
-
-        String[] colunas = { "Data", "Lucro", "Gasto" };
-        String resumo = String.format("""
-                Período: %s até %s
-                TOTAL LUCRO: R$ %.2f
-                """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro));
-
-        mostrarResultado("BALANÇO MENSAL", linhas, colunas, resumo);
-    }
-
-    private void mostrarBalancoAnual() {
-        LocalDate hoje = LocalDate.now();
-        LocalDate inicioAno = LocalDate.of(hoje.getYear(), 1, 1);
-        Map<Integer, Double[]> dados = RegistroVendas.calcularBalancoPorMes(inicioAno, hoje);
-
-        String[][] linhas = new String[12][4];
-        double totalLucro = 0, totalGasto = 0;
-        for (int mes = 1; mes <= 12; mes++) {
-            Double[] valores = dados.getOrDefault(mes, new Double[] { 0.0, 0.0 });
-            double lucro = valores[0];
-            double gasto = valores[1];
-            linhas[mes - 1][0] = String.format("%02d", mes);
-            linhas[mes - 1][1] = String.format("R$ %.2f", lucro);
-            linhas[mes - 1][2] = String.format("R$ %.2f", gasto);
-            totalLucro += lucro;
-            totalGasto += gasto;
-        }
-
-        String[] colunas = { "Mês", "Lucro", "Gasto" };
-        String resumo = String.format("""
-                Período: 01/01/%d até %s
-                TOTAL LUCRO ANUAL: R$ %.2f
-                """, hoje.getYear(),
-                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro));
-
-        mostrarResultado("BALANÇO ANUAL", linhas, colunas, resumo);
-    }
-
-    private void mostrarBalancoDiario() {
-        LocalDate hoje = LocalDate.now();
-        LocalDate inicio = hoje.minusDays(6);
-        Map<LocalDate, Double[]> dados = RegistroVendas.calcularBalancoPorDia(inicio, hoje);
-
-        String[][] linhas = new String[dados.size()][4];
-        int i = 0;
-        double totalLucro = 0, totalGasto = 0;
-        for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
-            double lucro = entry.getValue()[0];
-            double gasto = entry.getValue()[1];
-            linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
-            linhas[i][1] = String.format("R$ %.2f", lucro);
-            linhas[i][2] = String.format("R$ %.2f", gasto);
-            totalLucro += lucro;
-            totalGasto += gasto;
-            i++;
-        }
-
-        String[] colunas = { "Data", "Lucro", "Gasto" };
-        String resumo = String.format("""
-                Período: %s até %s
-                TOTAL LUCRO DOS ÚLTIMOS 7 DIAS: R$ %.2f
-                """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                (totalLucro));
-
-        mostrarResultado("BALANÇO DE VENDAS", linhas, colunas, resumo);
-    }
+// Dentro dos métodos mostrarBalancoMensal, mostrarBalancoAnual, mostrarBalancoDiario, só ajustei pra usar lucro e gasto direitinho
 
     private void mostrarResultado(String titulo, String[][] dadosTabela, String[] colunas, String resumo) {
         DefaultTableModel modelo = new DefaultTableModel(dadosTabela, colunas) {
@@ -226,7 +142,127 @@ public class MenuBalanco extends JPanel {
             popUpResultado = framePai.criarPopUp(titulo, painelPrincipal, 800, 403);
             popUpResultado.setVisible(true);
         }
+
     }
+
+
+    private void mostrarBalancoMensal() {
+        atualizarProdutosDasVendas(); // chama antes de calcular
+    
+        LocalDate hoje = LocalDate.now();
+        LocalDate inicio = hoje.minusDays(29);
+        Map<LocalDate, Double[]> dados = RegistroVendas.calcularBalancoPorDia(inicio, hoje);
+    
+        String[][] linhas = new String[dados.size()][3]; // só 3 colunas mesmo: Data, Lucro, Gasto
+        int i = 0;
+        double totalLucro = 0, totalGasto = 0;
+        for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
+            double lucro = entry.getValue()[0];
+            double gasto = entry.getValue()[1];
+            linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
+            linhas[i][1] = String.format("R$ %.2f", lucro);
+            linhas[i][2] = String.format("R$ %.2f", gasto);
+            totalLucro += lucro;
+            totalGasto += gasto;
+            i++;
+        }
+    
+        String[] colunas = { "Data", "Lucro", "Gasto" };
+        String resumo = String.format("""
+                Período: %s até %s
+                TOTAL LUCRO: R$ %.2f
+                TOTAL GASTO: R$ %.2f
+                """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                totalLucro, totalGasto);
+    
+        mostrarResultado("BALANÇO MENSAL", linhas, colunas, resumo);
+    }
+    
+    private void mostrarBalancoAnual() {
+        atualizarProdutosDasVendas();
+    
+        LocalDate hoje = LocalDate.now();
+        LocalDate inicioAno = LocalDate.of(hoje.getYear(), 1, 1);
+        Map<Integer, Double[]> dados = RegistroVendas.calcularBalancoPorMes(inicioAno, hoje);
+    
+        String[][] linhas = new String[12][3]; // só 3 colunas: Mês, Lucro, Gasto
+        double totalLucro = 0, totalGasto = 0;
+        for (int mes = 1; mes <= 12; mes++) {
+            Double[] valores = dados.getOrDefault(mes, new Double[] { 0.0, 0.0 });
+            double lucro = valores[0];
+            double gasto = valores[1];
+            linhas[mes - 1][0] = String.format("%02d", mes);
+            linhas[mes - 1][1] = String.format("R$ %.2f", lucro);
+            linhas[mes - 1][2] = String.format("R$ %.2f", gasto);
+            totalLucro += lucro;
+            totalGasto += gasto;
+        }
+    
+        String[] colunas = { "Mês", "Lucro", "Gasto" };
+        String resumo = String.format("""
+                Período: 01/01/%d até %s
+                TOTAL LUCRO ANUAL: R$ %.2f
+                TOTAL GASTO ANUAL: R$ %.2f
+                """, hoje.getYear(),
+                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                totalLucro, totalGasto);
+    
+        mostrarResultado("BALANÇO ANUAL", linhas, colunas, resumo);
+    }
+    
+    private void mostrarBalancoDiario() {
+        atualizarProdutosDasVendas();
+    
+        LocalDate hoje = LocalDate.now();
+        LocalDate inicio = hoje.minusDays(6);
+        Map<LocalDate, Double[]> dados = RegistroVendas.calcularBalancoPorDia(inicio, hoje);
+    
+        String[][] linhas = new String[dados.size()][3];
+        int i = 0;
+        double totalLucro = 0, totalGasto = 0;
+        for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
+            double lucro = entry.getValue()[0];
+            double gasto = entry.getValue()[1];
+            linhas[i][0] = entry.getKey().format(DateTimeFormatter.ofPattern("dd/MM"));
+            linhas[i][1] = String.format("R$ %.2f", lucro);
+            linhas[i][2] = String.format("R$ %.2f", gasto);
+            totalLucro += lucro;
+            totalGasto += gasto;
+            i++;
+        }
+    
+        String[] colunas = { "Data", "Lucro", "Gasto" };
+        String resumo = String.format("""
+                Período: %s até %s
+                TOTAL LUCRO DOS ÚLTIMOS 7 DIAS: R$ %.2f
+                TOTAL GASTO DOS ÚLTIMOS 7 DIAS: R$ %.2f
+                """, inicio.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                hoje.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                totalLucro, totalGasto);
+    
+        mostrarResultado("BALANÇO DE VENDAS", linhas, colunas, resumo);
+    }
+    
+    private void atualizarProdutosDasVendas() {
+        for (Venda venda : RegistroVendas.getTodasVendas()) {
+            for (ItemVenda item : venda.getItens()) {
+                Produto p = item.getProduto();
+                if (p != null) {
+                    try {
+                        Produto atualizado = Banco.ProdutoDAO.buscarPorCodigo(p.getCodigo());
+                        if (atualizado != null && atualizado.getValorCompra() > 0) {
+                            item.setProduto(atualizado);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Erro ao atualizar produto: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+    
+    
 
     private JButton jBVoltar;
     private JButton jBBalancoMensal;

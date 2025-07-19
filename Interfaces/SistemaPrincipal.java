@@ -8,6 +8,7 @@ import Backend.ItemVenda;
 import Backend.Produto;
 import Backend.RegistroVendas;
 import Backend.Venda;
+import Banco.GastosDAO;
 
 import java.awt.*;
 import java.sql.SQLException;
@@ -269,6 +270,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
             }
             RepositorioFiados.carregarFiadosDoBanco();
             RegistroVendas.carregarVendasDoBanco();
+            GastosDAO.carregarGastos();
             Estoque.carregarDoBanco();
         } catch (SQLException ex) {
             System.out.println("Erro ao carregar do banco.");

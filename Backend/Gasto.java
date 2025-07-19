@@ -1,3 +1,4 @@
+// Backend/Gasto.java
 package Backend;
 
 import java.time.LocalDate;
@@ -8,21 +9,11 @@ public class Gasto {
     private final LocalDate data;
     private final boolean pessoal;
 
-    private final boolean conta;
-    private boolean pago;
-
-    public Gasto(String descricao, double valor, LocalDate data, boolean pessoal, boolean conta) {
+    public Gasto(String descricao, double valor, LocalDate data, boolean pessoal) {
         this.descricao = descricao;
         this.valor = valor;
         this.data = data;
         this.pessoal = pessoal;
-        this.conta = conta;
-        this.pago = false; // por padrão, ainda não está paga
-    }
-
-    // Novo construtor para facilitar criação com conta = false
-    public Gasto(String descricao, double valor, LocalDate data, boolean pessoal) {
-        this(descricao, valor, data, pessoal, false);
     }
 
     public String getDescricao() {
@@ -39,17 +30,5 @@ public class Gasto {
 
     public boolean isPessoal() {
         return pessoal;
-    }
-
-    public boolean isConta() {
-        return conta;
-    }
-
-    public boolean isPago() {
-        return pago;
-    }
-
-    public void marcarComoPago() {
-        this.pago = true;
     }
 }

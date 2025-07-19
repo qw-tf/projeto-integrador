@@ -13,6 +13,7 @@ public class Venda {
     private double valorVenda;
     private double lucroTotal;
     private String descricao;
+    private double gasto;
 
     public Venda(List<ItemVenda> itens, String formaPagamento) {
         this.id = proximoId++;
@@ -55,6 +56,10 @@ public class Venda {
         this.valorVenda = total;
     }
 
+    public void setGasto(double gasto) {
+        this.gasto = gasto;
+    }
+
     public void setLucroTotal(double lucroTotal) {
         this.lucroTotal = lucroTotal;
     }
@@ -64,13 +69,15 @@ public class Venda {
     }
 
     private double calcularTotal() {
-        if (itens == null) return 0.0;
+        if (itens == null)
+            return 0.0;
         return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
     }
 
     private double calcularLucroTotal() {
         double total = 0;
-        if (itens == null) return 0.0;
+        if (itens == null)
+            return 0.0;
 
         for (ItemVenda item : itens) {
             double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
@@ -110,7 +117,8 @@ public class Venda {
 
     public double getGastoTotal() {
         double total = 0;
-        if (itens == null) return 0.0;
+        if (itens == null)
+            return 0.0;
 
         for (ItemVenda item : itens) {
             double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
@@ -124,11 +132,12 @@ public class Venda {
     }
 
     public String gerarResumoDosItens() {
-        if (itens == null || itens.isEmpty()) return "Sem itens!";
+        if (itens == null || itens.isEmpty())
+            return "Sem itens!";
         StringBuilder sb = new StringBuilder();
         for (ItemVenda item : itens) {
             sb.append(item.getProduto().getNome())
-              .append(" (x").append(item.getQuantidade()).append("), ");
+                    .append(" (x").append(item.getQuantidade()).append("), ");
         }
         String resumo = sb.substring(0, sb.length() - 2);
         this.descricao = resumo;
@@ -138,4 +147,9 @@ public class Venda {
     public String getDescricao() {
         return descricao;
     }
+    
+    public double getGasto() {
+        return gasto;
+    }
+    
 }
