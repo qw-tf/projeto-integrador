@@ -35,6 +35,13 @@ public class ProdutoDAO {
 
     public static void atualizar(int codigo, int novaQuantidade) throws SQLException {
         System.out.println("Código recebido: " + codigo + " | Nova quantidade: " + novaQuantidade);
+
+        if (novaQuantidade == 0) {
+            System.out.println("Quantidade zerada! Deletando produto do banco, desuu~!");
+            deletar(codigo); // chama o método que já existe, uhuul!
+            return;
+        }
+
         String sql = "UPDATE produtos SET quantidade = ? WHERE codigo = ?";
 
         try (Connection conn = ConexaoPostgres.getConnection();

@@ -12,7 +12,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import Backend.Fiado;
-import Backend.FiadoRepositorio;
+import Backend.RepositorioFiados;
 import Backend.Venda;
 import Backend.RegistroVendas;
 import Banco.FiadoDAO;
@@ -128,7 +128,7 @@ public class MenuFiados extends JPanel {
                     v.getId(),
                     v.getData() != null ? v.getData().toString() : "Data N/D",
                     v.getTotal(),
-                    v.getResumoProdutos());
+                    v.getDescricao());
             comboVendas.addItem(texto);
         }
 
@@ -191,7 +191,7 @@ public class MenuFiados extends JPanel {
                 }
 
                 Fiado fiado = new Fiado(nomeCliente, venda);
-                FiadoRepositorio.adicionarFiado(fiado);
+                RepositorioFiados.adicionarFiado(fiado);
                 FiadoDAO.inserirFiado(fiado); // Salva no banco também!!!
 
                 JOptionPane.showMessageDialog(panelzao, "Fiado registrado com sucesso!", "SUCESSO",
@@ -214,7 +214,7 @@ public class MenuFiados extends JPanel {
     }
 
     private Object[][] montarDadosTabela() {
-        List<Fiado> fiados = FiadoRepositorio.getFiados();
+        List<Fiado> fiados = RepositorioFiados.getFiados();
 
         Object[][] dados = new Object[fiados.size()][5];
         for (int i = 0; i < fiados.size(); i++) {
@@ -227,22 +227,21 @@ public class MenuFiados extends JPanel {
         }
         return dados;
     }
-
     private void abrirListarFiados() {
         String[] colunas = { "ID", "ID VENDA", "NOME DO CLIENTE", "VALOR RESTANTE", "QUITADO" };
         Object[][] dados = montarDadosTabela();
-
+    
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-
+    
         tabelaFiados = new JTable(modelo);
         tabelaFiados.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabelaFiados.setRowHeight(22);
-
+    
         JTableHeader header = tabelaFiados.getTableHeader();
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
@@ -257,16 +256,25 @@ public class MenuFiados extends JPanel {
                 return label;
             }
         });
-
+    
         JScrollPane scrollPane = new JScrollPane(tabelaFiados);
         scrollPane.getViewport().setBackground(new Color(156, 156, 156));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
+    
+        // Criar o label kawaii com a mensagem embaixo da tabela
+        JLabel avisoLabel = new JLabel("FIADOS DESAPARECEM AUTOMATICAMENTE DEPOIS DE 30 DIAS APÓS PAGOS");
+        avisoLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        avisoLabel.setForeground(new Color(0, 0, 0));  // Vermelhinho suave pra chamar atenção
+        avisoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        avisoLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0)); // Espaçamento legal
+    
+        // Painel principal com BorderLayout
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBackground(new Color(156, 156, 156));
         painelPrincipal.add(scrollPane, BorderLayout.CENTER);
-
+        painelPrincipal.add(avisoLabel, BorderLayout.SOUTH);  // Mensagem embaixo, centradinha
+    
         if (popUpListar != null && popUpListar.isVisible()) {
             popUpListar.toFront();
         } else {
@@ -274,7 +282,7 @@ public class MenuFiados extends JPanel {
             popUpListar.setVisible(true);
         }
     }
-
+    
     private void abrirQuitarFiado() {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setBackground(new Color(156, 156, 156));
@@ -350,7 +358,7 @@ public class MenuFiados extends JPanel {
                 JOptionPane.showMessageDialog(painel, "Informe um nome para busca.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            List<Fiado> encontrados = FiadoRepositorio.getFiados().stream()
+            List<Fiado> encontrados = RepositorioFiados.getFiados().stream()
                     .filter(f -> f.getNomeCliente().toLowerCase().contains(textoBusca) && !f.isQuitado())
                     .collect(Collectors.toList());
 

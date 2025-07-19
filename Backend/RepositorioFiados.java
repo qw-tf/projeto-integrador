@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FiadoRepositorio {
+public class RepositorioFiados {
 
     private static final List<Fiado> fiados = new ArrayList<>();
 

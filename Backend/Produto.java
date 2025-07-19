@@ -3,6 +3,8 @@ package Backend;
 import java.util.LinkedList;
 import java.util.List;
 
+import Banco.ProdutoDAO;
+
 public class Produto {
     private String nome;
     private int quantidade, codigo, quantidadeTotal;
@@ -33,10 +35,10 @@ public class Produto {
 
     public void removerQuantidade(int qt) {
         if (qt <= 0) {
-            throw new IllegalArgumentException("Quantidade a remover deve ser positiva! >_<");
+            throw new IllegalArgumentException("Quantidade a remover deve ser positiva!");
         }
         if (this.quantidade < qt) {
-            throw new IllegalArgumentException("Quantidade insuficiente no estoque! 😭");
+            throw new IllegalArgumentException("Quantidade insuficiente no estoque!");
         }
         this.quantidade -= qt;
     }

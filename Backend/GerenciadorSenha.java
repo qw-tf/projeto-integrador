@@ -33,17 +33,27 @@ public class GerenciadorSenha {
         return lerArquivo(ARQUIVO_TOKEN, "");
     }
 
-    public static boolean validarRecuperacao(String dica, String token) {
-        String dicaSalva = lerArquivo(ARQUIVO_DICA, "");
-        String tokenSalvo = lerArquivo(ARQUIVO_TOKEN, "");
+    /**
+     * Valida o token informado para recuperação de senha.
+     * Retorna true apenas se o token informado for igual ao token salvo.
+     */
+    public static boolean validarTokenRecuperacao(String tokenInformado) {
+        String tokenSalvo = carregarToken();
+        return tokenSalvo != null && tokenSalvo.equals(tokenInformado);
+    }
 
-        return (dica != null && dica.equals(dicaSalva)) ||
-                (token != null && token.equals(tokenSalvo));
+    /**
+     * Método mantido para compatibilidade. Agora delega à validação de token.
+     * O parâmetro dica é ignorado nesta versão.
+     */
+    public static boolean validarRecuperacao(String dica, String token) {
+        return validarTokenRecuperacao(token);
     }
 
     private static String lerArquivo(String caminho, String padrao) {
         try (BufferedReader br = new BufferedReader(new FileReader(caminho))) {
-            return br.readLine();
+            String linha = br.readLine();
+            return linha != null ? linha : padrao;
         } catch (IOException e) {
             return padrao;
         }

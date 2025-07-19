@@ -2,12 +2,17 @@
 package Interfaces;
 
 import Backend.Estoque;
-import Backend.FiadoRepositorio;
+import Backend.RepositorioFiados;
 import Backend.GerenciadorSenha;
+import Backend.ItemVenda;
+import Backend.Produto;
 import Backend.RegistroVendas;
+import Backend.Venda;
 
 import java.awt.*;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Arrays;
 
 import javax.swing.*;
 
@@ -138,24 +143,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         btnSair.addActionListener(e -> System.exit(0));
 
         btnRecuperar.addActionListener(e -> {
-            JTextField dica = new JTextField();
-            JTextField token = new JTextField();
-            JPanel panel = new JPanel(new GridLayout(0, 1));
-            panel.add(new JLabel("Dica:"));
-            panel.add(dica);
-            panel.add(new JLabel("Token:"));
-            panel.add(token);
-
-            int result = JOptionPane.showConfirmDialog(this, panel, "Recuperar Senha",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-            if (result == JOptionPane.OK_OPTION) {
-                if (GerenciadorSenha.validarRecuperacao(dica.getText(), token.getText())) {
-                    JOptionPane.showMessageDialog(this, "Senha atual: " + GerenciadorSenha.carregarSenha());
-                } else {
-                    JOptionPane.showMessageDialog(this, "Dados incorretos!", "Erro", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            abrirRecuperacaoSenha();
         });
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -180,56 +168,95 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         trocarTela(telaInicial);
     }
 
+    // Dentro da sua classe de UI (por exemplo, MenuRecuperacaoSenha)
     private void abrirRecuperacaoSenha() {
-        // Painel com 2 linhas: dica e token
-        JPanel painel = new JPanel(new GridLayout(2, 1, 10, 10));
-        painel.setBackground(new Color(156, 156, 156));
+        Font fonte = new Font("Segoe UI", Font.PLAIN, 14);
 
-        // 1) JLabel com a dica
-        JLabel campoDica = new JLabel("Dica: " + GerenciadorSenha.carregarDica());
-        campoDica.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        painel.add(campoDica);
+        // Painel de conteúdo com BorderLayout
+        JPanel conteudo = new JPanel(new BorderLayout());
+        conteudo.setBackground(new Color(156, 156, 156));
+        conteudo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 2) JTextField para digitar o token
-        JTextField campoToken = new JTextField();
-        campoToken.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        campoToken.setBorder(BorderFactory.createTitledBorder("Digite o token"));
-        painel.add(campoToken);
+        // Painel central com GridBagLayout
+        JPanel grid = new JPanel(new GridBagLayout());
+        grid.setBackground(new Color(156, 156, 156));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // exibe o confirm dialog usando o panel que já contém o label e o text field
-        int resultado = JOptionPane.showConfirmDialog(
-                this,
-                painel,
-                "Recuperar Senha",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE);
+        JLabel labelDica = new JLabel("Dica:");
+        JLabel textoDica = new JLabel(GerenciadorSenha.carregarDica());
+        JLabel labelToken = new JLabel("Token:");
+        JTextField campoToken = new JTextField(5);
 
-        if (resultado == JOptionPane.OK_OPTION) {
+        // Estilo do campo
+        campoToken.setFont(fonte);
+        campoToken.setBackground(Color.WHITE);
+        campoToken.setForeground(Color.BLACK);
+        campoToken.setPreferredSize(new Dimension(80, 18));
+        campoToken.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createEmptyBorder(2, 4, 2, 4)));
+
+        labelDica.setFont(fonte);
+        textoDica.setFont(fonte);
+        labelToken.setFont(fonte);
+
+        // Adiciona "Dica:"
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        grid.add(labelDica, gbc);
+
+        // Adiciona texto da dica
+        gbc.gridx = 1;
+        grid.add(textoDica, gbc);
+
+        // Adiciona "Token:"
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        grid.add(labelToken, gbc);
+
+        // Adiciona campo do token com espaçamento superior maior
+        gbc.gridx = 1;
+        gbc.insets = new Insets(10, 5, 5, 5); // margem superior maior
+        grid.add(campoToken, gbc);
+
+        // Painel de botões
+        JPanel botoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        botoes.setBackground(new Color(156, 156, 156));
+        JButton btnCancelar = new JButton("CANCELAR");
+        JButton btnRecuperar = new JButton("RECUPERAR");
+        estilizarBotaoMaior(btnCancelar);
+        estilizarBotaoMaior(btnRecuperar);
+        botoes.add(btnCancelar);
+        botoes.add(btnRecuperar);
+
+        // Monta conteúdo
+        conteudo.add(grid, BorderLayout.CENTER);
+        conteudo.add(botoes, BorderLayout.SOUTH);
+
+        // Cria pop-up
+        JDialog popup = criarPopUp("RECUPERAR SENHA", conteudo, 350, 180);
+
+        // Ações dos botões
+        btnCancelar.addActionListener(e -> popup.dispose());
+        btnRecuperar.addActionListener(e -> {
             String token = campoToken.getText().trim();
-            String dica = GerenciadorSenha.carregarDica();
-
-            // valida corretamente: dica + token
-            if (!token.isEmpty() &&
-                    GerenciadorSenha.validarRecuperacao(dica, token)) {
-
-                String senhaAtual = GerenciadorSenha.carregarSenha();
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Sua senha atual é: " + senhaAtual,
-                        "Recuperação bem-sucedida",
-                        JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // não mostra nada se vazio OU incorreto?
-                // Mas aqui mostra erro apenas se não vazio
-                if (!token.isEmpty()) {
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Token incorreto!",
-                            "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+            if (token.isEmpty()) {
+                JOptionPane.showMessageDialog(popup, "Por favor, informe o token!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        }
+            if (!GerenciadorSenha.validarTokenRecuperacao(token)) {
+                JOptionPane.showMessageDialog(popup, "Token incorreto!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String senha = GerenciadorSenha.carregarSenha();
+            JOptionPane.showMessageDialog(popup, "Senha atual: " + senha, "Recuperação bem-sucedida",
+                    JOptionPane.INFORMATION_MESSAGE);
+            popup.dispose();
+        });
+
+        popup.setVisible(true);
     }
 
     public static void main(String[] args) {
@@ -240,7 +267,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
                     break;
                 }
             }
-            FiadoRepositorio.carregarFiadosDoBanco();
+            RepositorioFiados.carregarFiadosDoBanco();
             RegistroVendas.carregarVendasDoBanco();
             Estoque.carregarDoBanco();
         } catch (SQLException ex) {
@@ -254,4 +281,5 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         telas.setVisible(true);
         telas.montarInterface();
     }
+
 }

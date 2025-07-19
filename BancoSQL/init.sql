@@ -28,6 +28,7 @@ CREATE TABLE vendas (
     data DATE NOT NULL DEFAULT CURRENT_DATE,
     descricao TEXT NOT NULL,
     quantidade INTEGER NOT NULL,
+    ganhoBruto NUMERIC(10,2), 
     formaPagamento VARCHAR(50) NOT NULL,
     valorTotal NUMERIC(10, 2) NOT NULL
 );
@@ -37,5 +38,6 @@ CREATE TABLE fiados (
     idVenda INT NOT NULL REFERENCES vendas(id) ON DELETE CASCADE,
     nomeCliente VARCHAR(100) NOT NULL,
     valorRestante NUMERIC(10, 2) NOT NULL,
-    dataCriacao DATE NOT NULL
+    dataCriacao DATE NOT NULL,
+    dataQuitado DATE
 );

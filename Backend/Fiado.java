@@ -16,7 +16,7 @@ public class Fiado {
 
     private double valorRestante;
     private boolean quitado;
-    private LocalDate dataCriacao;
+    private LocalDate dataQuitado;
 
     // ⚓ Novo construtor para Fiado
     public Fiado(String descricao, Venda venda) {
@@ -24,7 +24,6 @@ public class Fiado {
         this.idVenda = venda.getId();
         this.valorRestante = venda.getValor(); // OU getTotal()
         this.quitado = false;
-        this.dataCriacao = LocalDate.now();
 
         if (!idsDisponiveis.isEmpty()) {
             this.idFiado = idsDisponiveis.remove(0);
@@ -66,8 +65,8 @@ public class Fiado {
         return quitado;
     }
 
-    public LocalDate getDataCriacao() {
-        return dataCriacao;
+    public LocalDate getDataQuitado() {
+        return dataQuitado;
     }
 
     // Operações de ID global
@@ -79,33 +78,44 @@ public class Fiado {
         proximoId = id;
     }
 
-    // Métodos de lógica de pagamento
-    public void registrarPagamento(double valorPago) {
-        if (valorPago <= 0) {
-            throw new IllegalArgumentException("Valor tem que ser positivo!");
-        }
-        if (quitado) {
-            throw new IllegalStateException("Venda já quitada!");
-        }
 
+    public void registrarPagamento(double valorPago) {
+        if (valorPago <= 0) throw new IllegalArgumentException("Valor tem que ser positivo!");
+        if (quitado) throw new IllegalStateException("Venda já quitada!");
+    
         valorRestante -= valorPago;
         if (valorRestante <= 0) {
             valorRestante = 0.0;
             quitado = true;
+            dataQuitado = LocalDate.now();  // aqui!
         }
     }
-
+    
     public void quitarTotalmente() {
         this.valorRestante = 0.0;
         this.quitado = true;
+        this.dataQuitado = LocalDate.now(); // aqui também
     }
-
     public String getResumoFiado() {
         return "FIADO #" + idFiado +
                 " | Cliente: " + nomeCliente +
                 " | Venda: " + idVenda +
                 " | Valor Restante: " + valorRestante +
-                " | Data: " + dataCriacao +
+                " | Data Quitado: " + (dataQuitado != null ? dataQuitado : "NÃO QUITADO") +
                 " | Quitado: " + (quitado ? "SIM" : "NÃO");
     }
+
+    public void setValorRestante(double valorRestante) {
+        this.valorRestante = valorRestante;
+        this.quitado = (valorRestante == 0.0);
+    }
+
+    public void setDataQuitado(LocalDate dataQuitado) {
+        this.dataQuitado = dataQuitado;
+    }
+    
+    public void setQuitado(boolean quitado) {
+        this.quitado = quitado;
+    }
+
 }

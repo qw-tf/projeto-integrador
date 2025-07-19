@@ -38,7 +38,7 @@ public class Notificador {
 
         // 2. Fiados vencidos
         LocalDate limiteFiado = hoje.minusDays(DIAS_AVISO_FIADO);
-        for (Fiado fiado : FiadoRepositorio.getFiados()) { // CORREÇÃO AQUI
+        for (Fiado fiado : RepositorioFiados.getFiados()) { // CORREÇÃO AQUI
             if (fiado.getDataCriacao().isBefore(limiteFiado) && !fiado.isQuitado()) {
                 avisos.add(String.format(
                         "  ♣  Fiado do cliente ID " + fiado.getNomeCliente() + "  está vencido há %d dia(s).",

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import Banco.ConexaoPostgres;
+import Banco.ProdutoDAO;
 import Banco.VendaDAO;
 
 public class RegistroVendas {
@@ -25,6 +26,7 @@ public class RegistroVendas {
         // Atualiza estoque após venda
         for (ItemVenda item : itens) {
             item.getProduto().removerQuantidade(item.getQuantidade());
+            ProdutoDAO.atualizar(item.getProduto().getCodigo(), item.getProduto().getQuantidade());
         }
     }
 
@@ -39,14 +41,17 @@ public class RegistroVendas {
     public static boolean excluirVenda(int id) {
         return vendas.removeIf(v -> v.getId() == id);
     }
-
-    public static boolean removerVenda(Venda v) {
-        return vendas.remove(v);
+    public static boolean removerVenda(Venda venda) {
+        boolean removidoDoBanco = VendaDAO.deletarVendaPorId(venda.getId());
+        if (removidoDoBanco) {
+            return vendas.remove(venda);
+        }
+        return false;
     }
-
+    
     public static void quitarFiadoERegistrarVenda(Fiado f, List<ItemVenda> itens, String formaPagamento) {
         f.quitarTotalmente();
-        FiadoRepositorio.removerFiado(f);
+        RepositorioFiados.removerFiado(f);
         // Como o idCliente vem do fiado, e agora não usamos, vamos criar a venda sem
         // idCliente
         Venda novaVenda = new Venda(itens, formaPagamento);
@@ -99,12 +104,12 @@ public class RegistroVendas {
     public static void carregarVendasDoBanco() {
         try {
             List<Venda> vendasDoBanco = new ArrayList<>();
-
+    
             String sql = "SELECT * FROM vendas";
             try (Connection conn = ConexaoPostgres.getConnection();
-                    PreparedStatement stmt = conn.prepareStatement(sql);
-                    ResultSet rs = stmt.executeQuery()) {
-
+                 PreparedStatement stmt = conn.prepareStatement(sql);
+                 ResultSet rs = stmt.executeQuery()) {
+    
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     LocalDate data = rs.getDate("data").toLocalDate();
@@ -112,30 +117,30 @@ public class RegistroVendas {
                     int quantidade = rs.getInt("quantidade");
                     String formaPagamento = rs.getString("formapagamento");
                     double total = rs.getDouble("valortotal");
-
-                    // Como você não tem itens reais, passa uma lista vazia
-                    Venda venda = new Venda(new ArrayList<>(), formaPagamento) {
-                        {
-                            setId(id);
-                            setData(data);
-                            setTotal(total);
-                            // Se quiser, sobrescreve getResumoProdutos() para usar a descrição
-                        }
-                    };
-
+                    double ganhoBruto = rs.getDouble("ganhoBruto"); // 💸 PEGANDO O GANHO BRUTO do banco!
+    
+                    // Criando a venda com itens vazios, mas com tudo setado corretamente
+                    Venda venda = new Venda(new ArrayList<>(), formaPagamento) {{
+                        setId(id);
+                        setData(data);
+                        setTotal(total);
+                        setDescricao(descricao);
+                        setLucroTotal(ganhoBruto); // 🧠 Salva o lucro bruto direitinho!
+                    }};
+    
                     vendasDoBanco.add(venda);
                 }
             }
-
+    
             vendas.clear();
             vendas.addAll(vendasDoBanco);
-
-            System.out.println("Vendas carregadas!");
-
+    
+            System.out.println("Vendas carregadas! Yattaaaaa~ 🍡🎉");
+    
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Erro ao carregar vendas do banco!");
+            System.err.println("Erro ao carregar vendas do banco! 😭💔");
         }
     }
-
+    
 }
