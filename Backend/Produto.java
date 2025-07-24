@@ -66,6 +66,14 @@ public class Produto {
     public void setCodigo(int codigo) {
         Verificador.verificarCodigo(codigo);
         this.codigo = codigo;
+
+        // Remove da lista de disponíveis caso esteja lá
+        codigosDisponiveis.remove(Integer.valueOf(codigo));
+
+        // Atualiza o próximo código se necessário
+        if (codigo >= proximoCodigo) {
+            proximoCodigo = codigo + 1;
+        }
     }
 
     public void setNome(String nome) {
@@ -75,6 +83,10 @@ public class Produto {
 
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
+    }
+
+    public void setQuantidadeTotal(int quantidadeTotal) {
+        this.quantidadeTotal = quantidadeTotal;
     }
 
     public void setValorCompra(double valorCompra) {
@@ -88,7 +100,10 @@ public class Produto {
     }
 
     public static void liberarCodigo(int codigo) {
-        codigosDisponiveis.add(codigo);
+        if (!codigosDisponiveis.contains(codigo)) {
+            codigosDisponiveis.add(codigo);
+            codigosDisponiveis.sort(Integer::compareTo);
+        }
     }
 
     public static void setProximoCodigo(int codigo) {

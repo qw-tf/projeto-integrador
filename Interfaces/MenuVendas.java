@@ -26,12 +26,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 
-import Backend.Estoque;
+import Backend.RegistroProdutos;
 import Backend.ItemVenda;
 import Backend.Produto;
 import Backend.RegistroVendas;
@@ -185,7 +187,7 @@ public class MenuVendas extends JPanel {
                 List<Produto> encontrados = new ArrayList<>();
                 try {
                     int id = Integer.parseInt(entrada);
-                    for (Produto p : Estoque.getProdutos()) {
+                    for (Produto p : RegistroProdutos.getProdutos()) {
                         if (p.getCodigo() == id) {
                             encontrados.add(p);
                             break;
@@ -193,7 +195,7 @@ public class MenuVendas extends JPanel {
                     }
                 } catch (NumberFormatException ex) {
                     String nomeBuscado = entrada.toLowerCase();
-                    for (Produto p : Estoque.getProdutos()) {
+                    for (Produto p : RegistroProdutos.getProdutos()) {
                         if (p.getNome().toLowerCase().contains(nomeBuscado)) {
                             encontrados.add(p);
                         }
@@ -412,7 +414,7 @@ public class MenuVendas extends JPanel {
                     JOptionPane.showMessageDialog(popUp, "Venda não encontrada.", "Erro", JOptionPane.ERROR_MESSAGE);
                 } else {
                     vendaSelecionada[0] = v;
-        
+
                     // 🍡 Usa a descrição simples ao invés de tentar listar os itens reais
                     StringBuilder sb = new StringBuilder();
                     sb.append("Venda ID ").append(id).append(":\n\n");
@@ -421,7 +423,7 @@ public class MenuVendas extends JPanel {
                     sb.append("Forma de Pagamento: ").append(v.getFormaPagamento()).append("\n");
                     sb.append(String.format("Total: R$ %.2f\n", v.getTotal()));
                     sb.append(String.format("Ganho Bruto: R$ %.2f\n", v.getLucroTotal()));
-        
+
                     areaResumo.setText(sb.toString());
                 }
             } catch (NumberFormatException ex) {
@@ -430,7 +432,7 @@ public class MenuVendas extends JPanel {
                 JOptionPane.showMessageDialog(popUp, "ID inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
+
         btnExcluir.addActionListener(e -> {
             if (vendaSelecionada[0] == null) {
                 JOptionPane.showMessageDialog(popUp, "Consulte uma venda válida antes de excluir.", "Erro",
@@ -448,11 +450,11 @@ public class MenuVendas extends JPanel {
             if (resposta == JOptionPane.YES_OPTION) {
                 boolean removido = RegistroVendas.removerVenda(vendaSelecionada[0]);
                 if (removido) {
-                    JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "Sucesso",
+                    JOptionPane.showMessageDialog(popUp, "Venda excluída com sucesso!", "SUCESSO",
                             JOptionPane.INFORMATION_MESSAGE);
                     popUp.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(popUp, "Falha ao excluir a venda.", "Erro",
+                    JOptionPane.showMessageDialog(popUp, "Falha ao excluir a venda.", "ERRO",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -462,14 +464,14 @@ public class MenuVendas extends JPanel {
 
         popUp.setVisible(true);
     }
-    
+
     private void abrirListarVendas() {
         String[] colunas = { "ID", "Produtos", "Data", "Total", "Pagamento", "Ganho Bruto" };
         List<Venda> vendas = RegistroVendas.getTodasVendas();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    
+
         Object[][] dados = new Object[vendas.size()][6];
-    
+
         for (int i = 0; i < vendas.size(); i++) {
             Venda v = vendas.get(i);
             dados[i][0] = v.getId();
@@ -479,14 +481,14 @@ public class MenuVendas extends JPanel {
             dados[i][4] = v.getFormaPagamento();
             dados[i][5] = String.format("R$ %.2f", v.getLucroTotal()); // sem recalcular, yayyy!
         }
-    
+
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-    
+
         JTable tabelaVendas = new JTable(modelo);
         tabelaVendas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabelaVendas.setRowHeight(22);
@@ -496,7 +498,7 @@ public class MenuVendas extends JPanel {
         tabelaVendas.getColumnModel().getColumn(1).setPreferredWidth(300);
         tabelaVendas.getColumnModel().getColumn(4).setPreferredWidth(100);
         tabelaVendas.getColumnModel().getColumn(5).setPreferredWidth(100);
-    
+
         JTableHeader header = tabelaVendas.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setOpaque(true);
@@ -512,24 +514,63 @@ public class MenuVendas extends JPanel {
                 return label;
             }
         });
-    
+
+        // --- AQUI ADICIONAMOS O CAMPO DE BUSCA ---
+        JTextField campoBusca = new JTextField();
+        campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campoBusca.setPreferredSize(new Dimension(200, 30));
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tabelaVendas.setRowSorter(sorter);
+
+        campoBusca.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filtrar() {
+                String texto = campoBusca.getText().trim().toLowerCase();
+                if (texto.length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    // Filtra coluna 1 ("Produtos" / descrição)
+                    sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 1));
+                }
+            }
+
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                filtrar();
+            }
+        });
+
         JScrollPane scroll = new JScrollPane(tabelaVendas);
         scroll.getViewport().setBackground(new Color(156, 156, 156));
         scroll.setBorder(BorderFactory.createEmptyBorder());
-    
+
         JPanel painel = new JPanel(new BorderLayout());
         painel.setBackground(new Color(156, 156, 156));
+
+        // Painel para busca no topo
+        JPanel painelBusca = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelBusca.setBackground(new Color(156, 156, 156));
+        painelBusca.add(new JLabel("Buscar: "));
+        painelBusca.add(campoBusca);
+
+        painel.add(painelBusca, BorderLayout.NORTH);
         painel.add(scroll, BorderLayout.CENTER);
-    
+
         if (popUpListar != null) {
             popUpListar.dispose();
             popUpListar = null;
         }
-    
+
         popUpListar = framePai.criarPopUp("LISTAR VENDAS", painel, 900, 450);
         popUpListar.setVisible(true);
     }
-    
 
     public static void estilizarBotaoPequeno(javax.swing.JButton botao) {
         botao.setBackground(Color.BLACK);

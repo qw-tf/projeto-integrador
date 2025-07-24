@@ -6,9 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import Banco.ConexaoPostgres;
 import Banco.ProdutoDAO;
@@ -39,16 +43,49 @@ public class RegistroVendas {
     }
 
     public static boolean excluirVenda(int id) {
-        return vendas.removeIf(v -> v.getId() == id);
+        boolean removido = vendas.removeIf(v -> v.getId() == id);
+        if (removido) {
+            Venda.liberarId(id); // ⬅️ Também libera o ID
+        }
+        return removido;
     }
+
     public static boolean removerVenda(Venda venda) {
         boolean removidoDoBanco = VendaDAO.deletarVendaPorId(venda.getId());
+
         if (removidoDoBanco) {
-            return vendas.remove(venda);
+            // 💣 Remover os fiados da memória (o banco já fez sua parte via CASCADE ~ yay!)
+            List<Fiado> fiadosParaRemover = new ArrayList<>();
+            for (Fiado f : RepositorioFiados.getFiados()) {
+                if (f.getIdVenda() == venda.getId()) {
+                    fiadosParaRemover.add(f);
+                }
+            }
+
+            for (Fiado f : fiadosParaRemover) {
+                RepositorioFiados.removerFiado(f); // só da lista in-memory
+                Fiado.liberarId(f.getIdFiado()); // libera o ID pra reuso no mundinho mágico
+            }
+
+            // ✨ Agora remover a venda da memória também
+            Venda paraRemover = null;
+            for (Venda v : vendas) {
+                if (v.getId() == venda.getId()) {
+                    paraRemover = v;
+                    break;
+                }
+            }
+
+            if (paraRemover != null) {
+                vendas.remove(paraRemover);
+                Venda.liberarId(paraRemover.getId()); // libera ID pra próxima geração de heróis
+                return true;
+            }
         }
+
         return false;
     }
-    
+
     public static void quitarFiadoERegistrarVenda(Fiado f, List<ItemVenda> itens, String formaPagamento) {
         f.quitarTotalmente();
         RepositorioFiados.removerFiado(f);
@@ -85,7 +122,7 @@ public class RegistroVendas {
             if (!data.isBefore(inicio) && !data.isAfter(fim)) {
                 int mes = data.getMonthValue();
                 double lucro = venda.getLucroTotal();
-                double gasto = venda.getGastoTotal();
+                double gasto = venda.getGasto();
 
                 resultado.putIfAbsent(mes, new Double[] { 0.0, 0.0 });
                 Double[] valores = resultado.get(mes);
@@ -104,47 +141,67 @@ public class RegistroVendas {
     public static void carregarVendasDoBanco() {
         try {
             List<Venda> vendasDoBanco = new ArrayList<>();
-    
+
+            // 1️⃣ Zera o controle de ID antes de carregar
+            Venda.setProximoId(1);
+            Venda.setIdsDisponiveis(new LinkedList<>());
+
             String sql = "SELECT * FROM vendas";
             try (Connection conn = ConexaoPostgres.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-    
+                    PreparedStatement stmt = conn.prepareStatement(sql);
+                    ResultSet rs = stmt.executeQuery()) {
+
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     LocalDate data = rs.getDate("data").toLocalDate();
                     String descricao = rs.getString("descricao");
-                    int quantidade = rs.getInt("quantidade");
-                    String formaPagamento = rs.getString("formapagamento");
-                    double total = rs.getDouble("valortotal");
-                    double ganhoBruto = rs.getDouble("ganhoBruto"); //
-                    double gasto = rs.getDouble("gasto"); // pega gasto direto do banco
-                    
-    
-                    // Criando a venda com itens vazios, mas com tudo setado corretamente
-                    Venda venda = new Venda(new ArrayList<>(), formaPagamento) {{
-                        setId(id);
-                        setData(data);
-                        setTotal(total);
-                        setDescricao(descricao);
-                        setLucroTotal(ganhoBruto); // 🧠 Salva o lucro bruto direitinho!
-                        setGasto(gasto); // você precisa ter essa propriedade e getter/setter em Venda
+                    String formaPagamento = rs.getString("formaPagamento");
+                    double total = rs.getDouble("valorTotal");
+                    double ganhoBruto = rs.getDouble("ganhoBruto");
+                    double gasto = rs.getDouble("gasto");
 
-                    }};
-    
+                    // 2️⃣ Cria a venda e seta o ID manualmente
+                    Venda venda = new Venda(new ArrayList<>(), formaPagamento);
+                    venda.setId(id);
+                    venda.setData(data);
+                    venda.setTotal(total);
+                    venda.setDescricao(descricao);
+                    venda.setLucroTotal(ganhoBruto);
+                    venda.setGasto(gasto);
+
                     vendasDoBanco.add(venda);
                 }
             }
-    
+
+            // 3️⃣ Ordena por ID
+            vendasDoBanco.sort(Comparator.comparingInt(Venda::getId));
+
+            // 4️⃣ Substitui a lista principal
             vendas.clear();
             vendas.addAll(vendasDoBanco);
-    
-            System.out.println("Vendas carregadas!");
-    
+
+            // 5️⃣ Encontra buracos de ID e popula idsDisponiveis
+            Set<Integer> idsUsados = vendasDoBanco.stream()
+                    .map(Venda::getId)
+                    .collect(Collectors.toSet());
+            int maiorId = idsUsados.stream().mapToInt(i -> i).max().orElse(0);
+
+            List<Integer> idsDisponiveis = new LinkedList<>();
+            for (int i = 1; i < maiorId; i++) {
+                if (!idsUsados.contains(i)) {
+                    idsDisponiveis.add(i);
+                }
+            }
+            Venda.setIdsDisponiveis(idsDisponiveis);
+
+            // 6️⃣ Ajusta proximoId
+            Venda.setProximoId(maiorId + 1);
+
+            System.out.println("Vendas carregadas com sucesso! Próximo ID = " + Venda.getProximoId());
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("Erro ao carregar vendas do banco!");
         }
     }
-    
+
 }

@@ -1,7 +1,7 @@
 // SistemaPrincipal.java
 package Interfaces;
 
-import Backend.Estoque;
+import Backend.RegistroProdutos;
 import Backend.RepositorioFiados;
 import Backend.GerenciadorSenha;
 import Backend.ItemVenda;
@@ -32,7 +32,8 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     public JDialog criarPopUp(String titulo, JPanel conteudo, int width, int height) {
         JDialog popUp = new JDialog(this, titulo, true);
         popUp.setSize(width, height);
-        popUp.setResizable(false);
+        popUp.setMinimumSize(new Dimension(width, height));
+        popUp.setResizable(true);
         popUp.setLocationRelativeTo(null);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         conteudo.setBackground(new Color(156, 156, 156));
@@ -43,7 +44,8 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     public JDialog criarPopUp(String titulo, JScrollPane conteudo, int width, int height) {
         JDialog popUp = new JDialog(this, titulo, true);
         popUp.setSize(width, height);
-        popUp.setResizable(false);
+        popUp.setMinimumSize(new Dimension(width, height));
+        popUp.setResizable(true);
         popUp.setLocationRelativeTo(null);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         conteudo.setBackground(new Color(156, 156, 156));
@@ -57,6 +59,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         popUp.setResizable(true);
         popUp.setLocation(20, 20);
         popUp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        popUp.setMinimumSize(new Dimension(400, 300));
         conteudo.setBorder(BorderFactory.createEmptyBorder());
         popUp.setContentPane(conteudo);
         return popUp;
@@ -262,6 +265,13 @@ public class SistemaPrincipal extends javax.swing.JFrame {
 
     public static void main(String[] args) {
         try {
+            RegistroProdutos.carregarDoBanco();
+            RepositorioFiados.carregarFiadosDoBanco(); // se existir
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
@@ -271,7 +281,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
             RepositorioFiados.carregarFiadosDoBanco();
             RegistroVendas.carregarVendasDoBanco();
             GastosDAO.carregarGastos();
-            Estoque.carregarDoBanco();
+            RegistroProdutos.carregarDoBanco();
         } catch (SQLException ex) {
             System.out.println("Erro ao carregar do banco.");
         } catch (Exception ex) {

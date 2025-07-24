@@ -141,70 +141,225 @@ public class MenuAcess extends JPanel {
 
         jBVoltar.addActionListener(e -> framePai.montarInterface());
         jBNotif.addActionListener(e -> abrirPopUpNotificacoes());
-
-        jBNotif.addActionListener(e -> abrirPopUpNotificacoes());
     }
 
     private void abrirDialogMudarSenha() {
-        JPanel painel = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel painel = new JPanel(new GridBagLayout());
         painel.setBackground(new Color(156, 156, 156));
-        painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        painel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JPasswordField atual = new JPasswordField();
-        JPasswordField nova = new JPasswordField();
-        JPasswordField confirmar = new JPasswordField();
+        JPasswordField atual = new JPasswordField(15);
+        JPasswordField nova = new JPasswordField(15);
+        JPasswordField confirmar = new JPasswordField(15);
 
-        painel.add(new JLabel("Senha atual:"));
-        painel.add(atual);
-        painel.add(new JLabel("Nova senha:"));
-        painel.add(nova);
-        painel.add(new JLabel("Confirmar nova:"));
-        painel.add(confirmar);
+        Font fonteLabel = new Font("Segoe UI", Font.BOLD, 16);
+        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
 
-        int res = JOptionPane.showConfirmDialog(framePai, painel, "Alterar Senha", JOptionPane.OK_CANCEL_OPTION);
+        JLabel lblAtual = new JLabel("Senha atual:");
+        JLabel lblNova = new JLabel("Nova senha:");
+        JLabel lblConfirmar = new JLabel("Confirmar nova:");
 
-        if (res == JOptionPane.OK_OPTION) {
+        lblAtual.setFont(fonteLabel);
+        lblNova.setFont(fonteLabel);
+        lblConfirmar.setFont(fonteLabel);
+
+        atual.setFont(fonteCampo);
+        nova.setFont(fonteCampo);
+        confirmar.setFont(fonteCampo);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        painel.add(lblAtual, gbc);
+        gbc.gridx = 1;
+        painel.add(atual, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        painel.add(lblNova, gbc);
+        gbc.gridx = 1;
+        painel.add(nova, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        painel.add(lblConfirmar, gbc);
+        gbc.gridx = 1;
+        painel.add(confirmar, gbc);
+
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        painelBotoes.setBackground(new Color(156, 156, 156));
+
+        JButton btnOk = new JButton("Confirmar");
+        JButton btnCancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(btnOk);
+        SistemaPrincipal.estilizarBotaoMaior(btnCancelar);
+
+        painelBotoes.add(btnCancelar);
+        painelBotoes.add(btnOk);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painel.add(painelBotoes, gbc);
+
+        JDialog popup = framePai.criarPopUp("Alterar Senha", painel, 380, 280);
+
+        btnCancelar.addActionListener(e -> popup.dispose());
+
+        btnOk.addActionListener(e -> {
             String senhaAtual = new String(atual.getPassword());
             String novaSenha = new String(nova.getPassword());
             String confirmarSenha = new String(confirmar.getPassword());
 
             String senhaSalva = GerenciadorSenha.carregarSenha();
             if (!senhaAtual.equals(senhaSalva)) {
-                JOptionPane.showMessageDialog(framePai, "Senha atual incorreta.");
+                JOptionPane.showMessageDialog(popup, "Senha atual incorreta.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             if (!novaSenha.equals(confirmarSenha)) {
-                JOptionPane.showMessageDialog(framePai, "Nova senha não coincide.");
+                JOptionPane.showMessageDialog(popup, "Nova senha não coincide.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             GerenciadorSenha.salvarSenha(novaSenha);
-            JOptionPane.showMessageDialog(framePai, "Senha atualizada!");
-        }
+            JOptionPane.showMessageDialog(popup, "Senha atualizada!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            popup.dispose();
+        });
+
+        popup.setLocationRelativeTo(framePai);
+        popup.setVisible(true);
     }
 
     private void abrirDialogDica() {
-        String dicaAtual = GerenciadorSenha.carregarDica();
-        String novaDica = JOptionPane.showInputDialog(framePai, "Digite uma dica de recuperação:", dicaAtual);
-        if (novaDica != null && !novaDica.trim().isEmpty()) {
-            GerenciadorSenha.salvarDica(novaDica.trim());
-            JOptionPane.showMessageDialog(framePai, "Dica salva com sucesso.");
-        }
+        JPanel painel = new JPanel(new GridBagLayout());
+        painel.setBackground(new Color(156, 156, 156));
+        painel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel lblDica = new JLabel("Dica de recuperação:");
+        JTextField campoDica = new JTextField(20);
+        campoDica.setText(GerenciadorSenha.carregarDica());
+
+        Font fonteLabel = new Font("Segoe UI", Font.BOLD, 16);
+        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
+
+        lblDica.setFont(fonteLabel);
+        campoDica.setFont(fonteCampo);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        painel.add(lblDica, gbc);
+        gbc.gridx = 1;
+        painel.add(campoDica, gbc);
+
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        painelBotoes.setBackground(new Color(156, 156, 156));
+
+        JButton btnOk = new JButton("Confirmar");
+        JButton btnCancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(btnOk);
+        SistemaPrincipal.estilizarBotaoMaior(btnCancelar);
+
+        painelBotoes.add(btnCancelar);
+        painelBotoes.add(btnOk);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painel.add(painelBotoes, gbc);
+
+        JDialog popup = framePai.criarPopUp("Definir Dica", painel, 380, 180);
+
+        btnCancelar.addActionListener(e -> popup.dispose());
+
+        btnOk.addActionListener(e -> {
+            String novaDica = campoDica.getText().trim();
+            if (novaDica.isEmpty()) {
+                JOptionPane.showMessageDialog(popup, "A dica não pode ficar vazia.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            GerenciadorSenha.salvarDica(novaDica);
+            JOptionPane.showMessageDialog(popup, "Dica salva com sucesso.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            popup.dispose();
+        });
+
+        popup.setLocationRelativeTo(framePai);
+        popup.setVisible(true);
     }
 
     private void abrirDialogToken() {
-        String tokenAtual = GerenciadorSenha.carregarToken();
-        String novoToken = JOptionPane.showInputDialog(framePai, "Digite um token de segurança:", tokenAtual);
-        if (novoToken != null && !novoToken.trim().isEmpty()) {
-            GerenciadorSenha.salvarToken(novoToken.trim());
-            JOptionPane.showMessageDialog(framePai, "Token salvo com sucesso.");
-        }
+        JPanel painel = new JPanel(new GridBagLayout());
+        painel.setBackground(new Color(156, 156, 156));
+        painel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel lblToken = new JLabel("Token de segurança:");
+        JTextField campoToken = new JTextField(20);
+        campoToken.setText(GerenciadorSenha.carregarToken());
+
+        Font fonteLabel = new Font("Segoe UI", Font.BOLD, 16);
+        Font fonteCampo = new Font("Segoe UI", Font.PLAIN, 16);
+
+        lblToken.setFont(fonteLabel);
+        campoToken.setFont(fonteCampo);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        painel.add(lblToken, gbc);
+        gbc.gridx = 1;
+        painel.add(campoToken, gbc);
+
+        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        painelBotoes.setBackground(new Color(156, 156, 156));
+
+        JButton btnOk = new JButton("Confirmar");
+        JButton btnCancelar = new JButton("Cancelar");
+        SistemaPrincipal.estilizarBotaoMaior(btnOk);
+        SistemaPrincipal.estilizarBotaoMaior(btnCancelar);
+
+        painelBotoes.add(btnCancelar);
+        painelBotoes.add(btnOk);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        painel.add(painelBotoes, gbc);
+
+        JDialog popup = framePai.criarPopUp("Definir Token", painel, 380, 180);
+
+        btnCancelar.addActionListener(e -> popup.dispose());
+
+        btnOk.addActionListener(e -> {
+            String novoToken = campoToken.getText().trim();
+            if (novoToken.isEmpty()) {
+                JOptionPane.showMessageDialog(popup, "O token não pode ficar vazio.", "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            GerenciadorSenha.salvarToken(novoToken);
+            JOptionPane.showMessageDialog(popup, "Token salvo com sucesso.", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+            popup.dispose();
+        });
+
+        popup.setLocationRelativeTo(framePai);
+        popup.setVisible(true);
     }
 
     private void abrirPopUpNotificacoes() {
-        if (popUpNotificacoes != null && popUpNotificacoes.isVisible()) {
-            popUpNotificacoes.dispose();
+
+        if (popUpNotificacoes != null && popUpNotificacoes.isShowing()) {
+
+            popUpNotificacoes.toFront();
+            popUpNotificacoes.requestFocus();
             return;
         }
 
@@ -219,21 +374,24 @@ public class MenuAcess extends JPanel {
         scrollNotificacoes.setBackground(Color.BLACK);
 
         popUpNotificacoes = framePai.criarPopUpNotificacoesTopoEsquerdo(scrollNotificacoes);
-        popUpNotificacoes.setVisible(true);
-
-        atualizarNotificacoes();
 
         popUpNotificacoes.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+
                 popUpNotificacoes = null;
             }
 
             @Override
             public void windowClosed(WindowEvent e) {
+
                 popUpNotificacoes = null;
             }
         });
+
+        atualizarNotificacoes();
+
+        popUpNotificacoes.setVisible(true);
     }
 
     private void atualizarNotificacoes() {
@@ -245,7 +403,7 @@ public class MenuAcess extends JPanel {
         List<String> avisos = Notificador.gerarNotificacoes();
 
         if (avisos.isEmpty()) {
-            JLabel label = new JLabel("Sem notificacoes no momento.");
+            JLabel label = new JLabel("Sem notificações no momento.");
             label.setFont(new Font("Segoe UI", Font.ITALIC, 16));
             label.setForeground(Color.WHITE);
             label.setBackground(Color.BLACK);
@@ -271,8 +429,9 @@ public class MenuAcess extends JPanel {
     }
 
     private void iniciarAtualizacaoAutomatica() {
-        new javax.swing.Timer(5, e -> {
+        new javax.swing.Timer(5000, e -> {
             if (popUpNotificacoes != null && popUpNotificacoes.isVisible()) {
+                System.out.println("Atualizando notificações...");
                 atualizarNotificacoes();
             }
         }).start();

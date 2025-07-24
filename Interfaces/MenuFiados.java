@@ -227,22 +227,23 @@ public class MenuFiados extends JPanel {
         }
         return dados;
     }
+
     private void abrirListarFiados() {
         String[] colunas = { "ID", "ID VENDA", "NOME DO CLIENTE", "VALOR RESTANTE", "QUITADO" };
-        Object[][] dados = montarDadosTabela();
-    
-        DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
+        List<Fiado> fiados = RepositorioFiados.getFiados();
+
+        DefaultTableModel modelo = new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-    
-        tabelaFiados = new JTable(modelo);
-        tabelaFiados.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabelaFiados.setRowHeight(22);
-    
-        JTableHeader header = tabelaFiados.getTableHeader();
+
+        JTable tabela = new JTable(modelo);
+        tabela.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tabela.setRowHeight(22);
+
+        JTableHeader header = tabela.getTableHeader();
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 32));
         header.setDefaultRenderer(new DefaultTableCellRenderer() {
             @Override
@@ -256,25 +257,79 @@ public class MenuFiados extends JPanel {
                 return label;
             }
         });
-    
-        JScrollPane scrollPane = new JScrollPane(tabelaFiados);
+
+        JScrollPane scrollPane = new JScrollPane(tabela);
         scrollPane.getViewport().setBackground(new Color(156, 156, 156));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-    
-        // Criar o label kawaii com a mensagem embaixo da tabela
+
+        // Campo de busca
+        JTextField campoBusca = new JTextField(20);
+        campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JLabel labelBusca = new JLabel("Buscar por nome:");
+        labelBusca.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        JPanel painelBusca = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelBusca.setBackground(new Color(156, 156, 156));
+        painelBusca.add(labelBusca);
+        painelBusca.add(campoBusca);
+
+        // Label de aviso no rodapé
         JLabel avisoLabel = new JLabel("FIADOS DESAPARECEM AUTOMATICAMENTE DEPOIS DE 30 DIAS APÓS PAGOS");
         avisoLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        avisoLabel.setForeground(new Color(0, 0, 0));  // Vermelhinho suave pra chamar atenção
+        avisoLabel.setForeground(Color.BLACK);
         avisoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        avisoLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0)); // Espaçamento legal
-    
-        // Painel principal com BorderLayout
+        avisoLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
+
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBackground(new Color(156, 156, 156));
+        painelPrincipal.add(painelBusca, BorderLayout.NORTH);
         painelPrincipal.add(scrollPane, BorderLayout.CENTER);
-        painelPrincipal.add(avisoLabel, BorderLayout.SOUTH);  // Mensagem embaixo, centradinha
-    
+        painelPrincipal.add(avisoLabel, BorderLayout.SOUTH);
+
+        // Função de atualizar a tabela com base na busca
+        Runnable atualizarTabela = () -> {
+            String termo = campoBusca.getText().trim().toLowerCase();
+            List<Fiado> fiadosFiltrados = RepositorioFiados.getFiados();
+
+            if (!termo.isEmpty()) {
+                fiadosFiltrados = fiadosFiltrados.stream()
+                        .sorted((f1, f2) -> {
+                            boolean c1 = f1.getNomeCliente().toLowerCase().contains(termo);
+                            boolean c2 = f2.getNomeCliente().toLowerCase().contains(termo);
+                            return Boolean.compare(!c1, !c2); // true vem depois de false
+                        }).collect(Collectors.toList());
+            }
+
+            modelo.setRowCount(0); // limpa a tabela
+            for (Fiado f : fiadosFiltrados) {
+                modelo.addRow(new Object[] {
+                        f.getIdFiado(),
+                        f.getIdVenda(),
+                        f.getNomeCliente(),
+                        String.format("R$ %.2f", f.getValorRestante()),
+                        f.isQuitado() ? "Sim" : "Não"
+                });
+            }
+        };
+
+        // Atualiza conforme digita
+        campoBusca.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                atualizarTabela.run();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                atualizarTabela.run();
+            }
+
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                atualizarTabela.run();
+            }
+        });
+
+        atualizarTabela.run(); // carrega pela primeira vez
+
         if (popUpListar != null && popUpListar.isVisible()) {
             popUpListar.toFront();
         } else {
@@ -282,7 +337,7 @@ public class MenuFiados extends JPanel {
             popUpListar.setVisible(true);
         }
     }
-    
+
     private void abrirQuitarFiado() {
         JPanel painel = new JPanel(new GridBagLayout());
         painel.setBackground(new Color(156, 156, 156));

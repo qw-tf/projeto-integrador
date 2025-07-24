@@ -17,7 +17,7 @@ public class Notificador {
         LocalDate hoje = LocalDate.now();
 
         // 1. Produtos perto da validade
-        for (Produto p : Estoque.getProdutos()) {
+        for (Produto p : RegistroProdutos.getProdutos()) {
             if (p instanceof ProdutoPerecivel) {
                 ProdutoPerecivel pp = (ProdutoPerecivel) p;
                 LocalDate validade = pp.getDataDeValidade();
@@ -31,21 +31,34 @@ public class Notificador {
             }
         }
 
-        // ♦
-        // ♠
-        // ♥
-        // ♣
-
         // 2. Fiados vencidos
         LocalDate limiteFiado = hoje.minusDays(DIAS_AVISO_FIADO);
-        for (Fiado fiado : RepositorioFiados.getFiados()) { // CORREÇÃO AQUI
+        for (Fiado fiado : RepositorioFiados.getFiados()) {
             if (fiado.getDataCriacao().isBefore(limiteFiado) && !fiado.isQuitado()) {
                 avisos.add(String.format(
-                        "  ♣  Fiado do cliente ID " + fiado.getNomeCliente() + "  está vencido há %d dia(s).",
+                        "  ♣  Fiado do cliente '%s' está vencido há %d dia(s).",
                         fiado.getNomeCliente(), ChronoUnit.DAYS.between(fiado.getDataCriacao(), hoje)));
+            }
+        }
+
+        // 3. Estoque baixo (menos que 20% do estoque total)
+        for (Produto p : RegistroProdutos.getProdutos()) {
+            int atual = p.getQuantidade();
+            int total = p.getQuantidadeTotal();
+
+            if (total > 0) {
+                double percentual = (double) atual / total;
+                if (percentual <= 0.2) {
+                    avisos.add(String.format("  ♠  Estoque baixo do produto '%s': %.0f%% restante (%d de %d).",
+                            p.getNome(), percentual * 100, atual, total));
+                }
             }
         }
 
         return avisos;
     }
 }
+// ♦
+// ♠
+// ♥
+// ♣

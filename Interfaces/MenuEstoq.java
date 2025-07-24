@@ -5,15 +5,18 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
 
-import Backend.Estoque;
+import Backend.RegistroProdutos;
 import Backend.Produto;
 import Backend.ProdutoPerecivel;
 import Backend.ValidacaoException;
@@ -102,66 +105,100 @@ public class MenuEstoq extends JPanel {
         jBVoltar.addActionListener(e -> framePai.trocarTela(new MenuAcess(framePai)));
     }
 
-    // Dentro da classe MenuEstoq
     private void abrirAdicionarProduto() {
         JPanel panelzao = new JPanel(new GridBagLayout());
         panelzao.setBackground(new Color(156, 156, 156));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Campos
         JLabel labelNome = new JLabel("Nome:");
         JTextField campoNome = new JTextField(20);
-        JLabel labelValorCompra = new JLabel("Valor Compra:");
-        JTextField campoValorCompra = new JTextField(10);
-        JLabel labelValorVenda = new JLabel("Valor Venda:");
-        JTextField campoValorVenda = new JTextField(10);
+
         JLabel labelQuantidade = new JLabel("Quantidade:");
         JTextField campoQuantidade = new JTextField(10);
+
+        JLabel labelValorCompra = new JLabel("Valor Compra (R$):");
+        JTextField campoValorCompra = new JTextField(10);
+        JLabel labelValorCompraUnidade = new JLabel("R$ 0,00 / unidade");
+        labelValorCompraUnidade.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        labelValorCompraUnidade.setForeground(new Color(100, 100, 100));
+
+        JLabel labelValorVenda = new JLabel("Valor Venda (R$):");
+        JTextField campoValorVenda = new JTextField(10);
+
         JCheckBox checkPerecivel = new JCheckBox("Produto Perecível");
         JLabel labelValidade = new JLabel("Validade (se perecível):");
         JTextField campoValidade = new JTextField(10);
 
-        // Inicialmente invisível validade
-        labelValidade.setVisible(false);
-        campoValidade.setVisible(false);
+        // Inicialmente desabilita validade sem alterar layout
+        labelValidade.setEnabled(false);
+        labelValidade.setForeground(new Color(156, 156, 156));
+        campoValidade.setEnabled(false);
+        campoValidade.setBackground(new Color(220, 220, 220));
 
-        // Adiciona componentes no painel
+        int y = 0;
+
+        // Linha 0: Nome
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 1;
         panelzao.add(labelNome, gbc);
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         panelzao.add(campoNome, gbc);
 
+        // Linha 1: Quantidade
+        y++;
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        panelzao.add(labelValorCompra, gbc);
-        gbc.gridx = 1;
-        panelzao.add(campoValorCompra, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panelzao.add(labelValorVenda, gbc);
-        gbc.gridx = 1;
-        panelzao.add(campoValorVenda, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = y;
+        gbc.gridwidth = 1;
         panelzao.add(labelQuantidade, gbc);
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         panelzao.add(campoQuantidade, gbc);
 
+        // Linha 2: Valor Compra e custo por unidade
+        y++;
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = y;
+        gbc.gridwidth = 1;
+        panelzao.add(labelValorCompra, gbc);
+        gbc.gridx = 1;
+        gbc.gridwidth = 1;
+        panelzao.add(campoValorCompra, gbc);
+        gbc.gridx = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        panelzao.add(labelValorCompraUnidade, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Linha 3: Valor Venda
+        y++;
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 1;
+        panelzao.add(labelValorVenda, gbc);
+        gbc.gridx = 1;
         gbc.gridwidth = 2;
+        panelzao.add(campoValorVenda, gbc);
+
+        // Linha 4: Checkbox Perecível
+        y++;
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 3;
         panelzao.add(checkPerecivel, gbc);
 
-        gbc.gridy = 5;
+        // Linha 5: Validade
+        y++;
+        gbc.gridx = 0;
+        gbc.gridy = y;
         gbc.gridwidth = 1;
         panelzao.add(labelValidade, gbc);
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         panelzao.add(campoValidade, gbc);
 
         // Botões
@@ -169,35 +206,65 @@ public class MenuEstoq extends JPanel {
         JButton cancelar = new JButton("Cancelar");
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
         SistemaPrincipal.estilizarBotaoMaior(cancelar);
-
-        gbc.gridy = 6;
-        gbc.gridwidth = 1;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        panelzao.add(cancelar, gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        panelzao.add(confirmar, gbc);
-
         Dimension botaoTamanho = new Dimension(120, 30);
         confirmar.setPreferredSize(botaoTamanho);
         cancelar.setPreferredSize(botaoTamanho);
 
-        // Mostrar ou esconder validade
+        JPanel botoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        botoes.setOpaque(false);
+        botoes.add(cancelar);
+        botoes.add(confirmar);
+
+        y++;
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 3;
+        panelzao.add(botoes, gbc);
+
+        // Listener para habilitar/desabilitar validade suavemente
         checkPerecivel.addActionListener(e -> {
-            boolean selecionado = checkPerecivel.isSelected();
-            labelValidade.setVisible(selecionado);
-            campoValidade.setVisible(selecionado);
+            boolean ativo = checkPerecivel.isSelected();
+            labelValidade.setEnabled(ativo);
+            labelValidade.setForeground(ativo ? Color.BLACK : new Color(156, 156, 156));
+            campoValidade.setEnabled(ativo);
+            campoValidade.setBackground(ativo ? Color.WHITE : new Color(220, 220, 220));
             panelzao.revalidate();
             panelzao.repaint();
         });
 
-        JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 300);
+        // DocumentListener para custo por unidade
+        DocumentListener atualizaCustoUnidade = new DocumentListener() {
+            private void atualizar() {
+                try {
+                    double valor = Double.parseDouble(campoValorCompra.getText().trim().replace(",", "."));
+                    int qtd = Integer.parseInt(campoQuantidade.getText().trim());
+                    if (qtd > 0) {
+                        labelValorCompraUnidade.setText(String.format("R$ %.2f / unidade", valor / qtd));
+                    } else {
+                        labelValorCompraUnidade.setText("R$ 0,00 / unidade");
+                    }
+                } catch (Exception ex) {
+                    labelValorCompraUnidade.setText("R$ 0,00 / unidade");
+                }
+            }
 
+            public void insertUpdate(DocumentEvent e) {
+                atualizar();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                atualizar();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                atualizar();
+            }
+        };
+        campoQuantidade.getDocument().addDocumentListener(atualizaCustoUnidade);
+        campoValorCompra.getDocument().addDocumentListener(atualizaCustoUnidade);
+
+        // Dialog
+        JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 320);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         confirmar.addActionListener(e -> {
@@ -206,47 +273,28 @@ public class MenuEstoq extends JPanel {
                 Verificador.verificarNome(nome);
                 int qtd = Integer.parseInt(campoQuantidade.getText().trim());
                 Verificador.verificarQuantidade(qtd);
-
-                String valorCompraStr = campoValorCompra.getText().trim().replace(',', '.');
-                double valorCompra = Double.parseDouble(valorCompraStr);
+                double valorCompra = Double.parseDouble(campoValorCompra.getText().trim().replace(',', '.'));
                 Verificador.verificarPreco(valorCompra);
-
-                String valorVendaStr = campoValorVenda.getText().trim().replace(',', '.');
-                double valorVenda = Double.parseDouble(valorVendaStr);
+                double valorVenda = Double.parseDouble(campoValorVenda.getText().trim().replace(',', '.'));
                 Verificador.verificarPreco(valorVenda);
 
                 if (checkPerecivel.isSelected()) {
-                    String validadeStr = campoValidade.getText().trim();
-                    LocalDate dataValidade = LocalDate.parse(validadeStr, formatter);
-                    Verificador.verificarDataValidade(dataValidade);
-
-                    ProdutoPerecivel novoProduto = new ProdutoPerecivel(nome, qtd, valorCompra, valorVenda,
-                            dataValidade);
-                    ProdutoDAO.inserirProduto(novoProduto);
-                    Estoque.getProdutos().add(novoProduto);
+                    LocalDate validade = LocalDate.parse(campoValidade.getText().trim(), formatter);
+                    Verificador.verificarDataValidade(validade);
+                    ProdutoPerecivel p = new ProdutoPerecivel(nome, qtd, valorCompra, valorVenda, validade);
+                    ProdutoDAO.inserirProduto(p);
+                    RegistroProdutos.getProdutos().add(p);
                 } else {
-                    Produto novoProduto = new Produto(nome, qtd, valorCompra, valorVenda);
-                    ProdutoDAO.inserirProduto(novoProduto);
-                    Estoque.getProdutos().add(novoProduto);
+                    Produto p = new Produto(nome, qtd, valorCompra, valorVenda);
+                    ProdutoDAO.inserirProduto(p);
+                    RegistroProdutos.getProdutos().add(p);
                 }
 
                 JOptionPane.showMessageDialog(this, "Produto adicionado com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
                 popUp.dispose();
-
-            } catch (ValidacaoException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Valores inválidos!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Erro no Banco de dados!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Data inválida. Use o formato dd/MM/yyyy.", "ERRO",
-                        JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro inesperado: " + ex.getMessage(), "ERRO GRAVE",
-                        JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -256,7 +304,7 @@ public class MenuEstoq extends JPanel {
 
     private Object[][] montarDadosTabela() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        List<Produto> produtos = Estoque.getProdutos();
+        List<Produto> produtos = RegistroProdutos.getProdutos();
 
         Object[][] dados = new Object[produtos.size()][7];
 
@@ -280,7 +328,7 @@ public class MenuEstoq extends JPanel {
     }
 
     private void abrirListarProdutos() {
-        Estoque.verificarEExcluirZeradosOuVencidos(); // Limpa produtos zerados ou vencidos antes de listar
+        RegistroProdutos.verificarEExcluirZeradosOuVencidos();
 
         String[] colunas = { "ID", "NOME", "VALOR COMPRA", "VALOR VENDA", "QUANTIDADE", "PERECÍVEL", "VALIDADE" };
         Object[][] dados = montarDadosTabela();
@@ -293,8 +341,6 @@ public class MenuEstoq extends JPanel {
         };
 
         tabelaProdutos = new JTable(modelo);
-        // restante do método permanece igual...
-
         tabelaProdutos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabelaProdutos.setRowHeight(22);
         tabelaProdutos.setGridColor(new Color(120, 120, 120));
@@ -322,8 +368,43 @@ public class MenuEstoq extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
+        // 🔍 Campo de busca
+        JTextField campoBusca = new JTextField();
+        campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        campoBusca.setPreferredSize(new Dimension(200, 30));
+
+        campoBusca.addActionListener(e -> {
+            String termo = campoBusca.getText().toLowerCase().trim();
+            Object[][] todosDados = montarDadosTabela();
+            List<Object[]> filtrados = new ArrayList<>();
+
+            for (Object[] linha : todosDados) {
+                String nome = linha[1].toString().toLowerCase(); // Coluna do nome
+                if (nome.contains(termo)) {
+                    filtrados.add(linha);
+                }
+            }
+
+            DefaultTableModel novoModelo = new DefaultTableModel(
+                    filtrados.toArray(new Object[0][]), colunas) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
+            tabelaProdutos.setModel(novoModelo);
+            tabelaProdutos.setRowSorter(new TableRowSorter<>(novoModelo));
+        });
+
+        JPanel painelBusca = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        painelBusca.setBackground(new Color(156, 156, 156));
+        painelBusca.add(new JLabel("Buscar por nome:"));
+        painelBusca.add(campoBusca);
+
         JPanel painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.setBackground(new Color(156, 156, 156));
+        painelPrincipal.add(painelBusca, BorderLayout.NORTH);
         painelPrincipal.add(scrollPane, BorderLayout.CENTER);
 
         if (popUpListar != null && popUpListar.isVisible()) {
@@ -400,7 +481,7 @@ public class MenuEstoq extends JPanel {
 
             try {
                 int id = Integer.parseInt(entrada);
-                Produto p = Estoque.buscarProduto(id);
+                Produto p = RegistroProdutos.buscarProduto(id);
                 if (p != null) {
                     produtoSelecionado[0] = p;
                     labelNomeProduto.setText("Nome: " + p.getNome() + " (ID: " + p.getCodigo() + ")");
@@ -409,7 +490,7 @@ public class MenuEstoq extends JPanel {
                             JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ignored) {
-                List<Produto> correspondentes = Estoque.getProdutos().stream()
+                List<Produto> correspondentes = RegistroProdutos.getProdutos().stream()
                         .filter(p -> p.getNome().toLowerCase().contains(entrada))
                         .toList();
 
@@ -431,7 +512,7 @@ public class MenuEstoq extends JPanel {
 
                     if (escolha != null) {
                         int idEscolhido = Integer.parseInt(escolha.replaceAll(".*ID: (\\d+).*", "$1"));
-                        Produto escolhido = Estoque.buscarProduto(idEscolhido);
+                        Produto escolhido = RegistroProdutos.buscarProduto(idEscolhido);
                         if (escolhido != null) {
                             produtoSelecionado[0] = escolhido;
                             labelNomeProduto
@@ -459,7 +540,7 @@ public class MenuEstoq extends JPanel {
                     "Confirmação", JOptionPane.YES_NO_OPTION);
             try {
                 if (confirm == JOptionPane.YES_OPTION) {
-                    boolean excluiu = Estoque.excluirProduto(produto.getCodigo());
+                    boolean excluiu = RegistroProdutos.excluirProduto(produto.getCodigo());
                     if (excluiu) {
                         JOptionPane.showMessageDialog(popUpExcluir,
                                 "Produto removido com sucesso!\nNome: " + produto.getNome(),

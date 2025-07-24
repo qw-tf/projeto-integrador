@@ -7,8 +7,8 @@ CREATE TABLE produtos (
     valorVenda NUMERIC(10,2) NOT NULL,
     valorCompra NUMERIC(10,2) NOT NULL,
     quantidade INT,
-    dataDeValidade DATE
-
+    dataDeValidade DATE,
+    quantidadeTotal INT
 
 );
 

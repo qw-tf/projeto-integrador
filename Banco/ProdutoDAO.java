@@ -1,32 +1,32 @@
 package Banco;
 
 import Backend.Produto;
-
 import Backend.ProdutoPerecivel;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProdutoDAO {
-
     public static void inserirProduto(Produto produto) throws SQLException {
-        String sql = "INSERT INTO produtos (codigo, nome, quantidade, valorCompra, valorVenda, dataDeValidade) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO produtos (codigo, nome, quantidade, quantidadeTotal, valorCompra, valorVenda, dataDeValidade) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = ConexaoPostgres.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, produto.getCodigo());
             stmt.setString(2, produto.getNome());
             stmt.setInt(3, produto.getQuantidade());
-            stmt.setDouble(4, produto.getValorCompra());
-            stmt.setDouble(5, produto.getValorVenda());
+            stmt.setInt(4, produto.getQuantidadeTotal()); // 🌟 novo campo mágico!
+            stmt.setDouble(5, produto.getValorCompra());
+            stmt.setDouble(6, produto.getValorVenda());
 
-            if (produto instanceof ProdutoPerecivel) {
-                ProdutoPerecivel perecivel = (ProdutoPerecivel) produto;
-                LocalDate dataStr = perecivel.getDataDeValidade();
-                stmt.setDate(6, java.sql.Date.valueOf(dataStr));
+            if (produto instanceof ProdutoPerecivel perecivel) {
+                LocalDate validade = perecivel.getDataDeValidade();
+                stmt.setDate(7, validade != null ? Date.valueOf(validade) : null);
             } else {
-                stmt.setNull(6, java.sql.Types.DATE);
+                stmt.setNull(7, Types.DATE);
             }
 
             stmt.executeUpdate();
@@ -34,11 +34,8 @@ public class ProdutoDAO {
     }
 
     public static void atualizar(int codigo, int novaQuantidade) throws SQLException {
-        System.out.println("Código recebido: " + codigo + " | Nova quantidade: " + novaQuantidade);
-
         if (novaQuantidade == 0) {
-            System.out.println("Quantidade zerada! Deletando produto do banco, desuu~!");
-            deletar(codigo); // chama o método que já existe, uhuul!
+            deletar(codigo);
             return;
         }
 
@@ -47,55 +44,57 @@ public class ProdutoDAO {
         try (Connection conn = ConexaoPostgres.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, novaQuantidade); // nova quantidade kawaii desu
-            stmt.setInt(2, codigo); // código do produto-chan
-
-            int linhasAfetadas = stmt.executeUpdate();
-
-            if (linhasAfetadas == 0) {
-                System.out.println("Nenhum produto com esse código foi encontrado!");
-            } else {
-                System.out.println("Produto atualizado com sucesso!");
-            }
+            stmt.setInt(1, novaQuantidade);
+            stmt.setInt(2, codigo);
+            stmt.executeUpdate();
         }
     }
 
     public static void deletar(int codigo) throws SQLException {
-        System.out.println("Código recebido: " + codigo);
-        String deleteSql = "DELETE FROM produtos WHERE codigo = ?";
+        String sql = "DELETE FROM produtos WHERE codigo = ?";
 
         try (Connection conn = ConexaoPostgres.getConnection();
-                PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            deleteStmt.setInt(1, codigo);
-            int linhasAfetadas = deleteStmt.executeUpdate();
+            stmt.setInt(1, codigo);
+            int linhas = stmt.executeUpdate();
 
-            if (linhasAfetadas > 0) {
-                Produto.liberarCodigo(codigo); // <<< ESSENCIAL!!!
-                System.out.println("Produto com código " + codigo + " deletado com sucesso.");
-            } else {
-                System.out.println("Produto com código " + codigo + " não encontrado.");
+            if (linhas > 0) {
+                Produto.liberarCodigo(codigo);
             }
         }
     }
 
-    public List<Produto> listarTodos() throws SQLException {
+    public static List<Produto> listarTodos() throws SQLException {
         List<Produto> produtos = new ArrayList<>();
         String sql = "SELECT * FROM produtos";
+
         try (Connection conn = ConexaoPostgres.getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Produto produto = new Produto(
-                        rs.getString("nome"),
-                        rs.getInt("quantidade"),
-                        rs.getDouble("valorCompra"),
-                        rs.getDouble("valorVenda"));
-                produto.setCodigo(rs.getInt("codigo"));
+                String nome = rs.getString("nome");
+                int quantidade = rs.getInt("quantidade");
+                int quantidadeTotal = rs.getInt("quantidadeTotal");
+                double valorCompra = rs.getDouble("valorCompra");
+                double valorVenda = rs.getDouble("valorVenda");
+                int codigo = rs.getInt("codigo");
+                Date validade = rs.getDate("dataDeValidade");
+
+                Produto produto;
+                if (validade != null) {
+                    produto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade.toLocalDate());
+                } else {
+                    produto = new Produto(nome, quantidade, valorCompra, valorVenda);
+                }
+
+                produto.setCodigo(codigo);
+                produto.setQuantidadeTotal(quantidadeTotal); // ESSA LINHA FAZIA FALTA
                 produtos.add(produto);
             }
         }
+
         return produtos;
     }
 
@@ -113,13 +112,11 @@ public class ProdutoDAO {
                 int quantidade = rs.getInt("quantidade");
                 double valorCompra = rs.getDouble("valorCompra");
                 double valorVenda = rs.getDouble("valorVenda");
+                Date validade = rs.getDate("dataDeValidade");
 
                 Produto produto;
-                Date dataValidade = rs.getDate("dataDeValidade");
-
-                if (dataValidade != null) {
-                    produto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda,
-                            dataValidade.toLocalDate());
+                if (validade != null) {
+                    produto = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade.toLocalDate());
                 } else {
                     produto = new Produto(nome, quantidade, valorCompra, valorVenda);
                 }
@@ -127,9 +124,8 @@ public class ProdutoDAO {
                 produto.setCodigo(codigo);
                 return produto;
             }
-
-            return null;
         }
-    }
 
+        return null;
+    }
 }

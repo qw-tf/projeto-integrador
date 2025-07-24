@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import Banco.ConexaoPostgres;
 import Banco.ProdutoDAO;
 
-public class Estoque {
+public class RegistroProdutos {
 
     private static List<Produto> produtos = new ArrayList<>();
 
@@ -123,52 +123,20 @@ public class Estoque {
     }
 
     public static void carregarDoBanco() throws SQLException {
-        List<Produto> lista = new ArrayList<>();
-
-        String sql = "SELECT * FROM produtos";
-        try (Connection conn = ConexaoPostgres.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                String nome = rs.getString("nome");
-                int quantidade = rs.getInt("quantidade");
-                double valorCompra = rs.getDouble("valorCompra");
-                double valorVenda = rs.getDouble("valorVenda");
-
-                Produto p;
-
-                java.sql.Date validadeSQL = rs.getDate("dataDeValidade");
-
-                if (validadeSQL != null) {
-                    LocalDate validade = validadeSQL.toLocalDate();
-                    p = new ProdutoPerecivel(nome, quantidade, valorCompra, valorVenda, validade);
-                } else {
-                    p = new Produto(nome, quantidade, valorCompra, valorVenda);
-                }
-
-                int codigo = rs.getInt("codigo");
-                p.setCodigo(codigo);
-
-                lista.add(p);
-            }
-        }
-
+        List<Produto> lista = ProdutoDAO.listarTodos(); // usa o DAO
         lista.sort(Comparator.comparingInt(Produto::getCodigo));
         produtos = lista;
 
-        // Acha todos os códigos usados
+        // Atualiza códigos
         Set<Integer> codigosUsados = lista.stream()
                 .map(Produto::getCodigo)
                 .collect(Collectors.toSet());
 
-        // Acha maior código
         int maiorCodigo = codigosUsados.stream()
                 .mapToInt(Integer::intValue)
                 .max()
                 .orElse(0);
 
-        // Acha buracos
         List<Integer> codigosDisponiveis = new LinkedList<>();
         for (int i = 1; i < maiorCodigo; i++) {
             if (!codigosUsados.contains(i)) {
@@ -176,9 +144,7 @@ public class Estoque {
             }
         }
 
-        // Atualiza
         Produto.setProximoCodigo(maiorCodigo + 1);
         Produto.setCodigosDisponiveis(codigosDisponiveis);
     }
-
 }

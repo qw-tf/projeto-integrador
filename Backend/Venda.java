@@ -1,10 +1,12 @@
 package Backend;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Venda {
     private static int proximoId = 1;
+    private static List<Integer> idsDisponiveis = new LinkedList<>();
 
     private int id;
     private List<ItemVenda> itens;
@@ -16,16 +18,22 @@ public class Venda {
     private double gasto;
 
     public Venda(List<ItemVenda> itens, String formaPagamento) {
-        this.id = proximoId++;
+        if (!idsDisponiveis.isEmpty()) {
+            this.id = idsDisponiveis.remove(0);
+        } else {
+            this.id = proximoId++;
+        }
+
         this.itens = itens;
         this.data = LocalDate.now();
         this.formaPagamento = formaPagamento;
         this.valorVenda = calcularTotal();
         this.lucroTotal = calcularLucroTotal();
         this.descricao = gerarResumoDosItens();
+        this.gasto = getGastoTotal();
     }
 
-    // Construtor dummy só pro FiadoDAO poder reconstruir um Fiado já existente
+    // Construtor dummy usado por FiadoDAO para reconstrução
     public Venda(int id) {
         this.id = id;
         this.itens = null;
@@ -34,12 +42,38 @@ public class Venda {
         this.valorVenda = 0.0;
         this.lucroTotal = 0.0;
         this.descricao = null;
+
+        // Atualiza controle se necessário
+        idsDisponiveis.remove(Integer.valueOf(id));
+        if (id >= proximoId) {
+            proximoId = id + 1;
+        }
+    }
+
+    public static void liberarId(int id) {
+        if (!idsDisponiveis.contains(id)) {
+            idsDisponiveis.add(id);
+            idsDisponiveis.sort(Integer::compareTo);
+        }
+    }
+
+    public static void setProximoId(int id) {
+        proximoId = id;
+    }
+
+    public static void setIdsDisponiveis(List<Integer> ids) {
+        idsDisponiveis = ids;
     }
 
     public void setId(int id) {
         this.id = id;
+        idsDisponiveis.remove(Integer.valueOf(id)); // previne reuso de ID
+        if (id >= proximoId) {
+            proximoId = id + 1;
+        }
     }
 
+    // Getters e setters restantes
     public void setData(LocalDate data) {
         this.data = data;
     }
@@ -66,25 +100,6 @@ public class Venda {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    private double calcularTotal() {
-        if (itens == null)
-            return 0.0;
-        return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
-    }
-
-    private double calcularLucroTotal() {
-        double total = 0;
-        if (itens == null)
-            return 0.0;
-
-        for (ItemVenda item : itens) {
-            double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
-            double lucroPorUnidade = item.getProduto().getValorVenda() - custoUnitario;
-            total += lucroPorUnidade * item.getQuantidade();
-        }
-        return total;
     }
 
     public int getId() {
@@ -115,14 +130,35 @@ public class Venda {
         return lucroTotal;
     }
 
+    public double getGasto() {
+        return gasto;
+    }
+
     public double getGastoTotal() {
         double total = 0;
         if (itens == null)
             return 0.0;
-
         for (ItemVenda item : itens) {
             double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
             total += custoUnitario * item.getQuantidade();
+        }
+        return total;
+    }
+
+    private double calcularTotal() {
+        if (itens == null)
+            return 0.0;
+        return itens.stream().mapToDouble(ItemVenda::getSubtotal).sum();
+    }
+
+    private double calcularLucroTotal() {
+        if (itens == null)
+            return 0.0;
+        double total = 0;
+        for (ItemVenda item : itens) {
+            double custoUnitario = item.getProduto().getValorCompra() / item.getProduto().getQuantidadeTotal();
+            double lucroPorUnidade = item.getProduto().getValorVenda() - custoUnitario;
+            total += lucroPorUnidade * item.getQuantidade();
         }
         return total;
     }
@@ -147,9 +183,9 @@ public class Venda {
     public String getDescricao() {
         return descricao;
     }
-    
-    public double getGasto() {
-        return gasto;
+
+    public static int getProximoId() {
+        return proximoId;
     }
-    
+
 }
