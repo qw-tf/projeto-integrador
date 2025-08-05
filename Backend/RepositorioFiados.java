@@ -12,7 +12,6 @@ public class RepositorioFiados {
             List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados(); // já retorna com dataCriacao e dataQuitado
             fiados.clear();
             fiados.addAll(fiadosDoBanco);
-            System.out.println("Fiados carregados com sucesso do banco!");
         } catch (Exception e) {
             System.err.println("Erro ao carregar fiados do banco: " + e.getMessage());
             e.printStackTrace();

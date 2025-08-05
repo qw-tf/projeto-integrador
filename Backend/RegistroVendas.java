@@ -197,7 +197,6 @@ public class RegistroVendas {
             // 6️⃣ Ajusta proximoId
             Venda.setProximoId(maiorId + 1);
 
-            System.out.println("Vendas carregadas com sucesso! Próximo ID = " + Venda.getProximoId());
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("Erro ao carregar vendas do banco!");
