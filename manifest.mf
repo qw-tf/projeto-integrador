@@ -1,2 +1,0 @@
-Main-Class: Interfaces.SistemaPrincipal
-Class-Path: postgresql-42.7.6.jar

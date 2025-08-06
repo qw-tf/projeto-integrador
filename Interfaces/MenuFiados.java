@@ -344,20 +344,20 @@ public class MenuFiados extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
+    
         JLabel labelBusca = new JLabel("Nome ou parte do nome do cliente:");
         labelBusca.setFont(new Font("Segoe UI", Font.BOLD, 16));
         JTextField campoBusca = new JTextField(20);
         campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
+    
         JButton btnConsultar = new JButton("Consultar Fiados");
         JButton btnQuitarTotal = new JButton("Quitar Totalmente");
         JButton btnQuitarParcial = new JButton("Quitar Parcialmente");
         JButton btnCancelar = new JButton("Cancelar");
-
+    
         btnQuitarTotal.setEnabled(false);
         btnQuitarParcial.setEnabled(false);
-
+    
         JTextArea areaResumo = new JTextArea(10, 35);
         areaResumo.setEditable(false);
         areaResumo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -365,16 +365,20 @@ public class MenuFiados extends JPanel {
         areaResumo.setWrapStyleWord(true);
         JScrollPane scrollResumo = new JScrollPane(areaResumo);
         scrollResumo.setBorder(BorderFactory.createTitledBorder("Resumo do Fiado"));
-
+    
+        JComboBox<String> comboSelecionarFiado = new JComboBox<>();
+        comboSelecionarFiado.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboSelecionarFiado.setEnabled(false);
+    
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
         painel.add(labelBusca, gbc);
-
+    
         gbc.gridx = 1;
         gbc.weightx = 1;
         painel.add(campoBusca, gbc);
-
+    
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
@@ -382,13 +386,16 @@ public class MenuFiados extends JPanel {
         painelBotoesConsulta.setBackground(new Color(156, 156, 156));
         painelBotoesConsulta.add(btnConsultar);
         painel.add(painelBotoesConsulta, gbc);
-
+    
         gbc.gridy = 2;
+        painel.add(comboSelecionarFiado, gbc);
+    
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 1;
         painel.add(scrollResumo, gbc);
-
-        gbc.gridy = 3;
+    
+        gbc.gridy = 4;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weighty = 0;
         JPanel painelBotoesAcao = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -397,16 +404,15 @@ public class MenuFiados extends JPanel {
         painelBotoesAcao.add(btnQuitarParcial);
         painelBotoesAcao.add(btnCancelar);
         painel.add(painelBotoesAcao, gbc);
-
+    
         SistemaPrincipal.estilizarBotaoMaior(btnConsultar);
         SistemaPrincipal.estilizarBotaoMaior(btnQuitarTotal);
         SistemaPrincipal.estilizarBotaoMaior(btnQuitarParcial);
         SistemaPrincipal.estilizarBotaoMaior(btnCancelar);
-
-        final List<Fiado>[] fiadosEncontrados = new List[] { null };
+    
+        final List<Fiado>[] fiadosEncontrados = new List[1];
         final Fiado[] fiadoSelecionado = new Fiado[1];
-        fiadoSelecionado[0] = null;
-
+    
         btnConsultar.addActionListener(e -> {
             String textoBusca = campoBusca.getText().trim().toLowerCase();
             if (textoBusca.isEmpty()) {
@@ -416,116 +422,88 @@ public class MenuFiados extends JPanel {
             List<Fiado> encontrados = RepositorioFiados.getFiados().stream()
                     .filter(f -> f.getNomeCliente().toLowerCase().contains(textoBusca) && !f.isQuitado())
                     .collect(Collectors.toList());
-
-            if (encontrados.isEmpty()) {
-                areaResumo.setText("");
-                fiadosEncontrados[0] = null;
-                fiadoSelecionado[0] = null;
-                btnQuitarTotal.setEnabled(false);
-                btnQuitarParcial.setEnabled(false);
-                JOptionPane.showMessageDialog(painel, "Nenhum fiado encontrado para essa busca.", "Aviso",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
+    
             fiadosEncontrados[0] = encontrados;
-
-            // Mostrar lista resumida para escolher
-            StringBuilder sb = new StringBuilder();
-            sb.append("Fiados encontrados:\n\n");
-            for (int i = 0; i < encontrados.size(); i++) {
-                Fiado f = encontrados.get(i);
-                sb.append(String.format("%d - ID: %d | Cliente: %s | Valor Restante: R$ %.2f\n",
-                        i + 1, f.getIdFiado(), f.getNomeCliente(), f.getValorRestante()));
-            }
-            sb.append("\nColoque o ID do fiado para visualizar detalhes na caixa de texto e habilitar a quitação.");
-
-            areaResumo.setText(sb.toString());
-
+            comboSelecionarFiado.removeAllItems();
             fiadoSelecionado[0] = null;
+            areaResumo.setText("");
             btnQuitarTotal.setEnabled(false);
             btnQuitarParcial.setEnabled(false);
-        });
-
-        // Para selecionar o fiado a partir do número digitado na área de texto
-        campoBusca.addActionListener(e -> {
-            if (fiadosEncontrados[0] == null || fiadosEncontrados[0].isEmpty())
+    
+            if (encontrados.isEmpty()) {
+                JOptionPane.showMessageDialog(painel, "Nenhum fiado encontrado para essa busca.", "Aviso",
+                        JOptionPane.INFORMATION_MESSAGE);
+                comboSelecionarFiado.setEnabled(false);
                 return;
-            String texto = campoBusca.getText().trim();
-            try {
-                int num = Integer.parseInt(texto);
-                if (num >= 1 && num <= fiadosEncontrados[0].size()) {
-                    fiadoSelecionado[0] = fiadosEncontrados[0].get(num - 1);
-                    Fiado f = fiadoSelecionado[0];
-                    StringBuilder detalhes = new StringBuilder();
-                    detalhes.append(String.format("Detalhes do Fiado ID %d:\n", f.getIdFiado()));
-                    detalhes.append(String.format("Cliente: %s\n", f.getNomeCliente()));
-                    detalhes.append(String.format("ID Venda: %d\n", f.getIdVenda()));
-                    detalhes.append(String.format("Valor Restante: R$ %.2f\n", f.getValorRestante()));
-                    detalhes.append(String.format("Quitado: %s\n\n", f.isQuitado() ? "Sim" : "Não"));
-                    detalhes.append("Itens da Venda:\n");
-
-                    Venda venda = RegistroVendas.getTodasVendas().stream()
-                            .filter(v -> v.getId() == f.getIdVenda())
-                            .findFirst()
-                            .orElse(null);
-
-                    if (venda != null) {
-                        venda.getItens().forEach(item -> {
-                            detalhes.append(String.format("- %s | Qtd: %d | Preço Unit: R$ %.2f | Subtotal: R$ %.2f\n",
-                                    item.getProduto().getNome(),
-                                    item.getQuantidade(),
-                                    item.getProduto().getValorVenda(),
-                                    item.getSubtotal()));
-                        });
-                        detalhes.append(String.format("\nTotal Venda: R$ %.2f", venda.getTotal()));
-                    } else {
-                        detalhes.append("Venda associada não encontrada.\n");
-                    }
-
-                    areaResumo.setText(detalhes.toString());
-                    btnQuitarTotal.setEnabled(true);
-                    btnQuitarParcial.setEnabled(true);
+            }
+    
+            for (Fiado f : encontrados) {
+                comboSelecionarFiado.addItem(String.format("ID: %d | %s | R$ %.2f",
+                        f.getIdFiado(), f.getNomeCliente(), f.getValorRestante()));
+            }
+            comboSelecionarFiado.setEnabled(true);
+        });
+    
+        comboSelecionarFiado.addActionListener(e -> {
+            int idx = comboSelecionarFiado.getSelectedIndex();
+            if (idx >= 0 && fiadosEncontrados[0] != null && idx < fiadosEncontrados[0].size()) {
+                fiadoSelecionado[0] = fiadosEncontrados[0].get(idx);
+                Fiado f = fiadoSelecionado[0];
+                StringBuilder detalhes = new StringBuilder();
+                detalhes.append(String.format("Detalhes do Fiado ID %d:\n", f.getIdFiado()));
+                detalhes.append(String.format("Cliente: %s\n", f.getNomeCliente()));
+                detalhes.append(String.format("ID Venda: %d\n", f.getIdVenda()));
+                detalhes.append(String.format("Valor Restante: R$ %.2f\n", f.getValorRestante()));
+                detalhes.append(String.format("Quitado: %s\n\n", f.isQuitado() ? "Sim" : "Não"));
+                detalhes.append("Itens da Venda:\n");
+    
+                Venda venda = RegistroVendas.getTodasVendas().stream()
+                        .filter(v -> v.getId() == f.getIdVenda())
+                        .findFirst()
+                        .orElse(null);
+    
+                if (venda != null) {
+                    venda.getItens().forEach(item -> {
+                        detalhes.append(String.format("- %s | Qtd: %d | Preço Unit: R$ %.2f | Subtotal: R$ %.2f\n",
+                                item.getProduto().getNome(),
+                                item.getQuantidade(),
+                                item.getProduto().getValorVenda(),
+                                item.getSubtotal()));
+                    });
+                    detalhes.append(String.format("\nTotal Venda: R$ %.2f", venda.getTotal()));
+                } else {
+                    detalhes.append("Venda associada não encontrada.\n");
                 }
-            } catch (NumberFormatException ex) {
-                // Ignorar entrada inválida
+    
+                areaResumo.setText(detalhes.toString());
+                btnQuitarTotal.setEnabled(true);
+                btnQuitarParcial.setEnabled(true);
             }
         });
-
+    
         btnQuitarTotal.addActionListener(e -> {
-            try {
-                if (fiadoSelecionado[0] == null) {
-                    JOptionPane.showMessageDialog(painel, "Selecione um fiado válido primeiro.", "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                int resposta = JOptionPane.showConfirmDialog(painel,
-                        "Confirma quitar o fiado completamente?",
-                        "Confirmação",
-                        JOptionPane.YES_NO_OPTION);
-                if (resposta == JOptionPane.YES_OPTION) {
+            if (fiadoSelecionado[0] == null) return;
+            int resposta = JOptionPane.showConfirmDialog(painel,
+                    "Confirma quitar o fiado completamente?",
+                    "Confirmação",
+                    JOptionPane.YES_NO_OPTION);
+            if (resposta == JOptionPane.YES_OPTION) {
+                try {
                     fiadoSelecionado[0].quitarTotalmente();
                     FiadoDAO.atualizarValorRestante(fiadoSelecionado[0]);
                     JOptionPane.showMessageDialog(painel, "Fiado quitado com sucesso!", "Sucesso",
                             JOptionPane.INFORMATION_MESSAGE);
                     popUpListar = null;
                     SwingUtilities.getWindowAncestor(painel).dispose();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(painel, "Erro ao quitar: " + ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(painel, "Erro no banco de dados: " + ex.getMessage(), "ERRO",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(painel, "Erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
             }
-
         });
-
+    
         btnQuitarParcial.addActionListener(e -> {
-            if (fiadoSelecionado[0] == null) {
-                JOptionPane.showMessageDialog(painel, "Selecione um fiado válido primeiro.", "Erro",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            if (fiadoSelecionado[0] == null) return;
             String valor = JOptionPane.showInputDialog(painel, "Informe o valor a pagar parcialmente:",
                     "Quitar Parcialmente", JOptionPane.PLAIN_MESSAGE);
             if (valor != null) {
@@ -541,20 +519,18 @@ public class MenuFiados extends JPanel {
                             JOptionPane.INFORMATION_MESSAGE);
                     popUpListar = null;
                     SwingUtilities.getWindowAncestor(painel).dispose();
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(painel, "Erro no banco de dados: " + ex.getMessage(), "Erro",
-                            JOptionPane.ERROR_MESSAGE);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(painel, "Valor inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(painel, "Número inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(painel, "Erro:" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(painel, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-
+    
         btnCancelar.addActionListener(e -> SwingUtilities.getWindowAncestor(painel).dispose());
-
-        JDialog popUp = framePai.criarPopUp("QUITAR FIADO", painel, 600, 450);
+    
+        JDialog popUp = framePai.criarPopUp("QUITAR FIADO", painel, 700, 500);
         popUp.setVisible(true);
     }
+    
 }
