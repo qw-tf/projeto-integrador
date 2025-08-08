@@ -9,7 +9,7 @@ public class RepositorioFiados {
     private static final List<Fiado> fiados = new ArrayList<>();
     public static void carregarFiadosDoBanco() {
         try {
-            List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados(); // já retorna com dataCriacao e dataQuitado
+            List<Fiado> fiadosDoBanco = Banco.FiadoDAO.listarFiados();
             fiados.clear();
             fiados.addAll(fiadosDoBanco);
         } catch (Exception e) {
@@ -36,6 +36,6 @@ public class RepositorioFiados {
                 return fiado;
             }
         }
-        return null; // se não encontrar
+        return null;
     }
 }

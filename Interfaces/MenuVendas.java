@@ -357,7 +357,6 @@ public class MenuVendas extends JPanel {
         JScrollPane scrollResumo = new JScrollPane(areaResumo);
         scrollResumo.setBorder(BorderFactory.createTitledBorder("Resumo da Venda"));
 
-        // Layout
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0;
@@ -415,7 +414,6 @@ public class MenuVendas extends JPanel {
                 } else {
                     vendaSelecionada[0] = v;
 
-                    // 🍡 Usa a descrição simples ao invés de tentar listar os itens reais
                     StringBuilder sb = new StringBuilder();
                     sb.append("Venda ID ").append(id).append(":\n\n");
                     sb.append("Descrição: ").append(v.getDescricao()).append("\n");
@@ -475,11 +473,11 @@ public class MenuVendas extends JPanel {
         for (int i = 0; i < vendas.size(); i++) {
             Venda v = vendas.get(i);
             dados[i][0] = v.getId();
-            dados[i][1] = v.getDescricao(); // agora isso tá vindo do banco direitinho!
+            dados[i][1] = v.getDescricao();
             dados[i][2] = v.getData().format(formatter);
             dados[i][3] = String.format("R$ %.2f", v.getTotal());
             dados[i][4] = v.getFormaPagamento();
-            dados[i][5] = String.format("R$ %.2f", v.getLucroTotal()); // sem recalcular, yayyy!
+            dados[i][5] = String.format("R$ %.2f", v.getLucroTotal()); 
         }
 
         DefaultTableModel modelo = new DefaultTableModel(dados, colunas) {
@@ -515,7 +513,6 @@ public class MenuVendas extends JPanel {
             }
         });
 
-        // --- AQUI ADICIONAMOS O CAMPO DE BUSCA ---
         JTextField campoBusca = new JTextField();
         campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         campoBusca.setPreferredSize(new Dimension(200, 30));
@@ -529,7 +526,6 @@ public class MenuVendas extends JPanel {
                 if (texto.length() == 0) {
                     sorter.setRowFilter(null);
                 } else {
-                    // Filtra coluna 1 ("Produtos" / descrição)
                     sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 1));
                 }
             }
@@ -554,7 +550,6 @@ public class MenuVendas extends JPanel {
         JPanel painel = new JPanel(new BorderLayout());
         painel.setBackground(new Color(156, 156, 156));
 
-        // Painel para busca no topo
         JPanel painelBusca = new JPanel(new FlowLayout(FlowLayout.LEFT));
         painelBusca.setBackground(new Color(156, 156, 156));
         painelBusca.add(new JLabel("Buscar: "));

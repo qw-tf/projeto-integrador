@@ -52,7 +52,7 @@ public class MenuAcess extends JPanel {
         jBGeral = new JButton();
         jBVoltar = new JButton("VOLTAR");
         jBNotif = new JButton("NOTIFICAÇÕES");
-        jBEngrenagem = new JButton("OPÇÕES"); // ⚙ = engrenagem unicode
+        jBEngrenagem = new JButton("OPÇÕES"); 
         jBEngrenagem.setPreferredSize(new Dimension(99, 38));
         jBEngrenagem.setFont(new Font("Segoe UI", Font.BOLD, 20));
 

@@ -1,4 +1,4 @@
-// Backend/Gasto.java
+
 package Backend;
 
 import java.time.LocalDate;

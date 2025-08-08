@@ -33,7 +33,6 @@ public class Venda {
         this.gasto = getGastoTotal();
     }
 
-    // Construtor dummy usado por FiadoDAO para reconstrução
     public Venda(int id) {
         this.id = id;
         this.itens = null;
@@ -43,7 +42,6 @@ public class Venda {
         this.lucroTotal = 0.0;
         this.descricao = null;
 
-        // Atualiza controle se necessário
         idsDisponiveis.remove(Integer.valueOf(id));
         if (id >= proximoId) {
             proximoId = id + 1;
@@ -67,13 +65,12 @@ public class Venda {
 
     public void setId(int id) {
         this.id = id;
-        idsDisponiveis.remove(Integer.valueOf(id)); // previne reuso de ID
+        idsDisponiveis.remove(Integer.valueOf(id));
         if (id >= proximoId) {
             proximoId = id + 1;
         }
     }
 
-    // Getters e setters restantes
     public void setData(LocalDate data) {
         this.data = data;
     }

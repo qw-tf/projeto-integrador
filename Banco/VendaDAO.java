@@ -15,15 +15,15 @@ public class VendaDAO {
 
             stmt.setInt(1, venda.getId());
             stmt.setDate(2, Date.valueOf(venda.getData()));
-            stmt.setString(3, venda.gerarResumoDosItens()); // descrição tipo "Arroz (x1), Feijão (x2)"
+            stmt.setString(3, venda.gerarResumoDosItens()); 
             stmt.setInt(4, venda.getQuantidadeTotal());
             stmt.setString(5, venda.getFormaPagamento());
             stmt.setDouble(6, venda.getTotal());
-            stmt.setDouble(7, venda.getLucroTotal()); // o novo campo lindo e lucrativo 💸💸💸
-            stmt.setDouble(8, venda.getGastoTotal()); // o gasto que você quer salvar
+            stmt.setDouble(7, venda.getLucroTotal());
+            stmt.setDouble(8, venda.getGastoTotal());
 
             venda.setDescricao(venda.gerarResumoDosItens());
-            venda.setLucroTotal(venda.getLucroTotal()); // só pra garantir que o objeto tá sincronizadinho ✨
+            venda.setLucroTotal(venda.getLucroTotal()); 
 
             stmt.executeUpdate();
         }
@@ -51,7 +51,7 @@ public class VendaDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // ← Mostra o erro real no console!
+            e.printStackTrace(); 
             return false;
         }
     }

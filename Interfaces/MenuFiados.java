@@ -117,13 +117,11 @@ public class MenuFiados extends JPanel {
         JLabel labelVenda = new JLabel("Venda:");
         JComboBox<String> comboVendas = new JComboBox<>();
 
-        // Ordena as vendas da mais recente para a mais antiga (por ID decrescente)
         List<Venda> vendasOrdenadas = RegistroVendas.getTodasVendas().stream()
                 .sorted(Comparator.comparingInt(Venda::getId).reversed())
                 .collect(Collectors.toList());
 
         for (Venda v : vendasOrdenadas) {
-            // Exibir: ID, data, total e resumo dos produtos
             String texto = String.format("ID: %d | %s | R$ %.2f | %s",
                     v.getId(),
                     v.getData() != null ? v.getData().toString() : "Data N/D",
@@ -171,7 +169,6 @@ public class MenuFiados extends JPanel {
                     return;
                 }
 
-                // Pega o ID da venda selecionada no combo (string: "ID: x | ...")
                 String selecionado = (String) comboVendas.getSelectedItem();
                 int idVendaSelecionada = Integer
                         .parseInt(selecionado.substring(4, selecionado.indexOf('|') - 1).trim());
@@ -192,7 +189,7 @@ public class MenuFiados extends JPanel {
 
                 Fiado fiado = new Fiado(nomeCliente, venda);
                 RepositorioFiados.adicionarFiado(fiado);
-                FiadoDAO.inserirFiado(fiado); // Salva no banco também!!!
+                FiadoDAO.inserirFiado(fiado);
 
                 JOptionPane.showMessageDialog(panelzao, "Fiado registrado com sucesso!", "SUCESSO",
                         JOptionPane.INFORMATION_MESSAGE);
@@ -263,7 +260,6 @@ public class MenuFiados extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        // Campo de busca
         JTextField campoBusca = new JTextField(20);
         campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         JLabel labelBusca = new JLabel("Buscar por nome:");
@@ -274,7 +270,6 @@ public class MenuFiados extends JPanel {
         painelBusca.add(labelBusca);
         painelBusca.add(campoBusca);
 
-        // Label de aviso no rodapé
         JLabel avisoLabel = new JLabel("FIADOS DESAPARECEM AUTOMATICAMENTE DEPOIS DE 30 DIAS APÓS PAGOS");
         avisoLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
         avisoLabel.setForeground(Color.BLACK);
@@ -287,7 +282,6 @@ public class MenuFiados extends JPanel {
         painelPrincipal.add(scrollPane, BorderLayout.CENTER);
         painelPrincipal.add(avisoLabel, BorderLayout.SOUTH);
 
-        // Função de atualizar a tabela com base na busca
         Runnable atualizarTabela = () -> {
             String termo = campoBusca.getText().trim().toLowerCase();
             List<Fiado> fiadosFiltrados = RepositorioFiados.getFiados();
@@ -297,11 +291,11 @@ public class MenuFiados extends JPanel {
                         .sorted((f1, f2) -> {
                             boolean c1 = f1.getNomeCliente().toLowerCase().contains(termo);
                             boolean c2 = f2.getNomeCliente().toLowerCase().contains(termo);
-                            return Boolean.compare(!c1, !c2); // true vem depois de false
+                            return Boolean.compare(!c1, !c2);
                         }).collect(Collectors.toList());
             }
 
-            modelo.setRowCount(0); // limpa a tabela
+            modelo.setRowCount(0); 
             for (Fiado f : fiadosFiltrados) {
                 modelo.addRow(new Object[] {
                         f.getIdFiado(),
@@ -313,7 +307,7 @@ public class MenuFiados extends JPanel {
             }
         };
 
-        // Atualiza conforme digita
+    
         campoBusca.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             public void changedUpdate(javax.swing.event.DocumentEvent e) {
                 atualizarTabela.run();
@@ -328,7 +322,7 @@ public class MenuFiados extends JPanel {
             }
         });
 
-        atualizarTabela.run(); // carrega pela primeira vez
+        atualizarTabela.run(); 
 
         if (popUpListar != null && popUpListar.isVisible()) {
             popUpListar.toFront();

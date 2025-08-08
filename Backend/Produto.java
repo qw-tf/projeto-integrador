@@ -67,10 +67,8 @@ public class Produto {
         Verificador.verificarCodigo(codigo);
         this.codigo = codigo;
 
-        // Remove da lista de disponíveis caso esteja lá
         codigosDisponiveis.remove(Integer.valueOf(codigo));
 
-        // Atualiza o próximo código se necessário
         if (codigo >= proximoCodigo) {
             proximoCodigo = codigo + 1;
         }

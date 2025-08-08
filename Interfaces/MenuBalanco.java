@@ -87,7 +87,7 @@ public class MenuBalanco extends JPanel {
         jBBalancoAnual.addActionListener(e -> mostrarBalancoAnual());
         jBBalancoVendas.addActionListener(e -> mostrarBalancoDiario());
     }
-// Dentro dos métodos mostrarBalancoMensal, mostrarBalancoAnual, mostrarBalancoDiario, só ajustei pra usar lucro e gasto direitinho
+
 
     private void mostrarResultado(String titulo, String[][] dadosTabela, String[] colunas, String resumo) {
         DefaultTableModel modelo = new DefaultTableModel(dadosTabela, colunas) {
@@ -127,8 +127,8 @@ public class MenuBalanco extends JPanel {
         JTextArea rodape = new JTextArea(resumo);
         rodape.setFont(new Font("Segoe UI", Font.BOLD, 14));
         rodape.setEditable(false);
-        rodape.setBackground(new Color(110, 110, 110)); // cor mais escura
-        rodape.setForeground(Color.BLACK); // texto branco
+        rodape.setBackground(new Color(110, 110, 110)); 
+        rodape.setForeground(Color.BLACK); 
         rodape.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel painelPrincipal = new JPanel(new BorderLayout());
@@ -147,13 +147,13 @@ public class MenuBalanco extends JPanel {
 
 
     private void mostrarBalancoMensal() {
-        atualizarProdutosDasVendas(); // chama antes de calcular
+        atualizarProdutosDasVendas(); 
     
         LocalDate hoje = LocalDate.now();
         LocalDate inicio = hoje.minusDays(29);
         Map<LocalDate, Double[]> dados = RegistroVendas.calcularBalancoPorDia(inicio, hoje);
     
-        String[][] linhas = new String[dados.size()][3]; // só 3 colunas mesmo: Data, Lucro, Gasto
+        String[][] linhas = new String[dados.size()][3]; 
         int i = 0;
         double totalLucro = 0, totalGasto = 0;
         for (Map.Entry<LocalDate, Double[]> entry : dados.entrySet()) {
@@ -186,7 +186,7 @@ public class MenuBalanco extends JPanel {
         LocalDate inicioAno = LocalDate.of(hoje.getYear(), 1, 1);
         Map<Integer, Double[]> dados = RegistroVendas.calcularBalancoPorMes(inicioAno, hoje);
     
-        String[][] linhas = new String[12][3]; // só 3 colunas: Mês, Lucro, Gasto
+        String[][] linhas = new String[12][3];
         double totalLucro = 0, totalGasto = 0;
         for (int mes = 1; mes <= 12; mes++) {
             Double[] valores = dados.getOrDefault(mes, new Double[] { 0.0, 0.0 });

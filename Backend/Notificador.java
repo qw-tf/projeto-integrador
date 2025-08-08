@@ -15,8 +15,6 @@ public class Notificador {
         List<String> avisos = new ArrayList<>();
 
         LocalDate hoje = LocalDate.now();
-
-        // 1. Produtos perto da validade
         for (Produto p : RegistroProdutos.getProdutos()) {
             if (p instanceof ProdutoPerecivel) {
                 ProdutoPerecivel pp = (ProdutoPerecivel) p;
@@ -30,8 +28,6 @@ public class Notificador {
                 }
             }
         }
-
-        // 2. Fiados vencidos
         LocalDate limiteFiado = hoje.minusDays(DIAS_AVISO_FIADO);
         for (Fiado fiado : RepositorioFiados.getFiados()) {
             if (fiado.getDataCriacao().isBefore(limiteFiado) && !fiado.isQuitado()) {
@@ -41,7 +37,6 @@ public class Notificador {
             }
         }
 
-        // 3. Estoque baixo (menos que 20% do estoque total)
         for (Produto p : RegistroProdutos.getProdutos()) {
             int atual = p.getQuantidade();
             int total = p.getQuantidadeTotal();

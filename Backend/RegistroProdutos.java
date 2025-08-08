@@ -123,11 +123,10 @@ public class RegistroProdutos {
     }
 
     public static void carregarDoBanco() throws SQLException {
-        List<Produto> lista = ProdutoDAO.listarTodos(); // usa o DAO
+        List<Produto> lista = ProdutoDAO.listarTodos(); 
         lista.sort(Comparator.comparingInt(Produto::getCodigo));
         produtos = lista;
 
-        // Atualiza códigos
         Set<Integer> codigosUsados = lista.stream()
                 .map(Produto::getCodigo)
                 .collect(Collectors.toSet());

@@ -113,7 +113,6 @@ public class MenuEstoq extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos
         JLabel labelNome = new JLabel("Nome:");
         JTextField campoNome = new JTextField(20);
 
@@ -133,7 +132,6 @@ public class MenuEstoq extends JPanel {
         JLabel labelValidade = new JLabel("Validade (se perecível):");
         JTextField campoValidade = new JTextField(10);
 
-        // Inicialmente desabilita validade sem alterar layout
         labelValidade.setEnabled(false);
         labelValidade.setForeground(new Color(156, 156, 156));
         campoValidade.setEnabled(false);
@@ -141,7 +139,6 @@ public class MenuEstoq extends JPanel {
 
         int y = 0;
 
-        // Linha 0: Nome
         gbc.gridx = 0;
         gbc.gridy = y;
         gbc.gridwidth = 1;
@@ -150,7 +147,6 @@ public class MenuEstoq extends JPanel {
         gbc.gridwidth = 2;
         panelzao.add(campoNome, gbc);
 
-        // Linha 1: Quantidade
         y++;
         gbc.gridx = 0;
         gbc.gridy = y;
@@ -160,7 +156,6 @@ public class MenuEstoq extends JPanel {
         gbc.gridwidth = 2;
         panelzao.add(campoQuantidade, gbc);
 
-        // Linha 2: Valor Compra e custo por unidade
         y++;
         gbc.gridx = 0;
         gbc.gridy = y;
@@ -174,7 +169,6 @@ public class MenuEstoq extends JPanel {
         panelzao.add(labelValorCompraUnidade, gbc);
         gbc.anchor = GridBagConstraints.WEST;
 
-        // Linha 3: Valor Venda
         y++;
         gbc.gridx = 0;
         gbc.gridy = y;
@@ -184,14 +178,12 @@ public class MenuEstoq extends JPanel {
         gbc.gridwidth = 2;
         panelzao.add(campoValorVenda, gbc);
 
-        // Linha 4: Checkbox Perecível
         y++;
         gbc.gridx = 0;
         gbc.gridy = y;
         gbc.gridwidth = 3;
         panelzao.add(checkPerecivel, gbc);
 
-        // Linha 5: Validade
         y++;
         gbc.gridx = 0;
         gbc.gridy = y;
@@ -201,7 +193,6 @@ public class MenuEstoq extends JPanel {
         gbc.gridwidth = 2;
         panelzao.add(campoValidade, gbc);
 
-        // Botões
         JButton confirmar = new JButton("Confirmar");
         JButton cancelar = new JButton("Cancelar");
         SistemaPrincipal.estilizarBotaoMaior(confirmar);
@@ -221,7 +212,6 @@ public class MenuEstoq extends JPanel {
         gbc.gridwidth = 3;
         panelzao.add(botoes, gbc);
 
-        // Listener para habilitar/desabilitar validade suavemente
         checkPerecivel.addActionListener(e -> {
             boolean ativo = checkPerecivel.isSelected();
             labelValidade.setEnabled(ativo);
@@ -232,7 +222,6 @@ public class MenuEstoq extends JPanel {
             panelzao.repaint();
         });
 
-        // DocumentListener para custo por unidade
         DocumentListener atualizaCustoUnidade = new DocumentListener() {
             private void atualizar() {
                 try {
@@ -263,7 +252,6 @@ public class MenuEstoq extends JPanel {
         campoQuantidade.getDocument().addDocumentListener(atualizaCustoUnidade);
         campoValorCompra.getDocument().addDocumentListener(atualizaCustoUnidade);
 
-        // Dialog
         JDialog popUp = framePai.criarPopUp("ADICIONAR PRODUTO", panelzao, 450, 320);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -368,7 +356,6 @@ public class MenuEstoq extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-        // 🔍 Campo de busca
         JTextField campoBusca = new JTextField();
         campoBusca.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         campoBusca.setPreferredSize(new Dimension(200, 30));
@@ -379,7 +366,7 @@ public class MenuEstoq extends JPanel {
             List<Object[]> filtrados = new ArrayList<>();
 
             for (Object[] linha : todosDados) {
-                String nome = linha[1].toString().toLowerCase(); // Coluna do nome
+                String nome = linha[1].toString().toLowerCase();
                 if (nome.contains(termo)) {
                     filtrados.add(linha);
                 }
@@ -422,7 +409,7 @@ public class MenuEstoq extends JPanel {
 
             DefaultTableModel modelo = new DefaultTableModel(dadosAtualizados, colunas);
             tabelaProdutos.setModel(modelo);
-            tabelaProdutos.setRowSorter(new TableRowSorter<>(modelo)); // 🔄 Ordenação reativada está
+            tabelaProdutos.setRowSorter(new TableRowSorter<>(modelo)); 
         }
     }
 
@@ -472,7 +459,6 @@ public class MenuEstoq extends JPanel {
 
         final Produto[] produtoSelecionado = new Produto[1];
 
-        // Reutilizável: lógica de buscar e selecionar produto
         Runnable buscarProduto = () -> {
             String entrada = campoBusca.getText().trim().toLowerCase();
             if (entrada.isEmpty()) {
@@ -526,7 +512,7 @@ public class MenuEstoq extends JPanel {
         campoBusca.addActionListener(e -> buscarProduto.run());
 
         confirmar.addActionListener(e -> {
-            buscarProduto.run(); // Busca primeiro
+            buscarProduto.run();
             Produto produto = produtoSelecionado[0];
             if (produto == null) {
                 JOptionPane.showMessageDialog(popUpExcluir, "Nenhum produto selecionado.", "Erro",

@@ -106,13 +106,11 @@ public class MenuGastos extends JPanel {
     
         JLabel labelDescricao = new JLabel("Descrição:");
     
-        // JTextArea normal
         JTextArea campoDescricao = new JTextArea();
         campoDescricao.setLineWrap(true);
         campoDescricao.setWrapStyleWord(true);
         campoDescricao.setFont(new Font("Segoe UI", Font.PLAIN, 14));
     
-        // JScrollPane fixo em 300x100, scrollbar só quando necessário
         JScrollPane scrollDescricao = new JScrollPane(campoDescricao,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -138,7 +136,6 @@ public class MenuGastos extends JPanel {
         JLabel labelTipo = new JLabel("Tipo de Gasto:");
         JComboBox<String> comboTipo = new JComboBox<>(new String[] { "Pessoal", "Empresarial" });
     
-        // Layout
         gbc.gridx = 0; gbc.gridy = 0; panelzao.add(labelDescricao, gbc);
         gbc.gridx = 1; panelzao.add(scrollDescricao, gbc);
     
@@ -167,7 +164,6 @@ public class MenuGastos extends JPanel {
         confirmar.setPreferredSize(botaoTamanho);
         cancelar .setPreferredSize(botaoTamanho);
     
-        // Cria e fixa o diálogo
         JDialog popUp = framePai.criarPopUp("ADICIONAR GASTO", panelzao, 480, 350);
         popUp.setSize(480, 350);
         popUp.setMinimumSize(new Dimension(480, 350));
@@ -241,7 +237,7 @@ public class MenuGastos extends JPanel {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 if (column == 0) {
-                    return new TextAreaRenderer(); // 👈 agora usa a nova classe
+                    return new TextAreaRenderer(); 
                 }
                 return super.getCellRenderer(row, column);
             }
@@ -300,7 +296,6 @@ public class MenuGastos extends JPanel {
             setBackground(row % 2 == 0 ? new Color(220, 220, 220) : Color.WHITE);
             setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-            // 👇 ESSENCIAL: define largura antes de calcular altura preferida
             setSize(table.getColumnModel().getColumn(column).getWidth(), Short.MAX_VALUE);
             int alturaLinha = getPreferredSize().height;
 

@@ -1,4 +1,4 @@
-// Banco/GastosDAO.java
+
 package Banco;
 
 import Backend.Gasto;
@@ -31,8 +31,7 @@ public class GastosDAO {
                 if (generatedKeys.next()) {
                     int idGerado = generatedKeys.getInt(1);
                     System.out.println("Gasto inserido com sucesso! ID gerado: " + idGerado);
-                    // Se quiser, pode setar o ID no objeto gasto aqui (precisa criar setId)
-                    // gasto.setId(idGerado);
+                   
                 } else {
                     throw new SQLException("Falha ao obter ID gerado para o gasto.");
                 }
@@ -43,7 +42,6 @@ public class GastosDAO {
         }
     }
     
-    // Carrega todos os gastos do banco e já popula o RepositorioGastos
     public static List<Gasto> carregarGastos() {
         List<Gasto> todosGastos = new ArrayList<>();
         String sql = "SELECT * FROM gastos";

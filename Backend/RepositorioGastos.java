@@ -1,4 +1,4 @@
-// Backend/RepositorioGastos.java
+
 package Backend;
 
 import java.util.ArrayList;

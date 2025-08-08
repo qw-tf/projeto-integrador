@@ -1,4 +1,4 @@
-// SistemaPrincipal.java
+
 package Interfaces;
 
 import Backend.RegistroProdutos;
@@ -126,7 +126,6 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         SistemaPrincipal.estilizarBotaoMaior(btnRecuperar);
         btnSair.setForeground(new Color(255, 50, 50));
 
-        // Pressionar ENTER dentro do campo senha executa o botão Continuar
         campoSenha.addActionListener(e -> btnContinuar.doClick());
 
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -172,16 +171,13 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         trocarTela(telaInicial);
     }
 
-    // Dentro da sua classe de UI (por exemplo, MenuRecuperacaoSenha)
     private void abrirRecuperacaoSenha() {
         Font fonte = new Font("Segoe UI", Font.PLAIN, 14);
 
-        // Painel de conteúdo com BorderLayout
         JPanel conteudo = new JPanel(new BorderLayout());
         conteudo.setBackground(new Color(156, 156, 156));
         conteudo.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Painel central com GridBagLayout
         JPanel grid = new JPanel(new GridBagLayout());
         grid.setBackground(new Color(156, 156, 156));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -193,7 +189,6 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         JLabel labelToken = new JLabel("Token:");
         JTextField campoToken = new JTextField(5);
 
-        // Estilo do campo
         campoToken.setFont(fonte);
         campoToken.setBackground(Color.WHITE);
         campoToken.setForeground(Color.BLACK);
@@ -206,26 +201,21 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         textoDica.setFont(fonte);
         labelToken.setFont(fonte);
 
-        // Adiciona "Dica:"
         gbc.gridx = 0;
         gbc.gridy = 0;
         grid.add(labelDica, gbc);
 
-        // Adiciona texto da dica
         gbc.gridx = 1;
         grid.add(textoDica, gbc);
 
-        // Adiciona "Token:"
         gbc.gridx = 0;
         gbc.gridy = 1;
         grid.add(labelToken, gbc);
 
-        // Adiciona campo do token com espaçamento superior maior
         gbc.gridx = 1;
-        gbc.insets = new Insets(10, 5, 5, 5); // margem superior maior
+        gbc.insets = new Insets(10, 5, 5, 5); 
         grid.add(campoToken, gbc);
 
-        // Painel de botões
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         botoes.setBackground(new Color(156, 156, 156));
         JButton btnCancelar = new JButton("CANCELAR");
@@ -235,14 +225,11 @@ public class SistemaPrincipal extends javax.swing.JFrame {
         botoes.add(btnCancelar);
         botoes.add(btnRecuperar);
 
-        // Monta conteúdo
         conteudo.add(grid, BorderLayout.CENTER);
         conteudo.add(botoes, BorderLayout.SOUTH);
 
-        // Cria pop-up
         JDialog popup = criarPopUp("RECUPERAR SENHA", conteudo, 350, 180);
 
-        // Ações dos botões
         btnCancelar.addActionListener(e -> popup.dispose());
         btnRecuperar.addActionListener(e -> {
             String token = campoToken.getText().trim();
@@ -266,7 +253,7 @@ public class SistemaPrincipal extends javax.swing.JFrame {
     public static void main(String[] args) {
         try {
             RegistroProdutos.carregarDoBanco();
-            RepositorioFiados.carregarFiadosDoBanco(); // se existir
+            RepositorioFiados.carregarFiadosDoBanco();
 
         } catch (SQLException e) {
             e.printStackTrace();

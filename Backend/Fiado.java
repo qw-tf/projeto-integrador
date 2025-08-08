@@ -15,7 +15,7 @@ public class Fiado {
     private double valorRestante;
     private boolean quitado;
     private LocalDate dataCriacao;
-    private LocalDate dataQuitado;  // NOVO campo para data que o fiado foi quitado
+    private LocalDate dataQuitado;  
 
     public Fiado(String descricao, Venda venda) {
         this.nomeCliente = descricao;
@@ -23,7 +23,7 @@ public class Fiado {
         this.valorRestante = venda.getValor();
         this.quitado = false;
         this.dataCriacao = LocalDate.now();
-        this.dataQuitado = null; // ainda não quitado
+        this.dataQuitado = null; 
 
         if (!idsDisponiveis.isEmpty()) {
             this.idFiado = idsDisponiveis.remove(0);
@@ -32,7 +32,6 @@ public class Fiado {
         }
     }
 
-    // Getters e setters
 
     public int getIdFiado() {
         return idFiado;
@@ -81,8 +80,6 @@ public class Fiado {
     public void setDataQuitado(LocalDate dataQuitado) {
         this.dataQuitado = dataQuitado;
     }
-
-    // Métodos para atualizar pagamento e quitado
     public void registrarPagamento(double valorPago) {
         if (valorPago <= 0) throw new IllegalArgumentException("Valor tem que ser positivo!");
         if (quitado) throw new IllegalStateException("Venda já quitada!");
@@ -91,14 +88,14 @@ public class Fiado {
         if (valorRestante <= 0) {
             valorRestante = 0.0;
             quitado = true;
-            dataQuitado = LocalDate.now();  // marca a data do pagamento completo
+            dataQuitado = LocalDate.now();  
         }
     }
 
     public void quitarTotalmente() {
         this.valorRestante = 0.0;
         this.quitado = true;
-        this.dataQuitado = LocalDate.now();  // marca a data do pagamento completo
+        this.dataQuitado = LocalDate.now();  
     }
 
     public String getResumoFiado() {

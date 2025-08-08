@@ -18,7 +18,7 @@ public class ProdutoDAO {
             stmt.setInt(1, produto.getCodigo());
             stmt.setString(2, produto.getNome());
             stmt.setInt(3, produto.getQuantidade());
-            stmt.setInt(4, produto.getQuantidadeTotal()); // 🌟 novo campo mágico!
+            stmt.setInt(4, produto.getQuantidadeTotal()); 
             stmt.setDouble(5, produto.getValorCompra());
             stmt.setDouble(6, produto.getValorVenda());
 
@@ -90,7 +90,7 @@ public class ProdutoDAO {
                 }
 
                 produto.setCodigo(codigo);
-                produto.setQuantidadeTotal(quantidadeTotal); // ESSA LINHA FAZIA FALTA
+                produto.setQuantidadeTotal(quantidadeTotal); 
                 produtos.add(produto);
             }
         }

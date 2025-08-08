@@ -1,4 +1,4 @@
-// Backend/GerenciadorSenha.java
+
 package Backend;
 
 import java.io.*;

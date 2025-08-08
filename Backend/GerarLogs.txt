@@ -10,7 +10,6 @@ public class GerarLogs {
 
     static {
         try {
-            // Cria o diretório "logs" se ele não existir
             java.io.File logDir = new java.io.File("logs");
             if (!logDir.exists()) {
                 logDir.mkdirs();
