@@ -1,30 +1,9 @@
--- 1. Cria usuário admin se não existir
-DO
-$$
-BEGIN
-   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'admin') THEN
-      CREATE ROLE admin WITH LOGIN PASSWORD '0109';
-   END IF;
-END
-$$;
+-- Conectado no banco comercio (se não, rode \c comercio antes)
 
--- 2. Cria banco comercio com owner admin se não existir
-DO
-$$
-BEGIN
-   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'comercio') THEN
-      CREATE DATABASE comercio OWNER admin;
-   END IF;
-END
-$$;
-
--- 3. Conecta no banco comercio
-\c comercio;
-
--- 4. Cria extensão dblink se necessário
+-- Cria extensão dblink (se ainda não existir)
 CREATE EXTENSION IF NOT EXISTS dblink;
 
--- 5. Criação das tabelas (com IF NOT EXISTS)
+-- Criação das tabelas (usando IF NOT EXISTS pra não quebrar se já existir)
 CREATE TABLE IF NOT EXISTS produtos (
     codigo INT PRIMARY KEY,
     nome TEXT NOT NULL,
@@ -63,7 +42,7 @@ CREATE TABLE IF NOT EXISTS fiados (
     dataQuitado DATE
 );
 
--- 6. Cria função para remover produto se quantidade <= 0
+-- Função para remover produto se quantidade <= 0
 CREATE OR REPLACE FUNCTION remover_produto_se_zero()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -76,7 +55,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 7. Cria trigger para chamar a função acima
+-- Trigger que chama essa função antes de atualizar a tabela produtos
 DROP TRIGGER IF EXISTS trigger_remover_produto ON produtos;
 
 CREATE TRIGGER trigger_remover_produto
@@ -85,9 +64,11 @@ FOR EACH ROW
 WHEN (NEW.quantidade <= 0)
 EXECUTE FUNCTION remover_produto_se_zero();
 
--- 8. Dá todas as permissões pro admin no banco comercio
+-- Permissões para o usuário admin em tudo que está no schema public
 GRANT ALL PRIVILEGES ON DATABASE comercio TO admin;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO admin;
-GRANT ALL PRIVILEGES ON ALL TRIGGERS IN SCHEMA public TO admin;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO admin;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO admin;
