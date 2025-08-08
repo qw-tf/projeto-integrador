@@ -59,10 +59,8 @@ public class RegistroProdutos {
                 Produto.liberarCodigo(produto.getCodigo());
                 ProdutoDAO.deletar(codigo);
             }
-            System.out.println("deu sim, caralho");
             return true;
         }
-        System.out.println("não deu, porra");
         return false;
     }
 

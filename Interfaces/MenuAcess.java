@@ -216,7 +216,7 @@ public class MenuAcess extends JPanel {
 
             String senhaSalva = GerenciadorSenha.carregarSenha();
             if (!senhaAtual.equals(senhaSalva)) {
-                JOptionPane.showMessageDialog(popup, "Senha atual incorreta.", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(popup, "Senha atual incorreta.", "ERRO", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (!novaSenha.equals(confirmarSenha)) {
