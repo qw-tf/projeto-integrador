@@ -42,7 +42,7 @@ public class FiadoDAO {
 
             if (afetados > 0) {
                 Fiado.liberarId(idFiado);
-                System.out.println("Fiado deletado com sucesso, nyan~!");
+                System.out.println("Fiado deletado com sucesso");
             } else {
                 System.out.println("Nenhum fiado encontrado com esse ID...");
             }
